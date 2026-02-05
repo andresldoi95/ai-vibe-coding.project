@@ -1,0 +1,277 @@
+/* Import Tailwind Base, Components, and Utilities */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import Design System */
+@import './theme.css';
+
+/* Base styles */
+@layer base {
+  body {
+    margin: 0;
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: rgb(var(--color-background));
+    color: rgb(var(--color-text-primary));
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  #app {
+    min-height: 100vh;
+  }
+}
+
+/* PrimeVue Component Customizations */
+@layer components {
+  .p-component {
+    font-family: var(--font-sans);
+  }
+
+  /* Input fields */
+  .p-inputtext {
+    @apply w-full px-3 py-3 text-base border rounded-md transition-all duration-200 bg-white;
+    border-color: rgb(var(--color-border));
+  }
+
+  .p-inputtext:enabled:hover {
+    border-color: rgb(var(--color-primary));
+  }
+
+  .p-inputtext:enabled:focus {
+    outline: 0;
+    outline-offset: 0;
+    box-shadow: 0 0 0 0.2rem rgb(var(--color-primary) / 0.25);
+    border-color: rgb(var(--color-primary));
+  }
+
+  .p-inputtext.p-invalid {
+    border-color: rgb(var(--color-error));
+  }
+
+  /* Password field */
+  .p-password {
+    @apply w-full;
+  }
+
+  .p-password input {
+    @apply w-full pr-10;
+  }
+
+  .p-password-toggle-icon {
+    right: 0.75rem !important;
+  }
+
+  /* Dropdown/Select */
+  .p-dropdown {
+    @apply w-full border rounded-md bg-white transition-all duration-200;
+    border-color: rgb(var(--color-border));
+  }
+
+  .p-dropdown:not(.p-disabled):hover {
+    border-color: rgb(var(--color-primary));
+  }
+
+  .p-dropdown:not(.p-disabled).p-focus {
+    outline: 0;
+    outline-offset: 0;
+    box-shadow: 0 0 0 0.2rem rgb(var(--color-primary) / 0.25);
+    border-color: rgb(var(--color-primary));
+  }
+
+  .p-dropdown-label {
+    @apply px-3 py-3;
+  }
+
+  .p-dropdown-trigger {
+    @apply w-10;
+  }
+
+  /* Header Dropdown - Special styling for dropdown in gradient header */
+  .header-dropdown.p-dropdown {
+    @apply bg-white/10 backdrop-blur-sm;
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+
+  .header-dropdown.p-dropdown:not(.p-disabled):hover {
+    @apply bg-white/20;
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+
+  .header-dropdown.p-dropdown:not(.p-disabled).p-focus {
+    @apply bg-white/20;
+    border-color: rgba(255, 255, 255, 0.4);
+    box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.15);
+  }
+
+  .header-dropdown .p-dropdown-label {
+    @apply text-white px-3 py-2 overflow-hidden;
+    display: flex;
+    align-items: center;
+  }
+
+  .header-dropdown .p-dropdown-trigger {
+    @apply text-white;
+  }
+
+  /* Buttons */
+  .p-button {
+    @apply px-5 py-3 text-base rounded-md font-medium transition-all duration-200;
+  }
+
+  .p-button:enabled:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .p-button:enabled:active {
+    transform: translateY(0);
+  }
+
+  .p-button.p-button-outlined {
+    @apply bg-transparent border;
+    border-color: rgb(var(--color-primary));
+    color: rgb(var(--color-primary));
+  }
+
+  .p-button.p-button-outlined:enabled:hover {
+    background: rgb(var(--color-primary) / 0.05);
+  }
+
+  /* Cards */
+  .p-card {
+    @apply bg-white rounded-lg border border-gray-200;
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  }
+
+  .p-card .p-card-body {
+    @apply p-6;
+  }
+
+  .p-card .p-card-title {
+    @apply text-xl font-semibold text-gray-800 mb-4;
+  }
+
+  .p-card .p-card-content {
+    @apply p-0;
+  }
+
+  .p-card .p-card-header {
+    @apply rounded-t-lg overflow-hidden;
+  }
+
+  .p-card .p-card-footer {
+    @apply px-6 py-4 bg-gray-50 border-t border-gray-200;
+  }
+
+  /* DataTable */
+  .p-datatable .p-datatable-header {
+    @apply bg-surface border border-gray-200 border-b-0 p-4 font-semibold;
+  }
+
+  .p-datatable .p-datatable-thead > tr > th {
+    @apply bg-gray-50 border border-gray-200 p-4 font-semibold text-gray-700;
+  }
+
+  .p-datatable .p-datatable-tbody > tr {
+    @apply bg-surface transition-colors duration-200;
+  }
+
+  .p-datatable .p-datatable-tbody > tr:hover {
+    @apply bg-gray-50;
+  }
+
+  .p-datatable .p-datatable-tbody > tr > td {
+    @apply p-4 border border-gray-200;
+  }
+
+  /* Checkbox */
+  .p-checkbox {
+    @apply w-5 h-5;
+  }
+
+  .p-checkbox .p-checkbox-box {
+    @apply border-2 bg-surface w-5 h-5 rounded transition-all duration-200;
+    border-color: rgb(var(--color-border-hover));
+  }
+
+  .p-checkbox .p-checkbox-box.p-highlight {
+    border-color: rgb(var(--color-primary));
+    background: rgb(var(--color-primary));
+  }
+
+  .p-checkbox:not(.p-checkbox-disabled) .p-checkbox-box:hover {
+    border-color: rgb(var(--color-primary));
+  }
+
+  .p-checkbox:not(.p-checkbox-disabled) .p-checkbox-box.p-focus {
+    outline: 0;
+    outline-offset: 0;
+    box-shadow: 0 0 0 0.2rem rgb(var(--color-primary) / 0.25);
+    border-color: rgb(var(--color-primary));
+  }
+
+  /* Toast */
+  .p-toast {
+    @apply opacity-95;
+  }
+
+  .p-toast .p-toast-message {
+    @apply rounded-lg;
+    box-shadow: var(--shadow-md);
+  }
+
+  /* Message */
+  .p-message {
+    @apply rounded-md p-4;
+  }
+
+  /* Avatar */
+  .p-avatar {
+    background-color: rgba(255, 255, 255, 0.2);
+    @apply text-white;
+  }
+
+  /* Menu */
+  .p-menu {
+    @apply rounded-lg border border-gray-200 py-2;
+    box-shadow: var(--shadow-md);
+  }
+
+  .p-menu .p-menuitem-link {
+    @apply px-5 py-3 transition-all duration-200;
+  }
+
+  .p-menu .p-menuitem-link:hover {
+    @apply bg-gray-100;
+  }
+
+  /* Tag */
+  .p-tag {
+    @apply rounded px-3 py-1 text-sm font-medium;
+  }
+
+  /* Badge */
+  .p-badge {
+    @apply rounded-full px-2 py-1 text-xs font-semibold;
+  }
+
+  /* Responsive utilities */
+  @media (max-width: 768px) {
+    .p-button {
+      @apply px-4 py-2.5 text-sm;
+    }
+    
+    .p-inputtext {
+      @apply px-2.5 py-2.5 text-sm;
+    }
+    
+    .p-dropdown-label {
+      @apply px-2.5 py-2.5;
+    }
+  }
+}

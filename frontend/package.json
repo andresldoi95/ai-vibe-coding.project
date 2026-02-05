@@ -1,0 +1,49 @@
+{
+  "name": "billing-inventory-frontend",
+  "version": "1.0.0",
+  "description": "Billing and Inventory System Frontend - Vue.js",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc && vite build",
+    "preview": "vite preview",
+    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
+    "format": "prettier --write src/"
+  },
+  "dependencies": {
+    "vue": "^3.4.15",
+    "vue-router": "^4.2.5",
+    "pinia": "^2.1.7",
+    "axios": "^1.6.5",
+    "vee-validate": "^4.12.4",
+    "yup": "^1.3.3",
+    "@vueuse/core": "^10.7.1",
+    "primevue": "^3.50.0",
+    "primeicons": "^6.0.1",
+    "jspdf": "^2.5.1",
+    "jspdf-autotable": "^3.8.2",
+    "chart.js": "^4.4.1",
+    "vue-chartjs": "^5.3.0",
+    "date-fns": "^3.3.1",
+    "numeral": "^2.0.6"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.0.3",
+    "@vue/tsconfig": "^0.5.1",
+    "typescript": "^5.3.3",
+    "vue-tsc": "^1.8.27",
+    "vite": "^5.0.11",
+    "@types/node": "^20.10.6",
+    "@types/numeral": "^2.0.5",
+    "eslint": "^8.56.0",
+    "eslint-plugin-vue": "^9.19.2",
+    "@typescript-eslint/parser": "^6.17.0",
+    "@typescript-eslint/eslint-plugin": "^6.17.0",
+    "prettier": "^3.1.1",
+    "sass": "^1.69.7",
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.33",
+    "tailwindcss": "^3.4.1"
+  }
+}

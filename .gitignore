@@ -1,0 +1,36 @@
+# Dependencies
+node_modules/
+package-lock.json
+yarn.lock
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs/
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Storage (sensitive data)
+storage/
+*.p12
+*.pfx
+
+# Build
+dist/
+build/
+
+# Database
+*.sqlite
+*.db
+
+# Docker
+.docker/
