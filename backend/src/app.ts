@@ -47,13 +47,21 @@ app.get('/health', (_req, res) => {
 });
 
 // API Routes
-// const API_PREFIX = process.env.API_PREFIX || '/api/v1';
+const API_PREFIX = process.env.API_PREFIX || '/api/v1';
 
-// TODO: Import and use routes here
-// app.use(`${API_PREFIX}/auth`, authRoutes);
-// app.use(`${API_PREFIX}/companies`, companiesRoutes);
+// Import routes
+import authRoutes from './routes/auth';
+import productsRoutes from './routes/products';
+import companiesRoutes from './routes/companies';
+
+// Mount routes
+app.use(`${API_PREFIX}/auth`, authRoutes);
+app.use(`${API_PREFIX}/products`, productsRoutes);
+app.use(`${API_PREFIX}/companies`, companiesRoutes);
+
+// TODO: Add more routes
+// app.use(`${API_PREFIX}/customers`, customersRoutes);
 // app.use(`${API_PREFIX}/invoices`, invoicesRoutes);
-// app.use(`${API_PREFIX}/products`, productsRoutes);
 // app.use(`${API_PREFIX}/inventory`, inventoryRoutes);
 
 // 404 handler

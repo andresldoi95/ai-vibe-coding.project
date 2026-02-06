@@ -11,6 +11,12 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/auth/LoginView.vue'),
     meta: { requiresAuth: false }
   },
+  {
+    path: '/register',
+    name: 'register',
+    component: () => import('@/views/auth/RegisterView.vue'),
+    meta: { requiresAuth: false }
+  },
   // App routes (with layout)
   {
     path: '/',
@@ -67,7 +73,7 @@ router.beforeEach((to, _from, next) => {
   
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
     next({ name: 'login', query: { redirect: to.fullPath } })
-  } else if (to.name === 'login' && authStore.isAuthenticated) {
+  } else if ((to.name === 'login' || to.name === 'register') && authStore.isAuthenticated) {
     next({ name: 'dashboard' })
   } else {
     next()

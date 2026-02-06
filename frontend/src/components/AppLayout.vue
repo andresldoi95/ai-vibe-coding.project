@@ -16,30 +16,14 @@
       </div>
 
       <div class="flex items-center gap-4">
-        <!-- Company Selector -->
-        <Dropdown
-          v-if="companies && companies.length > 0"
-          v-model="selectedCompany"
-          :options="companies"
-          optionLabel="tradeName"
-          placeholder="Seleccionar empresa"
-          class="header-dropdown min-w-[250px] hidden md:block"
-          @change="onCompanyChange"
-        >
-          <template #value="slotProps">
-            <div v-if="slotProps.value" class="flex items-center gap-2">
-              <i class="pi pi-building text-sm"></i>
-              <span class="truncate">{{ slotProps.value.tradeName || slotProps.value.businessName }}</span>
-            </div>
-            <span v-else>{{ slotProps.placeholder }}</span>
-          </template>
-          <template #option="slotProps">
-            <div class="flex flex-col py-1">
-              <div class="font-medium text-gray-800">{{ slotProps.option.tradeName || slotProps.option.businessName }}</div>
-              <div class="text-sm text-gray-600">RUC: {{ slotProps.option.ruc }}</div>
-            </div>
-          </template>
-        </Dropdown>
+        <!-- Current Company Display -->
+        <div v-if="authStore.currentCompany" class="hidden md:flex items-center gap-2 bg-white/10 px-4 py-2 rounded-lg border border-white/20">
+          <i class="pi pi-building text-sm"></i>
+          <div class="flex flex-col">
+            <span class="text-sm font-semibold">{{ authStore.currentCompany.name }}</span>
+            <span class="text-xs opacity-80">RUC: {{ authStore.currentCompany.ruc }}</span>
+          </div>
+        </div>
 
         <!-- User Menu -->
         <Menu ref="userMenu" :model="userMenuItems" :popup="true" />
@@ -176,23 +160,9 @@ const toggleUserMenu = (event: Event) => {
   userMenu.value.toggle(event)
 }
 
-// Handle company change
-const onCompanyChange = () => {
-  // Update selected company in store
-  console.log('Company changed:', selectedCompany.value)
-}
-
 // Logout
 const logout = () => {
   authStore.logout()
   router.push('/login')
 }
-
-// Load companies on mount
-onMounted(async () => {
-  // TODO: Load companies from API
-  if (companies.value.length > 0) {
-    selectedCompany.value = companies.value[0]
-  }
-})
 </script>

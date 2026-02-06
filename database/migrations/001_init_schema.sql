@@ -128,6 +128,71 @@ INSERT INTO payment_methods (name, sri_code) VALUES
 ('Tarjeta de crédito', '19'),
 ('Otros con utilización del sistema financiero', '20');
 
--- NOTE: This is just the beginning of the schema.
--- Full schema implementation will be added in subsequent migrations.
--- See docs/database-schema.md for complete schema.
+-- =============================================
+-- PRODUCTS & INVENTORY
+-- =============================================
+
+CREATE TABLE products (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    company_id UUID NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
+    code VARCHAR(50) NOT NULL,
+    barcode VARCHAR(100),
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    category VARCHAR(100),
+    unit VARCHAR(10) NOT NULL,
+    price DECIMAL(10,2) NOT NULL DEFAULT 0,
+    cost DECIMAL(10,2) NOT NULL DEFAULT 0,
+    tax_type_id UUID NOT NULL REFERENCES tax_types(id),
+    has_inventory BOOLEAN DEFAULT true,
+    min_stock INTEGER,
+    max_stock INTEGER,
+    reorder_point INTEGER,
+    image TEXT,
+    status VARCHAR(20) DEFAULT 'active',
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW(),
+    UNIQUE(company_id, code)
+);
+
+CREATE INDEX idx_products_company ON products(company_id);
+CREATE INDEX idx_products_code ON products(code);
+CREATE INDEX idx_products_barcode ON products(barcode);
+CREATE INDEX idx_products_name ON products(name);
+CREATE INDEX idx_products_category ON products(category);
+CREATE INDEX idx_products_status ON products(status);
+
+-- =============================================
+-- CUSTOMERS
+-- =============================================
+
+CREATE TABLE customers (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    company_id UUID NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
+    identification_type VARCHAR(10) NOT NULL,
+    identification VARCHAR(13) NOT NULL,
+    business_name VARCHAR(255) NOT NULL,
+    trade_name VARCHAR(255),
+    email VARCHAR(255),
+    phone VARCHAR(20),
+    mobile VARCHAR(20),
+    address TEXT,
+    city VARCHAR(100),
+    province VARCHAR(100),
+    country VARCHAR(2) DEFAULT 'EC',
+    credit_limit DECIMAL(10,2) DEFAULT 0,
+    credit_days INTEGER DEFAULT 0,
+    notes TEXT,
+    status VARCHAR(20) DEFAULT 'active',
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW(),
+    UNIQUE(company_id, identification)
+);
+
+CREATE INDEX idx_customers_company ON customers(company_id);
+CREATE INDEX idx_customers_identification ON customers(identification);
+CREATE INDEX idx_customers_name ON customers(business_name);
+CREATE INDEX idx_customers_status ON customers(status);
+
+-- NOTE: Additional tables for invoices, inventory movements, etc.
+-- will be added in subsequent migrations as we build the system.

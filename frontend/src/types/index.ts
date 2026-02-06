@@ -7,6 +7,21 @@ export interface IUser {
   status: string
 }
 
+export interface IUserCompany {
+  companyId: string
+  companyName: string
+  companyRuc: string
+  roleName: string
+  roleId: string
+}
+
+export interface ISelectedCompany {
+  id: string
+  name: string
+  ruc: string
+  role: string
+}
+
 // Company types
 export interface ICompany {
   id: string
@@ -16,6 +31,22 @@ export interface ICompany {
   email: string
   phone?: string
   address?: string
+}
+
+export interface ICompanyRegistrationData {
+  ruc: string
+  businessName: string
+  tradeName?: string
+  email: string
+  phone: string
+  address: string
+}
+
+export interface IAdminUserData {
+  email: string
+  password: string
+  fullName: string
+  phone?: string
 }
 
 // Invoice types
@@ -34,12 +65,74 @@ export interface IInvoice {
 export interface IProduct {
   id: string
   companyId: string
-  sku?: string
+  code: string
   barcode?: string
   name: string
   description?: string
-  unitOfMeasure: string
-  status: string
+  category?: string
+  unit: string
+  price: number
+  cost: number
+  taxTypeId: string
+  hasInventory: boolean
+  minStock?: number
+  maxStock?: number
+  reorderPoint?: number
+  image?: string
+  status: 'active' | 'inactive'
+  createdAt: Date
+  updatedAt: Date
+}
+
+export interface ICreateProductDTO {
+  code: string
+  barcode?: string
+  name: string
+  description?: string
+  category?: string
+  unit: string
+  price: number
+  cost: number
+  taxTypeId: string
+  hasInventory: boolean
+  minStock?: number
+  maxStock?: number
+  reorderPoint?: number
+  image?: string
+}
+
+export interface IUpdateProductDTO {
+  code?: string
+  barcode?: string
+  name?: string
+  description?: string
+  category?: string
+  unit?: string
+  price?: number
+  cost?: number
+  taxTypeId?: string
+  hasInventory?: boolean
+  minStock?: number
+  maxStock?: number
+  reorderPoint?: number
+  image?: string
+  status?: 'active' | 'inactive'
+}
+
+export interface IProductFilters {
+  search?: string
+  category?: string
+  status?: 'active' | 'inactive'
+  hasInventory?: boolean
+  page?: number
+  limit?: number
+}
+
+export interface IProductResponse {
+  products: IProduct[]
+  total: number
+  page: number
+  totalPages: number
 }
 
 // Customer types

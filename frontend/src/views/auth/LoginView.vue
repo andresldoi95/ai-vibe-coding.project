@@ -11,9 +11,10 @@
         </template>
 
         <template #content>
-          <form @submit.prevent="handleLogin" class="flex flex-col gap-5">
+          <!-- Login Form -->
+          <form v-if="!showCompanySelection" @submit.prevent="handleLogin" class="flex flex-col gap-5">
             <div class="flex flex-col gap-2">
-              <label for="email" class="font-medium text-gray-700">Correo Electrónico</label>
+              <label for="email" class="font-semibold text-gray-700">Correo Electrónico</label>
               <InputText
                 id="email"
                 v-model="email"
@@ -26,7 +27,7 @@
             </div>
 
             <div class="flex flex-col gap-2">
-              <label for="password" class="font-medium text-gray-700">Contraseña</label>
+              <label for="password" class="font-semibold text-gray-700">Contraseña</label>
               <Password
                 id="password"
                 v-model="password"
@@ -57,25 +58,85 @@
               class="w-full py-3 text-base font-semibold"
             />
 
-            <div v-if="errorMessage" class="mt-4">
+            <div v-if="errorMessage" class="mt-2">
               <Message severity="error" :closable="false">{{ errorMessage }}</Message>
             </div>
           </form>
+
+          <!-- Company Selection -->
+          <div v-else class="flex flex-col gap-5">
+            <div class="text-center mb-4">
+              <h2 class="text-xl font-semibold text-gray-800 mb-2">Seleccione una Empresa</h2>
+              <p class="text-gray-600 text-sm">Tiene acceso a múltiples empresas. Seleccione una para continuar.</p>
+            </div>
+
+            <div class="flex flex-col gap-3">
+              <div
+                v-for="company in authStore.availableCompanies"
+                :key="company.companyId"
+                @click="handleCompanySelect(company.companyId)"
+                class="p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 hover:border-primary hover:bg-gray-50"
+                :class="{ 'border-primary bg-blue-50': selectedCompanyId === company.companyId }"
+              >
+                <div class="flex items-start justify-between">
+                  <div class="flex-1">
+                    <h3 class="font-semibold text-gray-800">{{ company.companyName }}</h3>
+                    <p class="text-sm text-gray-600">RUC: {{ company.companyRuc }}</p>
+                    <p class="text-xs text-gray-500 mt-1">Rol: {{ company.roleName }}</p>
+                  </div>
+                  <i 
+                    class="pi pi-check-circle text-2xl transition-all duration-200"
+                    :class="selectedCompanyId === company.companyId ? 'text-primary' : 'text-gray-300'"
+                  ></i>
+                </div>
+              </div>
+            </div>
+
+            <Button
+              label="Continuar"
+              :loading="loading"
+              :disabled="!selectedCompanyId || loading"
+              icon="pi pi-arrow-right"
+              @click="confirmCompanySelection"
+              class="w-full py-3 text-base font-semibold mt-2"
+            />
+
+            <Button
+              label="Volver"
+              outlined
+              icon="pi pi-arrow-left"
+              @click="backToLogin"
+              class="w-full"
+            />
+          </div>
         </template>
 
-        <template #footer>
-          <div class="text-center">
+        <template #footer v-if="!showCompanySelection">
+          <div class="text-center space-y-3">
             <a href="#" class="text-primary no-underline hover:underline">¿Olvidó su contraseña?</a>
+            <div class="border-t pt-3">
+              <p class="text-gray-600 text-sm mb-2">¿No tiene una cuenta?</p>
+              <router-link 
+                to="/register" 
+                class="text-primary font-semibold no-underline hover:underline"
+              >
+                Registre su empresa aquí
+              </router-link>
+            </div>
           </div>
         </template>
       </Card>
 
-      <div class="mt-6">
+      <div class="mt-6" v-if="!showCompanySelection">
         <Message severity="info" :closable="false" class="shadow-md">
           <div class="leading-relaxed">
             <strong class="block mb-2">Credenciales de prueba:</strong>
-            <div class="text-sm">Email: admin@example.com</div>
-            <div class="text-sm">Contraseña: admin123</div>
+            <div class="text-sm font-semibold">Usuario single-company:</div>
+            <div class="text-sm ml-4">Email: admin@demo.com</div>
+            <div class="text-sm ml-4">Contraseña: password123</div>
+            <div class="text-sm font-semibold mt-2">Usuario multi-company:</div>
+            <div class="text-sm ml-4">Email: multi@demo.com</div>
+            <div class="text-sm ml-4">Contraseña: password123</div>
           </div>
         </Message>
       </div>
@@ -112,6 +173,8 @@ const rememberMe = ref(false)
 const loading = ref(false)
 const errorMessage = ref('')
 const errors = ref<{ email?: string; password?: string }>({})
+const showCompanySelection = ref(false)
+const selectedCompanyId = ref<string | null>(null)
 
 // Handle login
 const handleLogin = async () => {
@@ -143,12 +206,19 @@ const handleLogin = async () => {
   loading.value = true
 
   try {
-    await authStore.login({
+    const response = await authStore.login({
       email: email.value,
-      password: password.value,
-      rememberMe: rememberMe.value
+      password: password.value
     })
 
+    // If user has multiple companies, show selection
+    if (response.requiresCompanySelection) {
+      showCompanySelection.value = true
+      loading.value = false
+      return
+    }
+
+    // If single company or already has token, redirect
     toast.add({
       severity: 'success',
       summary: 'Inicio de sesión exitoso',
@@ -160,15 +230,61 @@ const handleLogin = async () => {
     const redirect = route.query.redirect as string || '/dashboard'
     router.push(redirect)
   } catch (error: any) {
-    errorMessage.value = error.message || 'Error al iniciar sesión. Verifique sus credenciales.'
+    const errorMsg = error.response?.data?.error || error.message || 'Error al iniciar sesión'
+    errorMessage.value = errorMsg
     toast.add({
       severity: 'error',
       summary: 'Error',
-      detail: errorMessage.value,
+      detail: errorMsg,
       life: 5000
     })
   } finally {
     loading.value = false
   }
+}
+
+// Handle company selection
+const handleCompanySelect = (companyId: string) => {
+  selectedCompanyId.value = companyId
+}
+
+// Confirm company selection
+const confirmCompanySelection = async () => {
+  if (!selectedCompanyId.value) return
+
+  loading.value = true
+
+  try {
+    await authStore.selectCompany(email.value, selectedCompanyId.value)
+
+    toast.add({
+      severity: 'success',
+      summary: 'Empresa seleccionada',
+      detail: `Bienvenido a ${authStore.currentCompany?.name || ''}`,
+      life: 3000
+    })
+
+    // Redirect to intended page or dashboard
+    const redirect = route.query.redirect as string || '/dashboard'
+    router.push(redirect)
+  } catch (error: any) {
+    const errorMsg = error.response?.data?.error || error.message || 'Error al seleccionar empresa'
+    toast.add({
+      severity: 'error',
+      summary: 'Error',
+      detail: errorMsg,
+      life: 5000
+    })
+  } finally {
+    loading.value = false
+  }
+}
+
+// Back to login
+const backToLogin = () => {
+  showCompanySelection.value = false
+  selectedCompanyId.value = null
+  password.value = ''
+  errorMessage.value = ''
 }
 </script>
