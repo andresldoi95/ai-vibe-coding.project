@@ -1,0 +1,113 @@
+{
+  "app": {
+    "title": "SaaS Facturation et Inventaire"
+  },
+  "common": {
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "search": "Rechercher",
+    "loading": "Chargement...",
+    "no_data": "Aucune donnée disponible",
+    "toggle_theme": "Basculer le thème",
+    "theme": "Thème",
+    "theme_light": "Clair",
+    "theme_dark": "Sombre",
+    "theme_system": "Système",
+    "confirm": "Confirmer",
+    "close": "Fermer",
+    "back": "Retour",
+    "next": "Suivant",
+    "previous": "Précédent",
+    "actions": "Actions",
+    "status": "Statut",
+    "created_at": "Créé le",
+    "updated_at": "Mis à jour le"
+  },
+  "nav": {
+    "dashboard": "Tableau de bord",
+    "billing": "Facturation",
+    "inventory": "Inventaire",
+    "invoices": "Factures",
+    "customers": "Clients",
+    "payments": "Paiements",
+    "products": "Produits",
+    "warehouses": "Entrepôts",
+    "stock_movements": "Mouvements de Stock",
+    "profile": "Profil",
+    "settings": "Paramètres",
+    "logout": "Déconnexion"
+  },
+  "auth": {
+    "login": "Se Connecter",
+    "logout": "Déconnexion",
+    "email": "Adresse Email",
+    "password": "Mot de Passe",
+    "email_placeholder": "vous{'@'}exemple.com",
+    "password_placeholder": "Entrez votre mot de passe",
+    "login_subtitle": "Accédez à votre plateforme multi-tenant",
+    "demo_credentials": "Identifiants de Démonstration",
+    "forgot_password": "Mot de passe oublié?",
+    "security_note": "Votre connexion est sécurisée et cryptée",
+    "welcome_back": "Bon Retour",
+    "new_here": "Nouveau ici?",
+    "create_account": "Créer un compte"
+  },
+  "dashboard": {
+    "welcome": "Bienvenue sur votre tableau de bord",
+    "total_invoices": "Total des Factures",
+    "total_revenue": "Revenu Total",
+    "total_products": "Total des Produits",
+    "low_stock": "Articles en Stock Faible",
+    "recent_invoices": "Factures Récentes",
+    "recent_stock_movements": "Mouvements de Stock Récents"
+  },
+  "billing": {
+    "invoices": "Factures",
+    "invoice": "Facture",
+    "invoice_number": "Numéro de Facture",
+    "total_amount": "Montant Total",
+    "tax_amount": "Montant de la Taxe",
+    "subtotal": "Sous-total",
+    "due_date": "Date d'Échéance",
+    "issue_date": "Date d'Émission",
+    "paid_date": "Date de Paiement",
+    "create_invoice": "Créer une Facture",
+    "edit_invoice": "Modifier la Facture",
+    "customer": "Client",
+    "customer_name": "Nom du Client"
+  },
+  "inventory": {
+    "products": "Produits",
+    "product": "Produit",
+    "stock": "Stock",
+    "sku": "SKU",
+    "warehouse": "Entrepôt",
+    "quantity": "Quantité",
+    "unit_price": "Prix Unitaire",
+    "cost_price": "Prix de Revient",
+    "reorder_point": "Point de Réapprovisionnement",
+    "create_product": "Créer un Produit",
+    "edit_product": "Modifier le Produit"
+  },
+  "validation": {
+    "required": "Ce champ est obligatoire",
+    "email_required": "L'email est requis",
+    "email_invalid": "Veuillez entrer une adresse email valide",
+    "password_required": "Le mot de passe est requis",
+    "password_min_length": "Le mot de passe doit contenir au moins 6 caractères",
+    "invalid_field": "Ce champ est invalide",
+    "invalid_form": "Le formulaire contient des erreurs",
+    "fix_errors": "Veuillez corriger les erreurs avant de soumettre"
+  },
+  "messages": {
+    "success_save": "Enregistré avec succès",
+    "success_delete": "Supprimé avec succès",
+    "error_load": "Échec du chargement des données",
+    "error_save": "Échec de l'enregistrement",
+    "error_delete": "Échec de la suppression",
+    "confirm_delete": "Êtes-vous sûr de vouloir supprimer cet élément?",
+    "operation_cancelled": "Opération annulée"
+  }
+}

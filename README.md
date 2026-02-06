@@ -1,259 +1,256 @@
-# Sistema de Facturación e Inventario - Ecuador
+# SaaS Billing & Inventory Management System
 
-Sistema completo de facturación electrónica e inventario diseñado para cumplir con las normativas del SRI (Servicio de Rentas Internas) de Ecuador.
+A modern, multi-tenant SaaS application for billing and inventory management built with .NET 8, PostgreSQL, Nuxt 3, and PrimeVue.
 
-## 🚀 Características Principales
+## 🏗️ Architecture
 
-- ✅ **Facturación Electrónica SRI**: Generación de XML, firma electrónica, y autorización automática
-- 📦 **Gestión de Inventario**: Multi-bodega, seguimiento en tiempo real, alertas de stock
-- 👥 **Multi-empresa**: Arquitectura multi-tenant para gestionar múltiples empresas
-- 🔐 **Control de Acceso**: Sistema de roles y permisos (RBAC)
-- 📊 **Reportes**: Ventas, inventario, reportes tributarios (IVA, retenciones)
-- 💾 **Modo Offline**: Cola de autorización para operar sin internet
-- 🔍 **Auditoría Completa**: Registro de todas las operaciones
+- **Frontend**: Nuxt 3 + TypeScript + PrimeVue (Teal theme)
+- **Backend**: .NET 8 + Entity Framework Core + PostgreSQL
+- **Infrastructure**: Docker + Docker Compose
+- **Multi-tenant**: Schema-based tenant isolation
 
-## 📋 Documentos SRI Soportados
-
-- Facturas Electrónicas
-- Notas de Crédito
-- Notas de Débito
-- Guías de Remisión
-- Comprobantes de Retención
-
-## 🛠️ Stack Tecnológico
-
-### Backend
-- Node.js + Express
-- TypeScript
-- PostgreSQL
-- JWT Authentication
-
-### Frontend
-- Vue.js 3
-- TypeScript
-- Pinia (State Management)
-- Vue Router
-- Vite
-
-### Infrastructure
-- Docker & Docker Compose
-- PostgreSQL 15
-
-## 📁 Estructura del Proyecto
+## 📁 Project Structure
 
 ```
 ai-vibe-coding.project/
-├── backend/                 # API REST (Node.js + Express + TypeScript)
-│   ├── src/
-│   │   ├── config/         # Configuraciones (DB, Logger)
-│   │   ├── controllers/    # Controladores HTTP
-│   │   ├── services/       # Lógica de negocio
-│   │   ├── models/         # Modelos de datos
-│   │   ├── routes/         # Rutas de la API
-│   │   ├── middleware/     # Middlewares (auth, errors)
-│   │   ├── types/          # Tipos TypeScript
-│   │   └── utils/          # Utilidades
+├── docs/                           # Agent documentation
+│   ├── backend-agent.md
+│   ├── frontend-agent.md
+│   └── project-architecture-agent.md
+├── frontend/                       # Nuxt 3 frontend application
+│   ├── assets/
+│   ├── components/
+│   ├── composables/
+│   ├── layouts/
+│   ├── locales/
+│   ├── middleware/
+│   ├── pages/
+│   ├── plugins/
+│   ├── stores/
+│   ├── types/
 │   ├── Dockerfile
+│   ├── Dockerfile.dev
 │   └── package.json
-├── frontend/                # Aplicación web (Vue.js)
-│   ├── src/
-│   │   ├── views/          # Vistas/Páginas
-│   │   ├── components/     # Componentes reutilizables
-│   │   ├── stores/         # Pinia stores
-│   │   ├── router/         # Configuración de rutas
-│   │   ├── api/            # Cliente API
-│   │   └── types/          # Tipos TypeScript
-│   ├── Dockerfile
-│   └── package.json
-├── database/
-│   └── migrations/         # Scripts SQL de migración
-├── docs/
-│   ├── database-schema.md  # Esquema completo de la BD
-│   └── ...
-├── .github/
-│   └── copilot-instructions.md
-├── docker-compose.yml
-└── README.md
+├── backend/                        # .NET 8 backend (to be created)
+├── docker-compose.yml              # Development environment
+├── docker-compose.prod.yml         # Production environment
+└── AGENTS.md                       # Agent system documentation
 ```
 
-## 🚀 Inicio Rápido
+## 🚀 Quick Start
 
-### Prerrequisitos
+### Prerequisites
 
-- Node.js 20+
-- Docker & Docker Compose
-- Git
+- **Node.js** 20+
+- **Docker** & **Docker Compose**
+- **.NET 8 SDK** (for backend development)
+- **PostgreSQL** (or use Docker)
 
-### 1. Clonar el Repositorio
+### Frontend Setup
 
-```bash
-git clone <repository-url>
-cd ai-vibe-coding.project
-```
-
-### 2. Configurar Variables de Entorno
-
-**Backend:**
-```bash
-cd backend
-cp .env.example .env
-# Editar .env con tus configuraciones
-```
-
-**Frontend:**
+1. **Navigate to frontend directory**:
 ```bash
 cd frontend
-cp .env.example .env
-# Editar .env con tus configuraciones
 ```
 
-### 3. Iniciar con Docker (Recomendado)
-
+2. **Install dependencies**:
 ```bash
-# Desde la raíz del proyecto
-docker-compose up -d
-```
-
-Esto iniciará:
-- PostgreSQL en `localhost:5432`
-- Backend API en `http://localhost:3000`
-- Frontend en `http://localhost:5173`
-
-### 4. Instalación Manual (Sin Docker)
-
-**Backend:**
-```bash
-cd backend
 npm install
+```
+
+3. **Configure environment**:
+```bash
 cp .env.example .env
+```
+
+4. **Run development server**:
+```bash
 npm run dev
 ```
 
-**Frontend:**
+Frontend will be available at `http://localhost:3000`
+
+### Docker Development (Recommended)
+
+Start the entire stack with Docker:
+
+```bash
+# Start development environment with hot reload
+docker-compose up
+
+# Stop environment
+docker-compose down
+```
+
+### Docker Production
+
+Build and run optimized production containers:
+
+```bash
+# Build and start production environment
+docker-compose -f docker-compose.prod.yml up --build -d
+
+# Stop production environment
+docker-compose -f docker-compose.prod.yml down
+```
+
+## ✨ Features
+
+### Frontend ✅ (Completed)
+
+- ✅ Nuxt 3 with TypeScript
+- ✅ PrimeVue 4+ with Teal theme
+- ✅ Dark/Light mode support
+- ✅ Multi-language (EN, ES, FR, DE)
+- ✅ Multi-tenant architecture
+- ✅ JWT authentication setup
+- ✅ Pinia state management
+- ✅ Tailwind CSS integration
+- ✅ Responsive design
+- ✅ Docker containerization
+
+### Backend 🚧 (Planned)
+
+- 🚧 .NET 8 Web API
+- 🚧 Entity Framework Core
+- 🚧 PostgreSQL database
+- 🚧 Multi-tenant (schema-based)
+- 🚧 CQRS with MediatR
+- 🚧 JWT authentication
+- 🚧 Swagger/OpenAPI
+- 🚧 Docker containerization
+
+### Billing Module 📋 (Planned)
+
+- Invoice management
+- Customer management
+- Payment processing
+- Subscription management
+- Reports and analytics
+
+### Inventory Module 📦 (Planned)
+
+- Product catalog
+- Warehouse management
+- Stock tracking
+- Purchase orders
+- Stock movements
+
+## 🎨 UI/UX
+
+### Theme
+- **Primary Color**: Teal
+- **Themes**: Lara Light Teal / Lara Dark Teal
+- **Components**: PrimeVue default components
+- **Layout**: Tailwind CSS utilities
+
+### Supported Languages
+- 🇺🇸 English (en)
+- 🇪🇸 Spanish (es)
+- 🇫🇷 French (fr)
+- 🇩🇪 German (de)
+
+## 🔐 Authentication & Security
+
+- JWT-based authentication
+- Refresh token rotation
+- Multi-tenant isolation
+- Role-based access control
+- Secure headers and CORS
+
+## 📚 Documentation
+
+### Agent System
+
+This project uses specialized AI agents for development:
+
+- **Project Architecture Agent** - System design and architecture
+- **Backend Agent** - .NET 8 backend development
+- **Frontend Agent** - Nuxt 3 frontend development
+
+See [AGENTS.md](AGENTS.md) for details.
+
+### Component Documentation
+
+- [Frontend README](frontend/README.md) - Detailed frontend documentation
+- Backend README (coming soon)
+
+## 🛠️ Development
+
+### Frontend Development
+
 ```bash
 cd frontend
+
+# Install dependencies
 npm install
-cp .env.example .env
+
+# Run dev server
 npm run dev
+
+# Build for production
+npm run build
+
+# Type check
+npm run typecheck
+
+# Lint
+npm run lint
 ```
 
-**PostgreSQL:**
-- Crea una base de datos llamada `billing_inventory`
-- Ejecuta los scripts de migración en `database/migrations/`
+### Backend Development
 
-## 📊 Base de Datos
+Coming soon...
 
-Esquema completo documentado en [docs/database-schema.md](docs/database-schema.md)
+## 📦 Deployment
 
-### Migraciones
+### Using Docker Compose (Production)
 
 ```bash
-# Aplicar migraciones (TODO: implementar)
-cd backend
-npm run migrate
+# Build and start all services
+docker-compose -f docker-compose.prod.yml up --build -d
+
+# View logs
+docker-compose -f docker-compose.prod.yml logs -f
+
+# Stop all services
+docker-compose -f docker-compose.prod.yml down
 ```
 
-### Datos de Prueba
+### Environment Variables
 
-```bash
-# Cargar datos de prueba (TODO: implementar)
-cd backend
-npm run seed
+**Frontend (.env)**:
+```
+NUXT_PUBLIC_API_BASE=http://localhost:5000/api/v1
 ```
 
-## 🔐 Autenticación
-
-El sistema usa JWT para autenticación. Endpoints principales:
-
-- `POST /api/v1/auth/login` - Iniciar sesión
-- `POST /api/v1/auth/register` - Registrar usuario
-- `POST /api/v1/auth/logout` - Cerrar sesión
-- `GET /api/v1/auth/me` - Obtener usuario actual
-
-## 📝 API Endpoints (Planificados)
-
+**Backend (.env)** (coming soon):
 ```
-/api/v1/
-├── auth/           # Autenticación
-├── companies/      # Empresas
-├── users/          # Usuarios
-├── invoices/       # Facturas
-├── products/       # Productos
-├── inventory/      # Inventario
-├── customers/      # Clientes
-├── reports/        # Reportes
-└── sri/            # Integración SRI
+DATABASE_CONNECTION_STRING=...
+JWT_SECRET=...
 ```
 
 ## 🧪 Testing
 
-```bash
-# Backend tests
-cd backend
-npm test
+Coming soon...
 
-# Frontend tests
-cd frontend
-npm test
-```
+## 📄 License
 
-## 🚢 Deployment
+MIT
 
-### Producción con Docker
+## 👥 Team
 
-```bash
-docker-compose -f docker-compose.prod.yml up -d
-```
+SaaS Billing & Inventory Development Team
 
-### Variables de Entorno para Producción
+## 🤝 Contributing
 
-- Cambiar `NODE_ENV=production`
-- Usar contraseñas seguras
-- Configurar `SRI_ENVIRONMENT=2` (producción)
-- Actualizar URLs de servicios SRI
-- Configurar certificados digitales
+1. Follow the agent-based development approach
+2. Maintain TypeScript strict mode
+3. Use PrimeVue components without heavy customization
+4. Write internationalized content
+5. Test in both light and dark modes
+6. Ensure multi-tenant isolation
 
-## 📖 Documentación Adicional
+## 📞 Support
 
-- [Esquema de Base de Datos](docs/database-schema.md)
-- [Instrucciones para Copilot](.github/copilot-instructions.md)
-
-## 🔧 Configuración SRI
-
-Para utilizar facturación electrónica:
-
-1. Obtener certificado de firma electrónica (.p12)
-2. Registrarse en el SRI
-3. Configurar ambiente (pruebas/producción)
-4. Colocar certificado en `backend/storage/certificates/`
-5. Actualizar configuración en `.env`
-
-### URLs SRI
-
-**Ambiente de Pruebas:**
-- Recepción: `https://celdes.sri.gob.ec/comprobantes-electronicos-ws/RecepcionComprobantesOffline?wsdl`
-- Autorización: `https://celdes.sri.gob.ec/comprobantes-electronicos-ws/AutorizacionComprobantesOffline?wsdl`
-
-**Ambiente de Producción:**
-- Recepción: `https://cel.sri.gob.ec/comprobantes-electronicos-ws/RecepcionComprobantesOffline?wsdl`
-- Autorización: `https://cel.sri.gob.ec/comprobantes-electronicos-ws/AutorizacionComprobantesOffline?wsdl`
-
-## 🤝 Contribuir
-
-1. Fork el proyecto
-2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abre un Pull Request
-
-## 📄 Licencia
-
-ISC
-
-## 📧 Soporte
-
-Para soporte y preguntas, contactar a [tu-email@example.com]
-
----
-
-**Nota:** Este proyecto está en desarrollo activo. Algunas características pueden no estar completamente implementadas.
+For issues and questions, please open an issue in the repository.
