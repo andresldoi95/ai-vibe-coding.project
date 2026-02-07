@@ -296,6 +296,17 @@ const COLUMN_GAP = "gap-6"; // 24px between columns
 
 ## Reusable Components to Create
 
+**NOTE**: Many of these components have already been implemented and are available in `components/shared/`:
+- ✅ **PageHeader** - Available at `components/shared/PageHeader.vue`
+- ✅ **EmptyState** - Available at `components/shared/EmptyState.vue`
+- ✅ **LoadingState** - Available at `components/shared/LoadingState.vue`
+- ✅ **DataTableActions** - Available at `components/shared/DataTableActions.vue`
+- ✅ **StatCard** - Available at `components/shared/StatCard.vue`
+- ✅ **ThemeSwitcher** - Available at `components/shared/ThemeSwitcher.vue`
+- ✅ **LanguageSwitcher** - Available at `components/shared/LanguageSwitcher.vue`
+
+**Always check the `components/shared/` directory and frontend-agent.md documentation before creating new components.**
+
 ### 1. PageHeader Component
 
 **Purpose**: Standardize page headers with title, description, breadcrumbs, and actions

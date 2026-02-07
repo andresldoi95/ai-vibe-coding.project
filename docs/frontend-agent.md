@@ -130,45 +130,64 @@ Before committing code, ensure:
 #### Nuxt 3 Directory Structure
 
 ```
-/
+/frontend/
 ├── assets/
-│   ├── styles/
-│   │   └── main.css (Tailwind imports)
+│   └── styles/
+│       └── main.css (Tailwind imports)
 ├── components/
-│   ├── billing/
-│   ├── inventory/
-│   ├── shared/
-│   └── layout/
+│   ├── billing/ (billing-specific components)
+│   ├── inventory/ (inventory-specific components)
+│   └── shared/ (reusable components)
+│       ├── DataTableActions.vue
+│       ├── EmptyState.vue
+│       ├── LanguageSwitcher.vue
+│       ├── LoadingState.vue
+│       ├── PageHeader.vue
+│       ├── StatCard.vue
+│       └── ThemeSwitcher.vue
 ├── composables/
-│   ├── useApi.ts
-│   ├── useAuth.ts
-│   ├── useTenant.ts
-│   └── useToast.ts
+│   ├── useApi.ts (API client wrapper)
+│   ├── useFormatters.ts (date, currency, number formatters)
+│   ├── useNotification.ts (toast notifications)
+│   └── useTheme.ts (dark/light theme management)
+├── i18n/
+│   └── locales/
+│       ├── en.json (English translations)
+│       ├── es.json (Spanish translations)
+│       ├── fr.json (French translations)
+│       └── de.json (German translations)
 ├── layouts/
-│   ├── default.vue
-│   ├── auth.vue
-│   └── dashboard.vue
+│   ├── default.vue (authenticated app layout)
+│   └── auth.vue (login/authentication layout)
 ├── middleware/
-│   ├── auth.ts
-│   └── tenant.ts
+│   ├── auth.ts (authentication guard)
+│   └── tenant.ts (tenant resolution)
 ├── pages/
-│   ├── index.vue
-│   ├── login.vue
+│   ├── index.vue (dashboard)
+│   ├── login.vue (login page)
 │   ├── billing/
+│   │   └── invoices/
+│   │       └── index.vue
 │   └── inventory/
+│       └── products/
+│           └── index.vue
 ├── plugins/
-│   ├── primevue.ts
-│   └── api.ts
+│   └── api.ts (API plugin configuration)
 ├── stores/
-│   ├── auth.ts
-│   ├── tenant.ts
-│   └── ui.ts
+│   ├── auth.ts (authentication state)
+│   ├── tenant.ts (tenant context)
+│   └── ui.ts (UI state, breadcrumbs)
 ├── types/
-│   ├── api.ts
-│   └── models.ts
+│   ├── api.ts (API types)
+│   ├── auth.ts (authentication types)
+│   ├── billing.ts (billing domain types)
+│   ├── inventory.ts (inventory domain types)
+│   └── tenant.ts (tenant types)
 ├── utils/
-│   ├── formatters.ts
-│   └── validators.ts
+│   ├── constants.ts (app constants)
+│   ├── helpers.ts (utility functions)
+│   ├── status.ts (status utilities)
+│   └── validators.ts (validation helpers)
 └── nuxt.config.ts
 ```
 
@@ -601,20 +620,50 @@ Before creating any component, verify:
 - Define component props with TypeScript
 - Avoid `any` type - use `unknown` when needed
 
+#### Type Organization
+
+Types are organized by domain in separate files:
+
+**types/api.ts** - Generic API types and responses
+- ApiResponse<T>
+- PaginatedResponse<T>
+- ApiError
+
+**types/auth.ts** - Authentication types
+- User
+- LoginCredentials
+- AuthToken
+
+**types/billing.ts** - Billing domain types
+- Invoice
+- Customer
+- Payment
+- Subscription
+
+**types/inventory.ts** - Inventory domain types
+- Product
+- Warehouse
+- StockMovement
+
+**types/tenant.ts** - Multi-tenant types
+- Tenant
+- TenantContext
+- TenantSettings
+
 #### Type Definitions
 
 ```typescript
-// types/models.ts
+// types/billing.ts
 export interface Invoice {
-  id: string;
-  invoiceNumber: string;
-  customerId: string;
-  totalAmount: number;
-  status: InvoiceStatus;
-  createdAt: string;
+  id: string
+  invoiceNumber: string
+  customerId: string
+  totalAmount: number
+  status: InvoiceStatus
+  createdAt: string
 }
 
-export type InvoiceStatus = "draft" | "sent" | "paid" | "overdue";
+export type InvoiceStatus = 'draft' | 'sent' | 'paid' | 'overdue'
 ```
 
 #### Component Props Typing
@@ -642,33 +691,55 @@ const props = withDefaults(defineProps<Props>(), {
 - Use actions for async operations
 - Persist auth and tenant state to localStorage
 
+#### Available Stores
+
+The project includes the following Pinia stores:
+
+**auth.ts** - Authentication state management
+- Manages user authentication tokens
+- Stores current user information
+- Handles login/logout operations
+- Persisted to localStorage
+
+**tenant.ts** - Multi-tenant context management
+- Manages current tenant selection
+- Stores available tenants
+- Handles tenant switching
+- Persisted to localStorage
+
+**ui.ts** - UI state management
+- Manages breadcrumb navigation
+- Stores UI preferences
+- Handles global UI state
+- Sidebar/menu state
+
 #### Store Examples
 
 ```typescript
 // stores/auth.ts
 export const useAuthStore = defineStore(
-  "auth",
+  'auth',
   () => {
-    const token = ref<string | null>(null);
-    const user = ref<User | null>(null);
+    const token = ref<string | null>(null)
+    const user = ref<User | null>(null)
 
-    const isAuthenticated = computed(() => !!token.value);
+    const isAuthenticated = computed(() => !!token.value)
 
     async function login(credentials: LoginCredentials) {
       // API call
     }
 
     function logout() {
-      token.value = null;
-      user.value = null;
+      token.value = null
+      user.value = null
     }
 
-    return { token, user, isAuthenticated, login, logout };
+    return { token, user, isAuthenticated, login, logout }
   },
   {
     persist: true,
   },
-);
+)
 ```
 
 ### 6. API Integration & Composables
@@ -706,6 +777,214 @@ export const useApi = () => {
 - Handle errors consistently
 - Show loading states with PrimeVue ProgressBar/Skeleton
 - Display errors with PrimeVue Toast
+
+### 6.1. Available Composables
+
+The project includes the following composables that should be reused across the application:
+
+#### useApi
+
+Provides a configured API client with authentication and tenant context.
+
+```typescript
+// composables/useApi.ts
+const { apiFetch } = useApi()
+const data = await apiFetch('/endpoint')
+```
+
+#### useNotification
+
+Provides toast notification helpers for consistent user feedback.
+
+```typescript
+// composables/useNotification.ts
+const toast = useNotification()
+
+toast.showSuccess(summary, detail)
+toast.showError(summary, detail)
+toast.showWarning(summary, detail)
+toast.showInfo(summary, detail)
+```
+
+#### useTheme
+
+Manages dark/light theme state and provides theme utilities.
+
+```typescript
+// composables/useTheme.ts
+const { isDark, toggleTheme, setTheme } = useTheme()
+```
+
+#### useFormatters
+
+Provides formatting utilities for dates, currency, and numbers.
+
+```typescript
+// composables/useFormatters.ts
+const { formatCurrency, formatDate, formatNumber } = useFormatters()
+
+const formatted = formatCurrency(1234.56) // "$1,234.56"
+const date = formatDate(new Date()) // locale-aware formatting
+```
+
+### 6.2. Available Shared Components
+
+The project includes reusable shared components that should be used instead of recreating similar functionality:
+
+#### ThemeSwitcher
+
+Dropdown component for selecting theme (system/light/dark).
+
+```vue
+<ThemeSwitcher />
+```
+
+- Uses PrimeVue Select component
+- Icon-only on mobile, icon + text on larger screens
+- Automatically syncs with color mode
+
+#### LanguageSwitcher
+
+Dropdown component for language selection.
+
+```vue
+<LanguageSwitcher />
+```
+
+- Uses PrimeVue Select component
+- Icon-only on mobile, icon + text on larger screens
+- Persists language preference
+
+#### PageHeader
+
+Consistent page header with title, description, and action slot.
+
+```vue
+<PageHeader
+  :title="$t('pages.invoices.title')"
+  :description="$t('pages.invoices.description')"
+>
+  <template #actions>
+    <Button :label="$t('actions.create')" icon="pi pi-plus" />
+  </template>
+</PageHeader>
+```
+
+#### StatCard
+
+Reusable card for displaying statistics and metrics.
+
+```vue
+<StatCard
+  :title="$t('dashboard.revenue')"
+  :value="formatCurrency(revenue)"
+  icon="pi pi-dollar"
+  trend="+12%"
+  trend-up
+/>
+```
+
+#### LoadingState
+
+Skeleton/spinner component for loading states.
+
+```vue
+<LoadingState :loading="isLoading">
+  <template #default>
+    <!-- Your content here -->
+  </template>
+</LoadingState>
+```
+
+#### EmptyState
+
+Component for displaying empty states with icon, message, and action.
+
+```vue
+<EmptyState
+  icon="pi pi-inbox"
+  :title="$t('common.no_data')"
+  :description="$t('common.no_data_description')"
+>
+  <template #action>
+    <Button :label="$t('actions.create')" />
+  </template>
+</EmptyState>
+```
+
+#### DataTableActions
+
+Action buttons component for DataTable rows (view, edit, delete).
+
+```vue
+<DataTableActions
+  @view="handleView"
+  @edit="handleEdit"
+  @delete="handleDelete"
+  :show-view="true"
+  :show-edit="true"
+  :show-delete="true"
+/>
+```
+
+**Remember**: Always check for existing shared components before creating new ones. Reusing existing components ensures consistency and reduces maintenance.
+
+### 6.3. Available Utilities
+
+The project includes utility functions organized in the `utils/` directory:
+
+#### constants.ts
+
+Application-wide constants and configuration values.
+
+```typescript
+// utils/constants.ts
+export const APP_NAME = 'Billing & Inventory'
+export const API_TIMEOUT = 30000
+export const DEFAULT_PAGE_SIZE = 10
+export const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
+```
+
+#### helpers.ts
+
+General utility functions for common operations.
+
+```typescript
+// utils/helpers.ts
+export function debounce(fn: Function, delay: number) { ... }
+export function truncate(text: string, length: number) { ... }
+export function downloadFile(blob: Blob, filename: string) { ... }
+```
+
+#### status.ts
+
+Status-related utilities for billing, inventory, and orders.
+
+```typescript
+// utils/status.ts
+export function getInvoiceStatusSeverity(status: string): 'success' | 'warning' | 'danger' | 'info' { ... }
+export function getStockStatusColor(quantity: number, minQuantity: number): string { ... }
+```
+
+#### validators.ts
+
+Custom validation functions and rules.
+
+```typescript
+// utils/validators.ts
+export const isValidEmail = (email: string): boolean => { ... }
+export const isValidPhone = (phone: string): boolean => { ... }
+export const isPositiveNumber = (value: number): boolean => { ... }
+```
+
+**Usage Example**:
+```typescript
+import { getInvoiceStatusSeverity } from '~/utils/status'
+import { debounce } from '~/utils/helpers'
+
+const severity = getInvoiceStatusSeverity(invoice.status)
+const debouncedSearch = debounce(handleSearch, 300)
+```
 
 ### 7. Authentication & Authorization
 
@@ -836,6 +1115,25 @@ const v$ = useVuelidate(rules, formData);
 
 ### 11. Layout & Navigation
 
+#### Available Layouts
+
+The project includes two main layouts:
+
+**default.vue** - Authenticated application layout
+- Menubar with navigation
+- Tenant selector dropdown
+- Language and theme switchers
+- User menu with profile/settings/logout
+- Breadcrumb navigation
+- Responsive with mobile sidebar
+
+**auth.vue** - Authentication layout
+- Minimal layout for login/register pages
+- Centered content container
+- Theme and language switchers in top-right
+- Animated background (optional)
+- Toast for notifications
+
 #### Layout Structure
 
 - Use PrimeVue Menubar for top navigation
@@ -845,18 +1143,18 @@ const v$ = useVuelidate(rules, formData);
 - Use PrimeVue Card for content containers
 - Include theme toggle and language switcher in navigation
 
-#### Dashboard Layout with Theme & Language Support
+#### Default Layout Example with Theme & Language Support
 
 ```vue
 <script setup lang="ts">
-const { t } = useI18n();
-const { isDark, toggleTheme } = useTheme();
+const { t } = useI18n()
+const { isDark } = useTheme()
 
 const menuItems = computed(() => [
-  { label: t("nav.dashboard"), icon: "pi pi-home", to: "/" },
-  { label: t("nav.billing"), icon: "pi pi-dollar", to: "/billing" },
-  { label: t("nav.inventory"), icon: "pi pi-box", to: "/inventory" },
-]);
+  { label: t('nav.dashboard'), icon: 'pi pi-home', to: '/' },
+  { label: t('nav.billing'), icon: 'pi pi-dollar', to: '/billing' },
+  { label: t('nav.inventory'), icon: 'pi pi-box', to: '/inventory' },
+])
 </script>
 
 <template>
@@ -867,14 +1165,46 @@ const menuItems = computed(() => [
           <!-- Language Switcher -->
           <LanguageSwitcher />
 
-          <!-- Theme Toggle -->
-          <Button
-            :icon="isDark ? 'pi pi-sun' : 'pi pi-moon'"
-            text
-            rounded
-            @click="toggleTheme"
-            :aria-label="t('common.toggle_theme')"
-          />
+          <!-- Theme Switcher -->
+          <ThemeSwitcher />
+
+          <!-- User Menu -->
+          <Button icon="pi pi-user" text rounded @click="toggleUserMenu" />
+        </div>
+      </template>
+    </Menubar>
+
+    <div class="max-w-7xl mx-auto px-4 py-6">
+      <Breadcrumb :home="home" :model="breadcrumbItems" class="mb-4" />
+      <slot />
+    </div>
+
+    <Toast position="top-right" />
+  </div>
+</template>
+```
+
+#### Auth Layout Example
+
+```vue
+<template>
+  <div class="min-h-screen flex items-center justify-center relative">
+    <!-- Theme & Language Switchers - Fixed Top Right -->
+    <div class="fixed top-4 right-4 z-[99999] grid grid-cols-2 md:flex md:flex-row items-center gap-2">
+      <LanguageSwitcher />
+      <ThemeSwitcher />
+    </div>
+
+    <!-- Content Container -->
+    <div class="w-full max-w-md p-6 relative z-10">
+      <slot />
+    </div>
+
+    <!-- Toast for notifications -->
+    <Toast position="top-right" :pt="{ root: { style: 'top: 5rem' } }" />
+  </div>
+</template>
+```
 
           <!-- User Menu -->
           <Button icon="pi pi-user" text rounded @click="toggleUserMenu" />
@@ -959,36 +1289,46 @@ const menuItems = computed(() => [
 - Implement tenant-specific language preferences
 - Persist user language selection
 
+#### Supported Languages
+
+The project currently supports:
+- **English** (en) - Default
+- **Español** (es) - Spanish
+- **Français** (fr) - French
+- **Deutsch** (de) - German
+
+Translation files are located in `i18n/locales/` directory.
+
 #### i18n Module Setup
 
 ```typescript
 // nuxt.config.ts
 export default defineNuxtConfig({
-  modules: ["@nuxtjs/i18n"],
+  modules: ['@nuxtjs/i18n'],
   i18n: {
     locales: [
-      { code: "en", iso: "en-US", file: "en.json", name: "English" },
-      { code: "es", iso: "es-ES", file: "es.json", name: "Español" },
-      { code: "fr", iso: "fr-FR", file: "fr.json", name: "Français" },
-      { code: "de", iso: "de-DE", file: "de.json", name: "Deutsch" },
+      { code: 'en', iso: 'en-US', file: 'en.json', name: 'English' },
+      { code: 'es', iso: 'es-ES', file: 'es.json', name: 'Español' },
+      { code: 'fr', iso: 'fr-FR', file: 'fr.json', name: 'Français' },
+      { code: 'de', iso: 'de-DE', file: 'de.json', name: 'Deutsch' },
     ],
-    defaultLocale: "en",
+    defaultLocale: 'en',
     lazy: true,
-    langDir: "locales/",
-    strategy: "no_prefix", // or 'prefix_and_default'
+    langDir: 'i18n/locales/',
+    strategy: 'no_prefix', // or 'prefix_and_default'
     detectBrowserLanguage: {
       useCookie: true,
-      cookieKey: "i18n_redirected",
-      redirectOn: "root",
+      cookieKey: 'i18n_redirected',
+      redirectOn: 'root',
     },
   },
-});
+})
 ```
 
 #### Translation File Structure
 
 ```json
-// locales/en.json
+// i18n/locales/en.json
 {
   "common": {
     "save": "Save",
@@ -996,7 +1336,17 @@ export default defineNuxtConfig({
     "delete": "Delete",
     "edit": "Edit",
     "search": "Search",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "theme_system": "System",
+    "theme_light": "Light",
+    "theme_dark": "Dark"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "billing": "Billing",
+    "inventory": "Inventory",
+    "invoices": "Invoices",
+    "products": "Products"
   },
   "billing": {
     "invoices": "Invoices",
@@ -1015,12 +1365,20 @@ export default defineNuxtConfig({
     "login": "Login",
     "logout": "Logout",
     "email": "Email",
-    "password": "Password"
+    "password": "Password",
+    "welcome_back": "Welcome Back",
+    "demo_credentials": "Demo Credentials"
   },
   "messages": {
     "success_save": "Saved successfully",
     "error_load": "Failed to load data",
     "confirm_delete": "Are you sure you want to delete this item?"
+  },
+  "validation": {
+    "email_required": "Email is required",
+    "email_invalid": "Email is invalid",
+    "password_required": "Password is required",
+    "password_min_length": "Password must be at least 6 characters"
   }
 }
 ```
