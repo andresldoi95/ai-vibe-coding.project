@@ -22,6 +22,31 @@ All agents operate within their defined scope. **Instructions executed by agents
 - Agents will not exceed their defined boundaries
 - Cross-agent functionality requires explicit orchestration
 - Document new agents following this structure
+- **Reference Implementation**: See [`WAREHOUSE_IMPLEMENTATION_REFERENCE.md`](docs/WAREHOUSE_IMPLEMENTATION_REFERENCE.md) for complete CRUD implementation example
+
+## Reference Documentation
+
+### Warehouse Module (Complete Implementation Reference)
+
+The Warehouse module serves as the **canonical reference implementation** for all CRUD features in this project. It demonstrates:
+
+- ✅ **Backend**: Entity, CQRS commands/queries, repository, EF configuration, controller, migration
+- ✅ **Frontend**: TypeScript types, composable, list/create/edit/view pages, i18n translations
+- ✅ **UX Patterns**: DataTable, multi-section forms, breadcrumbs, status badges, confirmations, toasts
+
+**Location**: [`docs/WAREHOUSE_IMPLEMENTATION_REFERENCE.md`](docs/WAREHOUSE_IMPLEMENTATION_REFERENCE.md)
+
+**Use this as a template when implementing**:
+- New inventory entities (Products, Stock Movements, Suppliers)
+- Billing entities (Invoices, Customers, Payments)
+- Any CRUD module across the application
+
+## Implementation Status
+
+### Completed Modules
+- ✅ **Authentication**: User registration, login, JWT tokens, refresh tokens
+- ✅ **Multi-tenancy**: Tenant management, schema-per-tenant isolation
+- ✅ **Inventory - Warehouses**: Full CRUD with reference implementation (see above)
 
 ## Adding New Agents
 

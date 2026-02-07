@@ -149,7 +149,8 @@ Before committing code, ensure:
 │   ├── useApi.ts (API client wrapper)
 │   ├── useFormatters.ts (date, currency, number formatters)
 │   ├── useNotification.ts (toast notifications)
-│   └── useTheme.ts (dark/light theme management)
+│   ├── useTheme.ts (dark/light theme management)
+│   └── useWarehouse.ts (warehouse API integration - example pattern)
 ├── i18n/
 │   └── locales/
 │       ├── en.json (English translations)
@@ -169,8 +170,14 @@ Before committing code, ensure:
 │   │   └── invoices/
 │   │       └── index.vue
 │   └── inventory/
-│       └── products/
-│           └── index.vue
+│       ├── products/
+│       │   └── index.vue
+│       └── warehouses/  # Full CRUD implementation example
+│           ├── index.vue (list page with DataTable)
+│           ├── new.vue (create form)
+│           └── [id]/
+│               ├── index.vue (view/details page)
+│               └── edit.vue (edit form)
 ├── plugins/
 │   └── api.ts (API plugin configuration)
 ├── stores/
@@ -181,7 +188,7 @@ Before committing code, ensure:
 │   ├── api.ts (API types)
 │   ├── auth.ts (authentication types)
 │   ├── billing.ts (billing domain types)
-│   ├── inventory.ts (inventory domain types)
+│   ├── inventory.ts (inventory domain types - includes Warehouse interface)
 │   └── tenant.ts (tenant types)
 ├── utils/
 │   ├── constants.ts (app constants)
@@ -826,6 +833,157 @@ const { formatCurrency, formatDate, formatNumber } = useFormatters()
 const formatted = formatCurrency(1234.56) // "$1,234.56"
 const date = formatDate(new Date()) // locale-aware formatting
 ```
+
+#### useWarehouse (Entity Composable Pattern Example)
+
+**All entity-specific composables should follow this pattern**. This is the standard approach for CRUD operations in the application.
+
+```typescript
+// composables/useWarehouse.ts
+import type { Warehouse } from '~/types/inventory'
+
+export function useWarehouse() {
+  const config = useRuntimeConfig()
+  const toast = useNotification()
+  const { t } = useI18n()
+
+  // Get all warehouses for current tenant
+  async function getAllWarehouses() {
+    try {
+      const response = await $fetch<{ data: Warehouse[], success: boolean }>(
+        '/warehouses',
+        {
+          baseURL: config.public.apiBase,
+          credentials: 'include',
+        },
+      )
+      return response.data
+    }
+    catch (error) {
+      toast.showError(
+        t('messages.error_load'),
+        error instanceof Error ? error.message : 'Failed to load warehouses',
+      )
+      throw error
+    }
+  }
+
+  // Get warehouse by ID
+  async function getWarehouseById(id: string) {
+    try {
+      const response = await $fetch<{ data: Warehouse, success: boolean }>(
+        `/warehouses/${id}`,
+        {
+          baseURL: config.public.apiBase,
+          credentials: 'include',
+        },
+      )
+      return response.data
+    }
+    catch (error) {
+      toast.showError(
+        t('messages.error_load'),
+        error instanceof Error ? error.message : 'Failed to load warehouse',
+      )
+      throw error
+    }
+  }
+
+  // Create new warehouse
+  async function createWarehouse(warehouse: Partial<Warehouse>) {
+    try {
+      const response = await $fetch<{ data: Warehouse, success: boolean }>(
+        '/warehouses',
+        {
+          method: 'POST',
+          baseURL: config.public.apiBase,
+          credentials: 'include',
+          body: warehouse,
+        },
+      )
+      toast.showSuccess(
+        t('warehouses.title'),
+        t('warehouses.created_successfully'),
+      )
+      return response.data
+    }
+    catch (error) {
+      toast.showError(
+        t('messages.error_save'),
+        error instanceof Error ? error.message : 'Failed to create warehouse',
+      )
+      throw error
+    }
+  }
+
+  // Update existing warehouse
+  async function updateWarehouse(id: string, warehouse: Partial<Warehouse>) {
+    try {
+      const response = await $fetch<{ data: Warehouse, success: boolean }>(
+        `/warehouses/${id}`,
+        {
+          method: 'PUT',
+          baseURL: config.public.apiBase,
+          credentials: 'include',
+          body: { ...warehouse, id },
+        },
+      )
+      toast.showSuccess(
+        t('warehouses.title'),
+        t('warehouses.updated_successfully'),
+      )
+      return response.data
+    }
+    catch (error) {
+      toast.showError(
+        t('messages.error_save'),
+        error instanceof Error ? error.message : 'Failed to update warehouse',
+      )
+      throw error
+    }
+  }
+
+  // Delete warehouse (soft delete)
+  async function deleteWarehouse(id: string) {
+    try {
+      await $fetch(`/warehouses/${id}`, {
+        method: 'DELETE',
+        baseURL: config.public.apiBase,
+        credentials: 'include',
+      })
+      toast.showSuccess(
+        t('warehouses.title'),
+        t('warehouses.deleted_successfully'),
+      )
+    }
+    catch (error) {
+      toast.showError(
+        t('messages.error_delete'),
+        error instanceof Error ? error.message : 'Failed to delete warehouse',
+      )
+      throw error
+    }
+  }
+
+  return {
+    getAllWarehouses,
+    getWarehouseById,
+    createWarehouse,
+    updateWarehouse,
+    deleteWarehouse,
+  }
+}
+```
+
+**Key Patterns for Entity Composables**:
+- Always use runtime config for `baseURL` (e.g., `config.public.apiBase`)
+- **CRITICAL**: Never include `/api/v1` in endpoint paths - it's already in `baseURL`
+- Include `credentials: 'include'` for cookie-based auth
+- Wrap all calls in try/catch with toast notifications
+- Use i18n for all user-facing messages
+- Return typed data from API responses (`response.data`)
+- Export individual methods (not one giant object)
+- Follow naming convention: `getAll{Entity}`, `get{Entity}ById`, `create{Entity}`, `update{Entity}`, `delete{Entity}`
 
 ### 6.2. Available Shared Components
 

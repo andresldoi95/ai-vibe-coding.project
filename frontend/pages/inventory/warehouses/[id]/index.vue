@@ -23,7 +23,7 @@ async function loadWarehouse() {
     const id = route.params.id as string
     warehouse.value = await getWarehouseById(id)
     uiStore.setBreadcrumbs([
-      { label: t('nav.inventory') },
+      { label: t('nav.inventory'), to: '/inventory' },
       { label: t('warehouses.title'), to: '/inventory/warehouses' },
       { label: warehouse.value.name },
     ])

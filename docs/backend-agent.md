@@ -33,16 +33,23 @@ Expert in .NET 8 backend development with Entity Framework Core, CQRS patterns, 
 - Result pattern for error handling
 - Audit fields (CreatedAt, UpdatedAt, CreatedBy, UpdatedBy)
 - Soft delete support (IsDeleted, DeletedAt)
+- **Warehouse Management** (full CQRS implementation with Create, Update, Delete, GetAll, GetById)
+- Global query filters for soft deletes and tenant isolation
+- Unique constraints with tenant scoping (TenantId + Code)
 
 ### 📋 Planned Features
 - Advanced authorization policies
 - Billing module entities and features
-- Inventory module entities and features
+- **Inventory module**: Stock Movements, Products, Supplier Management
 - Advanced query filters and specifications
 - Caching (Redis)
 - Background jobs
 - Email notifications
 - File upload support
+
+### 🏗️ In Progress
+- **Inventory Module - Warehouses**: ✅ Completed (entity, CQRS, API, migrations)
+- Products and Stock Movements (next priority)
 
 ## Core Responsibilities
 
@@ -108,11 +115,31 @@ backend/
 │   │       │       └── GetCurrentUser/
 │   │       │           ├── GetCurrentUserQuery.cs
 │   │       │           └── GetCurrentUserQueryHandler.cs
-│   │       └── Tenants/
+│   │       ├── Tenants/
+│   │       │   └── Queries/
+│   │       │       └── GetUserTenants/
+│   │       │           ├── GetUserTenantsQuery.cs
+│   │       │           └── GetUserTenantsQueryHandler.cs
+│   │       └── Warehouses/  # Inventory Module Example
+│   │           ├── Commands/
+│   │           │   ├── CreateWarehouse/
+│   │           │   │   ├── CreateWarehouseCommand.cs
+│   │           │   │   ├── CreateWarehouseCommandValidator.cs
+│   │           │   │   └── CreateWarehouseCommandHandler.cs
+│   │           │   ├── UpdateWarehouse/
+│   │           │   │   ├── UpdateWarehouseCommand.cs
+│   │           │   │   ├── UpdateWarehouseCommandValidator.cs
+│   │           │   │   └── UpdateWarehouseCommandHandler.cs
+│   │           │   └── DeleteWarehouse/
+│   │           │       ├── DeleteWarehouseCommand.cs
+│   │           │       └── DeleteWarehouseCommandHandler.cs
 │   │           └── Queries/
-│   │               └── GetUserTenants/
-│   │                   ├── GetUserTenantsQuery.cs
-│   │                   └── GetUserTenantsQueryHandler.cs
+│   │               ├── GetAllWarehouses/
+│   │               │   ├── GetAllWarehousesQuery.cs
+│   │               │   └── GetAllWarehousesQueryHandler.cs
+│   │               └── GetWarehouseById/
+│   │                   ├── GetWarehouseByIdQuery.cs
+│   │                   └── GetWarehouseByIdQueryHandler.cs
 │   │
 │   ├── Infrastructure/                  # External services & data access
 │   │   ├── Persistence/
@@ -231,18 +258,43 @@ public abstract class AuditableEntity : BaseEntity
 - RevokedByIp
 - ReplacedByToken
 
+**Warehouse Entity** (Inventory Module)
+- Name (e.g., "Main Warehouse")
+- Code (unique per tenant, e.g., "WH-001")
+- Description (optional)
+- StreetAddress, City, State, PostalCode, Country
+- Phone, Email (contact info)
+- SquareFootage (nullable int)
+- Capacity (nullable int, storage units)
+- IsActive (boolean, default true)
+- Extends TenantEntity (automatic tenant isolation)
+- Unique constraint: (TenantId, Code) WHERE IsDeleted = false
+
 #### Entity Configurations (Fluent API)
 All entity configurations use `IEntityTypeConfiguration<T>`:
-- Table names: PascalCase, plural (Users, Tenants)
-- Column types: `decimal(18,2)` for money, `varchar(500)` for strings
-- Indexes: Unique on Email, Slug; composite on (UserId, TenantId)
-- Foreign keys: Cascade delete on UserTenants
+- Table names: PascalCase, plural (Users, Tenants, Warehouses)
+- Column types: `decimal(18,2)` for money, `varchar(500)` for strings, `text` for descriptions
+- Indexes:
+  - Unique on Email, Slug
+  - Composite on (UserId, TenantId)
+  - **Tenant-scoped unique**: (TenantId, Code) with filter WHERE IsDeleted = false
+  - **Performance indexes**: IsActive, TenantId for filtered queries
+- Foreign keys: Cascade delete on UserTenants, Restrict on tenant relationships
 - Required properties marked with `.IsRequired()`
+- Global query filters: `.HasQueryFilter(e => !e.IsDeleted)` on all AuditableEntity descendants
 
 #### Migrations
 - Initial migration: `20260206000000_InitialCreate.cs`
+- Warehouse migration: `20260207181646_AddWarehouseEntity.cs`
 - PostgreSQL provider with `UseNpgsql()`
-- Ready for deployment with `dotnet ef database update`
+- Auto-applied on container startup in development
+- Production deployment: `dotnet ef database update`
+
+**Migration Best Practices**:
+- Always generate migrations after entity/configuration changes
+- Review generated SQL before applying
+- Use meaningful migration names: `AddWarehouseEntity`, `AddProductInventoryTracking`
+- Test migrations with `dotnet ef migrations script` to see SQL output
 
 
 ### 3. CQRS Implementation with MediatR
@@ -267,11 +319,31 @@ Features/
 │       └── GetCurrentUser/
 │           ├── GetCurrentUserQuery.cs
 │           └── GetCurrentUserQueryHandler.cs
-└── Tenants/
+├── Tenants/
+│   └── Queries/
+│       └── GetUserTenants/
+│           ├── GetUserTenantsQuery.cs
+│           └── GetUserTenantsQueryHandler.cs
+└── Warehouses/  # Inventory Module Example
+    ├── Commands/
+    │   ├── CreateWarehouse/
+    │   │   ├── CreateWarehouseCommand.cs
+    │   │   ├── CreateWarehouseCommandValidator.cs
+    │   │   └── CreateWarehouseCommandHandler.cs
+    │   ├── UpdateWarehouse/
+    │   │   ├── UpdateWarehouseCommand.cs
+    │   │   ├── UpdateWarehouseCommandValidator.cs
+    │   │   └── UpdateWarehouseCommandHandler.cs
+    │   └── DeleteWarehouse/
+    │       ├── DeleteWarehouseCommand.cs
+    │       └── DeleteWarehouseCommandHandler.cs
     └── Queries/
-        └── GetUserTenants/
-            ├── GetUserTenantsQuery.cs
-            └── GetUserTenantsQueryHandler.cs
+        ├── GetAllWarehouses/
+        │   ├── GetAllWarehousesQuery.cs
+        │   └── GetAllWarehousesQueryHandler.cs
+        └── GetWarehouseById/
+            ├── GetWarehouseByIdQuery.cs
+            └── GetWarehouseByIdQueryHandler.cs
 ```
 
 #### Command Pattern Implementation
@@ -435,6 +507,97 @@ GET    /me           # Get current authenticated user [Authorized]
 ```
 GET    /             # Get user's accessible tenants [Authorized]
 ```
+
+**WarehousesController** (`/api/v1/warehouses`) - **Inventory Module Example**
+```
+GET    /             # Get all warehouses for current tenant [Authorized]
+GET    /{id}         # Get warehouse by ID [Authorized]
+POST   /             # Create new warehouse [Authorized]
+PUT    /{id}         # Update existing warehouse [Authorized]
+DELETE /{id}         # Soft delete warehouse [Authorized]
+```
+
+**Implementation Example**:
+```csharp
+[ApiController]
+[Route("api/v1/warehouses")]
+[Authorize]
+public class WarehousesController : BaseController
+{
+    public WarehousesController(IMediator mediator) : base(mediator) { }
+
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
+    {
+        var query = new GetAllWarehousesQuery();
+        var result = await _mediator.Send(query);
+
+        if (!result.IsSuccess)
+            return BadRequest(new { message = result.Error, success = false });
+
+        return Ok(new { data = result.Value, success = true });
+    }
+
+    [HttpGet("{id:guid}")]
+    public async Task<IActionResult> GetById(Guid id)
+    {
+        var query = new GetWarehouseByIdQuery { Id = id };
+        var result = await _mediator.Send(query);
+
+        if (!result.IsSuccess)
+            return NotFound(new { message = result.Error, success = false });
+
+        return Ok(new { data = result.Value, success = true });
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Create([FromBody] CreateWarehouseCommand command)
+    {
+        var result = await _mediator.Send(command);
+
+        if (!result.IsSuccess)
+            return BadRequest(new { message = result.Error, success = false });
+
+        return CreatedAtAction(nameof(GetById), new { id = result.Value.Id },
+            new { data = result.Value, success = true });
+    }
+
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateWarehouseCommand command)
+    {
+        if (id != command.Id)
+            return BadRequest(new { message = "ID mismatch", success = false });
+
+        var result = await _mediator.Send(command);
+
+        if (!result.IsSuccess)
+            return BadRequest(new { message = result.Error, success = false });
+
+        return Ok(new { data = result.Value, success = true });
+    }
+
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        var command = new DeleteWarehouseCommand { Id = id };
+        var result = await _mediator.Send(command);
+
+        if (!result.IsSuccess)
+            return NotFound(new { message = result.Error, success = false });
+
+        return NoContent();
+    }
+}
+```
+
+**Key Patterns Demonstrated**:
+- Thin controller - all logic delegated to CQRS handlers
+- Consistent response format with `{ data, success }` wrapper
+- Proper HTTP status codes (200, 201, 204, 400, 404)
+- Route parameter binding with `{id:guid}` constraint
+- [FromBody] for complex command objects
+- CreatedAtAction for POST responses with Location header
+- ID validation in Update endpoint
 
 #### Response Format Standards
 

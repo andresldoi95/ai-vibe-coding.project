@@ -105,7 +105,7 @@ async function loadWarehouse() {
     formData.capacity = warehouse.value.capacity || null
 
     uiStore.setBreadcrumbs([
-      { label: t('nav.inventory') },
+      { label: t('nav.inventory'), to: '/inventory' },
       { label: t('warehouses.title'), to: '/inventory/warehouses' },
       { label: warehouse.value.name, to: `/inventory/warehouses/${warehouse.value.id}` },
       { label: t('common.edit') },

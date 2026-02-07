@@ -13,6 +13,7 @@ const menuItems = computed(() => [
   {
     label: t('nav.billing'),
     icon: 'pi pi-dollar',
+    command: () => navigateTo('/billing'),
     items: [
       { label: t('nav.invoices'), icon: 'pi pi-file', command: () => navigateTo('/billing/invoices') },
       {
@@ -30,6 +31,7 @@ const menuItems = computed(() => [
   {
     label: t('nav.inventory'),
     icon: 'pi pi-box',
+    command: () => navigateTo('/inventory'),
     items: [
       {
         label: t('nav.products'),
@@ -163,7 +165,20 @@ const breadcrumbHome = { icon: 'pi pi-home', to: '/' }
         :home="breadcrumbHome"
         :model="uiStore.breadcrumbs"
         class="mb-4 bg-transparent border-0"
-      />
+      >
+        <template #item="{ item }">
+          <NuxtLink
+            v-if="item.to"
+            :to="item.to"
+            class="text-primary hover:underline"
+          >
+            {{ item.label }}
+          </NuxtLink>
+          <span v-else class="text-gray-600 dark:text-gray-400">
+            {{ item.label }}
+          </span>
+        </template>
+      </Breadcrumb>
 
       <!-- Page Content -->
       <slot />

@@ -69,9 +69,17 @@ function getFullAddress(warehouse: Warehouse): string {
   return parts.join(', ')
 }
 
+function getStatusLabel(isActive: boolean): string {
+  return isActive ? t('common.active') : t('common.inactive')
+}
+
+function getStatusSeverity(isActive: boolean): 'success' | 'danger' {
+  return isActive ? 'success' : 'danger'
+}
+
 onMounted(() => {
   uiStore.setBreadcrumbs([
-    { label: t('nav.inventory') },
+    { label: t('nav.inventory'), to: '/inventory' },
     { label: t('warehouses.title') },
   ])
   loadWarehouses()
@@ -133,8 +141,8 @@ onMounted(() => {
           <Column field="isActive" :header="t('common.status')" sortable>
             <template #body="{ data }">
               <Tag
-                :value="data.isActive ? t('common.active') : t('common.inactive')"
-                :severity="data.isActive ? 'success' : 'danger'"
+                :value="getStatusLabel(data.isActive)"
+                :severity="getStatusSeverity(data.isActive)"
               />
             </template>
           </Column>

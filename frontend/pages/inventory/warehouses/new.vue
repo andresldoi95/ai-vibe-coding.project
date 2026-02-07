@@ -122,7 +122,7 @@ function cancel() {
 
 onMounted(() => {
   uiStore.setBreadcrumbs([
-    { label: t('nav.inventory') },
+    { label: t('nav.inventory'), to: '/inventory' },
     { label: t('warehouses.title'), to: '/inventory/warehouses' },
     { label: t('warehouses.create') },
   ])

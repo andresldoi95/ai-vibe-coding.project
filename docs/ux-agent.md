@@ -307,6 +307,61 @@ const COLUMN_GAP = "gap-6"; // 24px between columns
 
 **Always check the `components/shared/` directory and frontend-agent.md documentation before creating new components.**
 
+## Implemented UX Patterns
+
+### ✅ Warehouse Module Patterns (Reference Implementation)
+
+The Warehouse module serves as a **reference implementation** for all future CRUD modules. It demonstrates:
+
+1. **List Page Pattern** (`pages/inventory/warehouses/index.vue`)
+   - PageHeader with title, description, and "Create" action
+   - DataTable with pagination, sorting, and filtering
+   - Status badges (Active/Inactive) using Tag component with severity
+   - Action column with view/edit/delete icons
+   - EmptyState when no warehouses exist
+   - Delete confirmation with ConfirmDialog
+   - Toast notifications for success/error feedback
+
+2. **Create/Edit Form Pattern** (`pages/inventory/warehouses/new.vue`, `[id]/edit.vue`)
+   - Multi-section forms with Card components
+   - Sections: Basic Info, Address Info, Contact Info, Additional Info
+   - Vuelidate validation with real-time error display
+   - InputText, Textarea, InputNumber, InputSwitch components
+   - Helper text for complex fields (e.g., code format)
+   - Form actions: Cancel (outlined) + Submit (filled primary)
+   - Breadcrumb navigation
+   - Loading state during submission
+
+3. **View/Details Page Pattern** (`pages/inventory/warehouses/[id]/index.vue`)
+   - Breadcrumb navigation (Home > Warehouses > {name})
+   - Header with warehouse name and Edit button
+   - Organized detail sections matching form structure
+   - Status display with Tag component
+   - Empty value handling (shows "—" for null/empty fields)
+   - Loading state while fetching data
+   - Error handling with error messages
+
+4. **i18n Pattern for Features**
+   - Dedicated translation namespace (`warehouses.*`)
+   - Keys for: title, description, create, edit, field labels, placeholders, helpers
+   - Success/error messages
+   - Empty state messages
+   - Translations in all supported languages (en, es, fr, de)
+   - Proper escaping for special characters (e.g., `{'@'}` for email domains)
+
+5. **API Integration Pattern** (`composables/useWarehouse.ts`)
+   - Composable for each entity type
+   - Methods: getAll, getById, create, update, delete
+   - Error handling with try/catch and toast notifications
+   - Loading states
+   - Type-safe with TypeScript interfaces
+   - Base URL from runtime config (no `/api/v1` prefix in endpoint paths)
+
+**Apply these patterns when implementing**:
+- Products, Stock Movements, Suppliers (Inventory)
+- Invoices, Customers, Payments (Billing)
+- Any new CRUD feature
+
 ### 1. PageHeader Component
 
 **Purpose**: Standardize page headers with title, description, breadcrumbs, and actions
