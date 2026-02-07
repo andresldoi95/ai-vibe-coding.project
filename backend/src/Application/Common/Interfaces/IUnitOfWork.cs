@@ -9,6 +9,7 @@ public interface IUnitOfWork : IDisposable
     ITenantRepository Tenants { get; }
     IUserTenantRepository UserTenants { get; }
     IRefreshTokenRepository RefreshTokens { get; }
+    IWarehouseRepository Warehouses { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     Task BeginTransactionAsync(CancellationToken cancellationToken = default);

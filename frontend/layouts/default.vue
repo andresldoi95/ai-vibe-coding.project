@@ -8,22 +8,22 @@ const menuItems = computed(() => [
   {
     label: t('nav.dashboard'),
     icon: 'pi pi-home',
-    to: '/',
+    command: () => navigateTo('/'),
   },
   {
     label: t('nav.billing'),
     icon: 'pi pi-dollar',
     items: [
-      { label: t('nav.invoices'), icon: 'pi pi-file', to: '/billing/invoices' },
+      { label: t('nav.invoices'), icon: 'pi pi-file', command: () => navigateTo('/billing/invoices') },
       {
         label: t('nav.customers'),
         icon: 'pi pi-users',
-        to: '/billing/customers',
+        command: () => navigateTo('/billing/customers'),
       },
       {
         label: t('nav.payments'),
         icon: 'pi pi-credit-card',
-        to: '/billing/payments',
+        command: () => navigateTo('/billing/payments'),
       },
     ],
   },
@@ -34,17 +34,17 @@ const menuItems = computed(() => [
       {
         label: t('nav.products'),
         icon: 'pi pi-shopping-cart',
-        to: '/inventory/products',
+        command: () => navigateTo('/inventory/products'),
       },
       {
         label: t('nav.warehouses'),
         icon: 'pi pi-building',
-        to: '/inventory/warehouses',
+        command: () => navigateTo('/inventory/warehouses'),
       },
       {
         label: t('nav.stock_movements'),
         icon: 'pi pi-arrows-h',
-        to: '/inventory/stock-movements',
+        command: () => navigateTo('/inventory/stock-movements'),
       },
     ],
   },

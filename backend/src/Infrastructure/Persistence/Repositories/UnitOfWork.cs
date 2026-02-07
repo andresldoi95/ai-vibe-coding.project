@@ -15,19 +15,22 @@ public class UnitOfWork : IUnitOfWork
     public ITenantRepository Tenants { get; }
     public IUserTenantRepository UserTenants { get; }
     public IRefreshTokenRepository RefreshTokens { get; }
+    public IWarehouseRepository Warehouses { get; }
 
     public UnitOfWork(
         ApplicationDbContext context,
         IUserRepository userRepository,
         ITenantRepository tenantRepository,
         IUserTenantRepository userTenantRepository,
-        IRefreshTokenRepository refreshTokenRepository)
+        IRefreshTokenRepository refreshTokenRepository,
+        IWarehouseRepository warehouseRepository)
     {
         _context = context;
         Users = userRepository;
         Tenants = tenantRepository;
         UserTenants = userTenantRepository;
         RefreshTokens = refreshTokenRepository;
+        Warehouses = warehouseRepository;
     }
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

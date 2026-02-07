@@ -20,8 +20,18 @@ export interface Warehouse {
   id: string
   tenantId: string
   name: string
-  location: string
+  code: string
+  description?: string
+  streetAddress: string
+  city: string
+  state?: string
+  postalCode: string
+  country: string
+  phone?: string
+  email?: string
   isActive: boolean
+  squareFootage?: number
+  capacity?: number
   createdAt: string
   updatedAt: string
 }
