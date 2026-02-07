@@ -1,0 +1,58 @@
+# ========================================
+# .NET Backend Development
+# ========================================
+
+# Ignore build outputs
+bin/
+obj/
+out/
+
+# Ignore user-specific files
+*.user
+*.userosscache
+*.suo
+*.userprefs
+.vs/
+.vscode/
+.idea/
+
+# Ignore NuGet packages
+*.nupkg
+*.snupkg
+packages/
+.nuget/
+
+# Ignore test results
+TestResults/
+*.trx
+*.coverage
+*.coveragexml
+
+# Ignore logs
+Logs/
+*.log
+
+# Ignore database files
+*.db
+*.db-shm
+*.db-wal
+
+# Ignore development settings
+appsettings.*.user.json
+
+# Ignore migrations (optional - uncomment if you regenerate)
+# **/Migrations/
+
+# Ignore Rider
+.idea/
+*.sln.iml
+
+# Ignore macOS
+.DS_Store
+
+# Ignore Linux
+*~
+
+# Ignore Windows
+Thumbs.db
+ehthumbs.db

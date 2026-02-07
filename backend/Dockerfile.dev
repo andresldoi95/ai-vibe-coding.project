@@ -1,0 +1,35 @@
+# Development Dockerfile for .NET 8 API
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+
+# Copy solution and project files
+COPY SaaS.sln ./
+COPY src/Domain/Domain.csproj src/Domain/
+COPY src/Application/Application.csproj src/Application/
+COPY src/Infrastructure/Infrastructure.csproj src/Infrastructure/
+COPY src/Api/Api.csproj src/Api/
+
+# Restore dependencies
+RUN dotnet restore
+
+# Copy the rest of the source code
+COPY . .
+
+# Build the application
+WORKDIR /src/src/Api
+RUN dotnet build -c Debug -o /app/build
+
+# Development runtime
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS development
+WORKDIR /app
+COPY --from=build /app/build .
+
+# Install dotnet-ef tool for migrations
+RUN dotnet tool install --global dotnet-ef
+ENV PATH="${PATH}:/root/.dotnet/tools"
+
+EXPOSE 5000
+ENV ASPNETCORE_URLS=http://+:5000
+ENV ASPNETCORE_ENVIRONMENT=Development
+
+ENTRYPOINT ["dotnet", "Api.dll"]
