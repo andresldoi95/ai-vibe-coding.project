@@ -79,6 +79,7 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Result<Lo
                 IsActive = true
             };
 
+            await _unitOfWork.UserTenants.AddAsync(userTenant, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             // Generate JWT and refresh tokens

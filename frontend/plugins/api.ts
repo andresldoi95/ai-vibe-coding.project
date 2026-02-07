@@ -1,11 +1,19 @@
 export default defineNuxtPlugin(() => {
   const config = useRuntimeConfig()
 
+  // Use server-side URL for SSR, client-side URL for browser
+  const baseURL = import.meta.server
+    ? config.apiBaseUrl
+    : config.public.apiBase
+
   const apiFetch = $fetch.create({
-    baseURL: config.public.apiBase as string,
+    baseURL: baseURL as string,
     async onRequest({ options }) {
       const authStore = useAuthStore()
       const tenantStore = useTenantStore()
+
+      // Initialize headers if not present
+      options.headers = options.headers || {}
 
       // Add authorization token
       if (authStore.token) {
@@ -22,9 +30,30 @@ export default defineNuxtPlugin(() => {
           'X-Tenant-Id': tenantStore.currentTenantId,
         }
       }
+
+      // Log request for debugging
+      if (import.meta.dev) {
+        // eslint-disable-next-line no-console
+        console.log('[API Request]', options.method || 'GET', options.baseURL, {
+          hasAuth: !!authStore.token,
+          hasTenant: !!tenantStore.currentTenantId,
+        })
+      }
+    },
+    async onResponse({ response }) {
+      // Log successful responses for debugging
+      if (import.meta.dev) {
+        // eslint-disable-next-line no-console
+        console.log('[API Response]', response.status, response._data)
+      }
     },
     async onResponseError({ response }) {
       const authStore = useAuthStore()
+
+      // Log errors for debugging
+      if (import.meta.dev) {
+        console.error('[API Error]', response.status, response._data)
+      }
 
       // Handle authentication errors
       if (response.status === 401) {

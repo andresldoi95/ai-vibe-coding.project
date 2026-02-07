@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import type { LoginCredentials, LoginResponse, User } from '~/types/auth'
+import type { ApiResponse, LoginCredentials, LoginResponse, User } from '~/types/auth'
 
 export const useAuthStore = defineStore(
   'auth',
@@ -10,31 +10,40 @@ export const useAuthStore = defineStore(
 
     const isAuthenticated = computed(() => !!token.value && !!user.value)
 
-    const login = async (credentials: LoginCredentials): Promise<void> => {
+    const login = async (credentials: LoginCredentials): Promise<LoginResponse> => {
       const { apiFetch } = useApi()
-      const toast = useNotification()
 
-      try {
-        const response = await apiFetch<LoginResponse>('/auth/login', {
-          method: 'POST',
-          body: credentials,
-        })
+      // eslint-disable-next-line no-console
+      console.log('[AuthStore] Logging in...', credentials.email)
 
-        token.value = response.accessToken
-        refreshToken.value = response.refreshToken
-        user.value = response.user
+      // Backend wraps response in { data, message, success }
+      const apiResponse = await apiFetch<ApiResponse<LoginResponse>>('/auth/login', {
+        method: 'POST',
+        body: credentials,
+      })
 
-        toast.showSuccess(
-          'Login successful',
-          `Welcome back, ${response.user.name}!`,
-        )
+      // eslint-disable-next-line no-console
+      console.log('[AuthStore] API Response:', apiResponse)
+
+      const response = apiResponse.data
+
+      token.value = response.accessToken
+      refreshToken.value = response.refreshToken
+      user.value = response.user
+
+      // Set available tenants and select the first one
+      const tenantStore = useTenantStore()
+      if (response.tenants && response.tenants.length > 0) {
+        // eslint-disable-next-line no-console
+        console.log('[AuthStore] Setting tenants:', response.tenants)
+        tenantStore.setAvailableTenants(response.tenants)
+        // Auto-select first tenant
+        tenantStore.selectTenant(response.tenants[0].id)
       }
-      catch (error) {
-        const errMessage
-          = error instanceof Error ? error.message : 'Invalid credentials'
-        toast.showError('Login failed', errMessage)
-        throw error
-      }
+
+      // eslint-disable-next-line no-console
+      console.log('[AuthStore] Login complete')
+      return response
     }
 
     const logout = () => {
@@ -75,7 +84,8 @@ export const useAuthStore = defineStore(
       const { apiFetch } = useApi()
 
       try {
-        user.value = await apiFetch<User>('/auth/me')
+        const apiResponse = await apiFetch<ApiResponse<User>>('/auth/me')
+        user.value = apiResponse.data
       }
       catch (error) {
         logout()

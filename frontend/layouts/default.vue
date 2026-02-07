@@ -1,6 +1,5 @@
 <script setup lang="ts">
 const { t } = useI18n()
-const { isDark } = useTheme()
 const authStore = useAuthStore()
 const tenantStore = useTenantStore()
 const uiStore = useUiStore()
@@ -51,6 +50,8 @@ const menuItems = computed(() => [
   },
 ])
 
+const userMenu = ref()
+
 const userMenuItems = ref([
   {
     label: t('nav.profile'),
@@ -75,17 +76,15 @@ const userMenuItems = ref([
   },
 ])
 
-const userMenuVisible = ref(false)
-
-function toggleUserMenu(_event: Event) {
-  userMenuVisible.value = !userMenuVisible.value
+function toggleUserMenu(event: Event) {
+  userMenu.value.toggle(event)
 }
 
 const breadcrumbHome = { icon: 'pi pi-home', to: '/' }
 </script>
 
 <template>
-  <div class="min-h-screen" :class="isDark ? 'dark bg-gray-900' : 'bg-gray-50'">
+  <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
     <!-- Top Navigation -->
     <Menubar :model="menuItems" class="rounded-none border-x-0 border-t-0">
       <template #start>
@@ -98,49 +97,61 @@ const breadcrumbHome = { icon: 'pi pi-home', to: '/' }
       </template>
 
       <template #end>
-        <div class="flex items-center gap-2">
-          <!-- Tenant Selector -->
-          <Dropdown
-            v-if="tenantStore.availableTenants.length > 0"
-            v-model="tenantStore.currentTenantId"
-            :options="tenantStore.availableTenants"
-            optionLabel="name"
-            optionValue="id"
-            placeholder="Select Tenant"
-            appendTo="body"
-            class="w-48"
-            @change="(event) => tenantStore.setTenant(event.value)"
-          >
-            <template #value="{ value }">
-              <div v-if="value" class="flex items-center gap-2">
-                <i class="pi pi-briefcase" />
-                <span>{{ tenantStore.currentTenant?.name }}</span>
-              </div>
-            </template>
-          </Dropdown>
+        <ClientOnly>
+          <div class="flex items-center gap-2">
+            <!-- Tenant Selector -->
+            <Dropdown
+              v-if="tenantStore.availableTenants.length > 0"
+              v-model="tenantStore.currentTenantId"
+              :options="tenantStore.availableTenants"
+              optionLabel="name"
+              optionValue="id"
+              placeholder="Select Tenant"
+              appendTo="body"
+              class="w-48"
+              @change="(event: Event) => tenantStore.selectTenant((event.target as HTMLSelectElement).value)"
+            >
+              <template #value="{ value }">
+                <div v-if="value" class="flex items-center gap-2">
+                  <i class="pi pi-briefcase" />
+                  <span>{{ tenantStore.currentTenant?.name }}</span>
+                </div>
+              </template>
+            </Dropdown>
 
-          <!-- Language Switcher -->
-          <LanguageSwitcher />
+            <!-- Language Switcher -->
+            <LanguageSwitcher />
 
-          <!-- Theme Switcher -->
-          <ThemeSwitcher />
+            <!-- Theme Switcher -->
+            <ThemeSwitcher />
 
-          <!-- User Menu -->
-          <Button
-            icon="pi pi-user"
-            text
-            rounded
-            aria-haspopup="true"
-            aria-controls="user_menu"
-            @click="toggleUserMenu"
-          />
-          <Menu
-            id="user_menu"
-            v-model:visible="userMenuVisible"
-            :model="userMenuItems"
-            :popup="true"
-          />
-        </div>
+            <!-- User Menu -->
+            <Button
+              icon="pi pi-user"
+              text
+              rounded
+              aria-haspopup="true"
+              aria-controls="user_menu"
+              @click="toggleUserMenu"
+            />
+            <Menu
+              id="user_menu"
+              ref="userMenu"
+              :model="userMenuItems"
+              :popup="true"
+            />
+          </div>
+
+          <template #fallback>
+            <div class="flex items-center gap-2">
+              <!-- Placeholder to maintain layout during SSR -->
+              <div class="w-48 h-10" />
+              <div class="w-40 h-10" />
+              <div class="w-36 h-10" />
+              <div class="w-10 h-10" />
+            </div>
+          </template>
+        </ClientOnly>
       </template>
     </Menubar>
 

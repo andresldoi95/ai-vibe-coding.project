@@ -55,11 +55,21 @@ async function handleLogin() {
 
   loading.value = true
   try {
-    await authStore.login(formData)
+    // eslint-disable-next-line no-console
+    console.log('[Login] Attempting login with:', formData.email)
+    const response = await authStore.login(formData)
+    // eslint-disable-next-line no-console
+    console.log('[Login] Login successful, response:', response)
+    toast.showSuccess(
+      'Login successful',
+      `Welcome back, ${response.user.name}!`,
+    )
     await router.push('/')
   }
-  catch {
-    // handled in store
+  catch (error) {
+    console.error('[Login] Login error:', error)
+    const errMessage = error instanceof Error ? error.message : 'Invalid credentials'
+    toast.showError('Login failed', errMessage)
   }
   finally {
     loading.value = false

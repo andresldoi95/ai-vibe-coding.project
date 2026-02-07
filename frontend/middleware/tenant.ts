@@ -1,4 +1,9 @@
 export default defineNuxtRouteMiddleware(async () => {
+  // Skip during SSR to prevent hydration issues with localStorage
+  if (import.meta.server) {
+    return
+  }
+
   const tenantStore = useTenantStore()
   const authStore = useAuthStore()
 
@@ -7,8 +12,9 @@ export default defineNuxtRouteMiddleware(async () => {
     return
   }
 
-  // Fetch available tenants if not loaded
-  if (tenantStore.availableTenants.length === 0) {
+  // Only fetch if we don't have tenants and no current tenant is set
+  // This prevents unnecessary API calls on page reload when state is restored
+  if (tenantStore.availableTenants.length === 0 && !tenantStore.currentTenantId) {
     try {
       await tenantStore.fetchAvailableTenants()
     }
@@ -17,9 +23,14 @@ export default defineNuxtRouteMiddleware(async () => {
     }
   }
 
+  // If we have a currentTenantId but no currentTenant object, restore it
+  if (tenantStore.currentTenantId && !tenantStore.currentTenant && tenantStore.availableTenants.length > 0) {
+    tenantStore.selectTenant(tenantStore.currentTenantId)
+  }
+
   // Require tenant selection for protected routes
   if (!tenantStore.hasTenant && tenantStore.availableTenants.length > 0) {
     // Auto-select first tenant
-    await tenantStore.setTenant(tenantStore.availableTenants[0].id)
+    tenantStore.selectTenant(tenantStore.availableTenants[0].id)
   }
 })

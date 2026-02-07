@@ -39,6 +39,15 @@ export default defineNuxtConfig({
         propsDestructure: true,
       },
     },
+    server: {
+      watch: {
+        usePolling: true, // Enable polling for Docker/Windows compatibility
+      },
+      hmr: {
+        protocol: 'ws',
+        host: 'localhost',
+      },
+    },
   },
 
   // PrimeVue configuration
@@ -100,10 +109,12 @@ export default defineNuxtConfig({
 
   // Runtime config
   runtimeConfig: {
+    // Server-side API URL (for SSR, using Docker service name)
+    apiBaseUrl: import.meta.env.API_BASE_URL || 'http://localhost:5000/api/v1',
+
     public: {
-      apiBase:
-        // eslint-disable-next-line node/prefer-global/process
-        process.env.NUXT_PUBLIC_API_BASE || 'http://localhost:5000/api/v1',
+      // Client-side API URL (for browser, using localhost)
+      apiBase: import.meta.env.NUXT_PUBLIC_API_BASE || 'http://localhost:5000/api/v1',
     },
   },
 

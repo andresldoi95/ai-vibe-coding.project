@@ -1,4 +1,9 @@
 export default defineNuxtRouteMiddleware((to) => {
+  // Skip during SSR to prevent hydration issues with localStorage
+  if (import.meta.server) {
+    return
+  }
+
   const authStore = useAuthStore()
 
   // Allow access to login page

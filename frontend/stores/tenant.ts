@@ -12,21 +12,10 @@ export const useTenantStore = defineStore(
 
     const setTenant = async (tenantId: string): Promise<void> => {
       const { apiFetch } = useApi()
-      const toast = useNotification()
 
-      try {
-        const tenant = await apiFetch<Tenant>(`/tenants/${tenantId}`)
-        currentTenantId.value = tenantId
-        currentTenant.value = tenant
-
-        toast.showInfo('Tenant switched', `Now working on: ${tenant.name}`)
-      }
-      catch (error) {
-        const errMessage
-          = error instanceof Error ? error.message : 'Failed to switch tenant'
-        toast.showError('Failed to switch tenant', errMessage)
-        throw error
-      }
+      const tenant = await apiFetch<Tenant>(`/tenants/${tenantId}`)
+      currentTenantId.value = tenantId
+      currentTenant.value = tenant
     }
 
     const fetchAvailableTenants = async (): Promise<void> => {
@@ -52,6 +41,23 @@ export const useTenantStore = defineStore(
       availableTenants.value = []
     }
 
+    const setAvailableTenants = (tenants: Tenant[]) => {
+      availableTenants.value = tenants
+    }
+
+    const selectTenant = (tenantId: string) => {
+      const tenant = availableTenants.value.find(t => t.id === tenantId)
+      if (tenant) {
+        currentTenantId.value = tenantId
+        currentTenant.value = tenant
+        // eslint-disable-next-line no-console
+        console.log('[TenantStore] Tenant selected:', tenant.name)
+      }
+      else {
+        console.warn('[TenantStore] Tenant not found in available tenants:', tenantId)
+      }
+    }
+
     return {
       currentTenantId,
       currentTenant,
@@ -60,12 +66,14 @@ export const useTenantStore = defineStore(
       setTenant,
       fetchAvailableTenants,
       clearTenant,
+      setAvailableTenants,
+      selectTenant,
     }
   },
   {
     persist: {
       storage: persistedState.localStorage,
-      paths: ['currentTenantId', 'currentTenant'],
+      paths: ['currentTenantId', 'currentTenant', 'availableTenants'],
     },
   },
 )

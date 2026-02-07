@@ -13,17 +13,20 @@ public class UnitOfWork : IUnitOfWork
 
     public IUserRepository Users { get; }
     public ITenantRepository Tenants { get; }
+    public IUserTenantRepository UserTenants { get; }
     public IRefreshTokenRepository RefreshTokens { get; }
 
     public UnitOfWork(
         ApplicationDbContext context,
         IUserRepository userRepository,
         ITenantRepository tenantRepository,
+        IUserTenantRepository userTenantRepository,
         IRefreshTokenRepository refreshTokenRepository)
     {
         _context = context;
         Users = userRepository;
         Tenants = tenantRepository;
+        UserTenants = userTenantRepository;
         RefreshTokens = refreshTokenRepository;
     }
 

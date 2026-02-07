@@ -1,12 +1,9 @@
 <script setup lang="ts">
-const { isDark } = useTheme()
+// Theme is automatically handled by color-mode module and app.vue
 </script>
 
 <template>
-  <div
-    class="min-h-screen flex items-center justify-center relative"
-    :class="isDark ? 'dark bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900' : 'bg-gradient-to-br from-gray-50 via-teal-50 to-gray-50'"
-  >
+  <div class="min-h-screen flex items-center justify-center relative bg-gradient-to-br from-gray-50 via-teal-50 to-gray-50 dark:bg-gradient-to-br dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
     <!-- Theme Switcher - Fixed Top Right -->
     <div class="fixed top-4 right-4 z-[99999] grid grid-cols-2 md:flex md:flex-row items-center gap-2">
       <LanguageSwitcher />
