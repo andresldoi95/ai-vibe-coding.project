@@ -6,8 +6,8 @@ export default defineNuxtRouteMiddleware((to) => {
 
   const authStore = useAuthStore()
 
-  // Allow access to login page
-  if (to.path === '/login') {
+  // Allow access to login and register pages
+  if (to.path === '/login' || to.path === '/register') {
     // Redirect to dashboard if already authenticated
     if (authStore.isAuthenticated) {
       return navigateTo('/')

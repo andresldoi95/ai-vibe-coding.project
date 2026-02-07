@@ -32,6 +32,8 @@ export interface ApiResponse<T> {
 }
 
 export interface RegisterData {
+  companyName: string
+  slug: string
   name: string
   email: string
   password: string

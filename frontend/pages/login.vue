@@ -253,10 +253,19 @@ async function copyToClipboard(text: string) {
         </template>
 
         <template #footer>
-          <div class="bg-slate-50/50 px-8 py-6 dark:bg-slate-900/30">
-            <div class="flex items-center justify-center gap-2 text-xs text-slate-500 dark:text-slate-400">
-              <i class="pi pi-lock text-teal-600 dark:text-teal-400" />
+          <div class="border-t border-slate-200 bg-slate-50 px-8 py-6 dark:border-slate-700 dark:bg-slate-800/50">
+            <!-- Security Note -->
+            <div class="mb-4 flex items-center justify-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+              <i class="pi pi-shield text-teal-600 dark:text-teal-400" />
               <span>{{ t('auth.security_note') }}</span>
+            </div>
+
+            <!-- Register Link -->
+            <div class="text-center text-sm text-slate-600 dark:text-slate-400">
+              {{ t('auth.new_here') }}
+              <NuxtLink to="/register" class="font-semibold text-teal-600 transition-colors hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-300">
+                {{ t('auth.create_account') }}
+              </NuxtLink>
             </div>
           </div>
         </template>

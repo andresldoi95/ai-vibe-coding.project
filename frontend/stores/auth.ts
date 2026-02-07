@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import type { ApiResponse, LoginCredentials, LoginResponse, User } from '~/types/auth'
+import type { ApiResponse, LoginCredentials, LoginResponse, RegisterData, User } from '~/types/auth'
 
 export const useAuthStore = defineStore(
   'auth',
@@ -93,6 +93,52 @@ export const useAuthStore = defineStore(
       }
     }
 
+    const register = async (data: RegisterData): Promise<LoginResponse> => {
+      const { apiFetch } = useApi()
+
+      // eslint-disable-next-line no-console
+      console.log('[AuthStore] Registering new tenant...', data.email)
+
+      // Transform frontend data to match backend RegisterCommand
+      const registerCommand = {
+        companyName: data.companyName,
+        slug: data.slug,
+        name: data.name,
+        email: data.email,
+        password: data.password,
+      }
+
+      // Backend wraps response in { data, message, success }
+      const apiResponse = await apiFetch<ApiResponse<LoginResponse>>('/auth/register', {
+        method: 'POST',
+        body: registerCommand,
+      })
+
+      // eslint-disable-next-line no-console
+      console.log('[AuthStore] Registration successful:', apiResponse)
+
+      const response = apiResponse.data
+
+      // Auto-login after registration
+      token.value = response.accessToken
+      refreshToken.value = response.refreshToken
+      user.value = response.user
+
+      // Set available tenants and select the first one
+      const tenantStore = useTenantStore()
+      if (response.tenants && response.tenants.length > 0) {
+        // eslint-disable-next-line no-console
+        console.log('[AuthStore] Setting tenants:', response.tenants)
+        tenantStore.setAvailableTenants(response.tenants)
+        // Auto-select first tenant
+        tenantStore.selectTenant(response.tenants[0].id)
+      }
+
+      // eslint-disable-next-line no-console
+      console.log('[AuthStore] Registration complete')
+      return response
+    }
+
     return {
       token,
       user,
@@ -102,6 +148,7 @@ export const useAuthStore = defineStore(
       logout,
       refreshAccessToken,
       fetchCurrentUser,
+      register,
     }
   },
   {
