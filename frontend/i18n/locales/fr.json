@@ -10,6 +10,8 @@
     "create": "Créer",
     "search": "Rechercher",
     "loading": "Chargement...",
+    "sending": "Envoi en cours...",
+    "processing": "Traitement...",
     "no_data": "Aucune donnée disponible",
     "toggle_theme": "Basculer le thème",
     "theme": "Thème",
@@ -78,7 +80,33 @@
     "company_slug_placeholder": "votre-entreprise",
     "slug_helper": "Lettres minuscules, chiffres et traits d'union uniquement. Ce sera votre identifiant unique.",
     "full_name": "Nom Complet",
-    "full_name_placeholder": "Jean Dupont"
+    "full_name_placeholder": "Jean Dupont",
+    "newPassword": "Nouveau Mot de Passe",
+    "confirmPassword": "Confirmer le Mot de Passe",
+    "passwordRequirements": "Doit contenir au moins 8 caractères avec majuscules, minuscules, chiffres et caractères spéciaux",
+    "forgotPassword": {
+      "title": "Mot de Passe Oublié",
+      "subtitle": "Entrez votre email pour recevoir un lien de réinitialisation",
+      "sendResetLink": "Envoyer le Lien",
+      "backToLogin": "Retour à la connexion",
+      "successTitle": "Email envoyé!",
+      "successMessage": "Si l'email existe dans notre système, vous recevrez un lien de réinitialisation sous peu."
+    },
+    "resetPassword": {
+      "title": "Réinitialiser le Mot de Passe",
+      "subtitle": "Entrez votre nouveau mot de passe",
+      "resetButton": "Réinitialiser le Mot de Passe",
+      "backToLogin": "Retour à la connexion",
+      "goToLogin": "Aller à la connexion",
+      "requestNewLink": "Demander un Nouveau Lien",
+      "successTitle": "Mot de passe réinitialisé!",
+      "successMessage": "Votre mot de passe a été réinitialisé avec succès. Vous pouvez maintenant vous connecter avec votre nouveau mot de passe.",
+      "invalidTokenTitle": "Lien invalide ou expiré",
+      "invalidTokenMessage": "Ce lien de réinitialisation est invalide ou a expiré. Veuillez en demander un nouveau."
+    },
+    "register": {
+      "createAccount": "Créer un compte"
+    }
   },
   "dashboard": {
     "welcome": "Bienvenue sur votre tableau de bord",
@@ -176,7 +204,11 @@
     "warehouse_code_format": "Le code d'entrepôt ne peut contenir que des lettres majuscules, des chiffres et des traits d'union",
     "invalid_field": "Ce champ est invalide",
     "invalid_form": "Le formulaire contient des erreurs",
-    "fix_errors": "Veuillez corriger les erreurs avant de soumettre"
+    "fix_errors": "Veuillez corriger les erreurs avant de soumettre",
+    "invalidEmail": "Veuillez entrer une adresse e-mail valide",
+    "minLength": "{field} doit contenir au moins {min} caractères",
+    "passwordComplexity": "Le mot de passe doit contenir des majuscules, minuscules, chiffres et caractères spéciaux",
+    "passwordMismatch": "Les mots de passe ne correspondent pas"
   },
   "messages": {
     "success_save": "Enregistré avec succès",

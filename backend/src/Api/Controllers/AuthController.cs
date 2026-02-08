@@ -1,9 +1,11 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SaaS.Application.Features.Auth.Commands.ForgotPassword;
 using SaaS.Application.Features.Auth.Commands.Login;
 using SaaS.Application.Features.Auth.Commands.RefreshToken;
 using SaaS.Application.Features.Auth.Commands.Register;
+using SaaS.Application.Features.Auth.Commands.ResetPassword;
 using SaaS.Application.Features.Auth.Queries.GetCurrentUser;
 
 namespace SaaS.Api.Controllers;
@@ -98,7 +100,55 @@ public class AuthController : BaseController
 
         return Ok(new { data = result.Value, success = true });
     }
+
+    /// <summary>
+    /// Request password reset
+    /// </summary>
+    [HttpPost("forgot-password")]
+    [AllowAnonymous]
+    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
+    {
+        var command = new ForgotPasswordCommand
+        {
+            Email = request.Email
+        };
+
+        var result = await _mediator.Send(command);
+
+        if (!result.IsSuccess)
+        {
+            return BadRequest(new { message = result.Error });
+        }
+
+        return Ok(new { message = "If the email exists, a password reset link has been sent", success = true });
+    }
+
+    /// <summary>
+    /// Reset password using token
+    /// </summary>
+    [HttpPost("reset-password")]
+    [AllowAnonymous]
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
+    {
+        var command = new ResetPasswordCommand
+        {
+            Token = request.Token,
+            NewPassword = request.NewPassword,
+            ConfirmPassword = request.ConfirmPassword
+        };
+
+        var result = await _mediator.Send(command);
+
+        if (!result.IsSuccess)
+        {
+            return BadRequest(new { message = result.Error, errors = result.Errors });
+        }
+
+        return Ok(new { message = "Password reset successfully", success = true });
+    }
 }
 
 public record LoginRequest(string Email, string Password);
 public record RefreshTokenRequest(string RefreshToken);
+public record ForgotPasswordRequest(string Email);
+public record ResetPasswordRequest(string Token, string NewPassword, string ConfirmPassword);

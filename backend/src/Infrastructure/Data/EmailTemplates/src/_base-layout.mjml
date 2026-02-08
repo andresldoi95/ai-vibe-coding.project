@@ -1,0 +1,157 @@
+<mjml>
+  <mj-head>
+    <mj-title>SaaS Platform</mj-title>
+    <mj-preview>Professional email template</mj-preview>
+    <mj-attributes>
+      <mj-all font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" />
+      <mj-text font-size="14px" color="#374151" line-height="1.6" />
+      <mj-button background-color="#14b8a6" color="#ffffff" border-radius="6px" font-weight="600" font-size="16px" padding="12px 32px" />
+    </mj-attributes>
+
+    <!-- Branding & Dark Mode Styles -->
+    <mj-style>
+      /* Light Mode Styles (Default) */
+      .brand-primary { color: #14b8a6 !important; }
+      .brand-secondary { color: #0891b2 !important; }
+      .text-primary { color: #1f2937 !important; }
+      .text-secondary { color: #6b7280 !important; }
+      .bg-light { background-color: #f9fafb !important; }
+      .bg-white { background-color: #ffffff !important; }
+      .border-color { border-color: #e5e7eb !important; }
+
+      /* Button Styles */
+      .primary-button {
+        background-color: #14b8a6 !important;
+        color: #ffffff !important;
+        text-decoration: none !important;
+        padding: 12px 32px !important;
+        border-radius: 6px !important;
+        font-weight: 600 !important;
+        display: inline-block !important;
+      }
+
+      /* Dark Mode Styles */
+      @media (prefers-color-scheme: dark) {
+        .dark-mode-bg { background-color: #111827 !important; }
+        .dark-mode-card { background-color: #1f2937 !important; }
+        .text-primary { color: #f3f4f6 !important; }
+        .text-secondary { color: #9ca3af !important; }
+        .bg-light { background-color: #1f2937 !important; }
+        .bg-white { background-color: #111827 !important; }
+        .border-color { border-color: #374151 !important; }
+        .brand-primary { color: #5eead4 !important; }
+        .brand-secondary { color: #22d3ee !important; }
+
+        /* Button adjustments for dark mode */
+        .primary-button {
+          background-color: #0d9488 !important;
+          color: #ffffff !important;
+        }
+      }
+
+      /* Responsive */
+      @media only screen and (max-width: 480px) {
+        .mobile-padding { padding: 16px !important; }
+        .mobile-text { font-size: 13px !important; }
+      }
+    </mj-style>
+
+    <mj-style inline="inline">
+      /* Inline styles for better email client support */
+      a { color: #14b8a6; text-decoration: none; }
+      a:hover { color: #0d9488; }
+      .footer-link { color: #6b7280; text-decoration: underline; }
+      .footer-link:hover { color: #14b8a6; }
+    </mj-style>
+  </mj-head>
+
+  <mj-body background-color="#f9fafb" css-class="dark-mode-bg">
+
+    <!-- Header with Logo -->
+    <mj-section background-color="#ffffff" padding="24px 20px" css-class="dark-mode-card">
+      <mj-column>
+        <mj-image
+          src="https://via.placeholder.com/200x60/14b8a6/ffffff?text=SaaS+Platform"
+          alt="SaaS Platform Logo"
+          width="200px"
+          align="left"
+          padding="0"
+        />
+      </mj-column>
+    </mj-section>
+
+    <!-- Main Content Section -->
+    <mj-section background-color="#ffffff" padding="40px 40px" css-class="dark-mode-card">
+      <mj-column>
+
+        <!-- Greeting -->
+        <mj-text font-size="16px" color="#6b7280" padding-bottom="16px" css-class="text-secondary">
+          Hello {userName},
+        </mj-text>
+
+        <!-- Main Heading -->
+        <mj-text font-size="28px" font-weight="700" color="#1f2937" line-height="1.3" padding-bottom="20px" css-class="text-primary">
+          {emailHeading}
+        </mj-text>
+
+        <!-- Body Content (Override in individual templates) -->
+        <mj-text font-size="16px" color="#374151" line-height="1.7" padding-bottom="24px" css-class="text-primary">
+          {emailBody}
+        </mj-text>
+
+        <!-- Call-to-Action Button -->
+        <mj-button href="{ctaLink}" background-color="#14b8a6" color="#ffffff" font-size="16px" font-weight="600" border-radius="6px" padding="14px 32px" css-class="primary-button">
+          {ctaText}
+        </mj-button>
+
+        <!-- Secondary Information -->
+        <mj-text font-size="14px" color="#6b7280" line-height="1.6" padding-top="28px" css-class="text-secondary">
+          {secondaryInfo}
+        </mj-text>
+
+      </mj-column>
+    </mj-section>
+
+    <!-- Security/Support Section (Optional) -->
+    <mj-section background-color="#f9fafb" padding="24px 40px" css-class="bg-light">
+      <mj-column>
+        <mj-text font-size="13px" color="#6b7280" line-height="1.6" css-class="text-secondary">
+          <strong>Need help?</strong> Contact our support team or visit our help center.
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Footer -->
+    <mj-section padding="32px 20px 40px">
+      <mj-column>
+
+        <!-- Company Name -->
+        <mj-text align="center" font-size="13px" color="#6b7280" padding-bottom="12px" css-class="text-secondary">
+          <strong>SaaS Platform</strong>
+        </mj-text>
+
+        <!-- Footer Links -->
+        <mj-text align="center" font-size="12px" color="#9ca3af" line-height="1.8" css-class="text-secondary">
+          <a href="{frontendUrl}/help" class="footer-link" style="color: #6b7280; text-decoration: none; margin: 0 8px;">Help Center</a>
+          <span style="color: #d1d5db;">•</span>
+          <a href="{frontendUrl}/privacy" class="footer-link" style="color: #6b7280; text-decoration: none; margin: 0 8px;">Privacy Policy</a>
+          <span style="color: #d1d5db;">•</span>
+          <a href="{frontendUrl}/terms" class="footer-link" style="color: #6b7280; text-decoration: none; margin: 0 8px;">Terms of Service</a>
+        </mj-text>
+
+        <!-- Unsubscribe -->
+        <mj-text align="center" font-size="11px" color="#9ca3af" padding-top="16px" css-class="text-secondary">
+          You're receiving this email because you have an account with SaaS Platform.<br/>
+          <a href="{frontendUrl}/unsubscribe" style="color: #6b7280; text-decoration: underline;">Unsubscribe</a> from these emails.
+        </mj-text>
+
+        <!-- Copyright -->
+        <mj-text align="center" font-size="11px" color="#9ca3af" padding-top="16px" css-class="text-secondary">
+          © 2026 SaaS Platform. All rights reserved.
+        </mj-text>
+
+      </mj-column>
+    </mj-section>
+
+  </mj-body>
+</mjml>

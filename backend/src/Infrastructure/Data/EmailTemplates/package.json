@@ -1,0 +1,12 @@
+{
+  "name": "email-templates",
+  "version": "1.0.0",
+  "description": "MJML email templates for SaaS platform",
+  "scripts": {
+    "build": "mjml src/*.mjml -o dist/",
+    "watch": "mjml src/*.mjml -o dist/ --watch"
+  },
+  "devDependencies": {
+    "mjml": "^4.15.3"
+  }
+}

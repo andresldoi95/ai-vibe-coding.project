@@ -22,4 +22,10 @@ public class UserRepository : Repository<User>, IUserRepository
     {
         return await _dbSet.AnyAsync(u => u.Email == email, cancellationToken);
     }
+
+    public async Task<User?> GetByResetTokenAsync(string resetToken, CancellationToken cancellationToken = default)
+    {
+        return await _dbSet
+            .FirstOrDefaultAsync(u => u.ResetToken == resetToken, cancellationToken);
+    }
 }

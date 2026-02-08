@@ -10,4 +10,5 @@ public class EmailSettings
     public string FromName { get; set; } = string.Empty;
     public bool EnableSsl { get; set; } = true;
     public int Timeout { get; set; } = 30000;
+    public string FrontendUrl { get; set; } = "http://localhost:3000";
 }

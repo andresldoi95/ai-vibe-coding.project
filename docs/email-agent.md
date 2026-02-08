@@ -1,14 +1,16 @@
 # Email Agent
 
 ## Specialization
-Expert in email service implementation, SMTP configuration, email templating, and testing with Mailpit for the SaaS Billing + Inventory Management System. Handles transactional emails, notifications, and email testing workflows.
+Expert in email service implementation, SMTP configuration, email templating with MJML framework, and testing with Mailpit for the SaaS Billing + Inventory Management System. Handles transactional emails, notifications, and email testing workflows.
 
 ## Tech Stack
-- **SMTP Client**: MailKit (recommended .NET library)
-- **Testing**: Mailpit (modern MailHog replacement)
-- **Templating**: Razor Pages / FluentEmail / Custom HTML templates
+- **SMTP Client**: MailKit 4.14.1 (production-ready .NET library)
+- **Testing**: Mailpit (modern SMTP testing server with web UI)
+- **Templating**: MJML 4.15+ (responsive email framework)
+- **Template Engine**: MJML CLI for compilation (MJML → HTML)
 - **Queue**: Background jobs for async sending (future: Hangfire)
 - **Storage**: Email audit log in PostgreSQL
+- **Dark Mode**: CSS media queries for `prefers-color-scheme`
 
 ## Core Responsibilities
 
@@ -517,90 +519,237 @@ public class EmailService : IEmailService
 }
 ```
 
-### 6. Email Templates
+### 6. Email Templates (MJML Framework)
 
-#### Template Structure
-Located in: `Infrastructure/Data/EmailTemplates/`
-
-**UserInvitation.html**
-```html
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-        .header { background-color: #14b8a6; color: white; padding: 20px; text-align: center; }
-        .content { background-color: #f9fafb; padding: 30px; }
-        .button { display: inline-block; padding: 12px 24px; background-color: #14b8a6;
-                  color: white; text-decoration: none; border-radius: 4px; }
-        .footer { text-align: center; padding: 20px; color: #6b7280; font-size: 12px; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>You're Invited!</h1>
-        </div>
-        <div class="content">
-            <h2>Join {CompanyName}</h2>
-            <p>You've been invited to join <strong>{CompanyName}</strong> on our platform.</p>
-            <p>Click the button below to accept the invitation and create your account:</p>
-            <p style="text-align: center; margin: 30px 0;">
-                <a href="{InviteUrl}" class="button">Accept Invitation</a>
-            </p>
-            <p>This invitation will expire in 7 days.</p>
-            <p>If you didn't expect this invitation, you can safely ignore this email.</p>
-        </div>
-        <div class="footer">
-            <p>&copy; 2026 Your SaaS Platform. All rights reserved.</p>
-        </div>
-    </div>
-</body>
-</html>
+#### Directory Structure
+```
+Infrastructure/Data/EmailTemplates/
+├── src/                    # MJML source files
+│   ├── PasswordReset.mjml
+│   ├── WelcomeEmail.mjml
+│   ├── UserInvitation.mjml
+│   └── _base-layout.mjml  # Base template (reference only)
+├── dist/                   # Compiled HTML (generated)
+│   ├── PasswordReset.html
+│   ├── WelcomeEmail.html
+│   └── UserInvitation.html
+├── assets/                 # Images, logos
+│   └── logo.svg
+├── old-templates/          # Legacy templates (backup)
+├── package.json            # MJML dependencies
+├── compile-templates.ps1   # Build script
+├── test-templates.ps1      # Testing script
+└── README.md               # Template documentation
 ```
 
-**PasswordReset.html**
-```html
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-        .header { background-color: #14b8a6; color: white; padding: 20px; text-align: center; }
-        .content { background-color: #f9fafb; padding: 30px; }
-        .button { display: inline-block; padding: 12px 24px; background-color: #14b8a6;
-                  color: white; text-decoration: none; border-radius: 4px; }
-        .footer { text-align: center; padding: 20px; color: #6b7280; font-size: 12px; }
-        .warning { background-color: #fef3c7; padding: 15px; border-left: 4px solid #f59e0b; margin: 20px 0; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>Password Reset Request</h1>
-        </div>
-        <div class="content">
-            <p>Hi,</p>
-            <p>We received a request to reset your password for <strong>{Email}</strong>.</p>
-            <p>Click the button below to reset your password:</p>
-            <p style="text-align: center; margin: 30px 0;">
-                <a href="{ResetUrl}" class="button">Reset Password</a>
-            </p>
-            <div class="warning">
-                <strong>Security Notice:</strong> This link expires in 1 hour. If you didn't request this,
-                please ignore this email and ensure your account is secure.
-            </div>
-        </div>
-        <div class="footer">
-            <p>&copy; 2026 Your SaaS Platform. All rights reserved.</p>
-        </div>
-    </div>
-</body>
-</html>
+#### Why MJML?
+- **Responsive Design**: Automatically adapts to mobile/desktop
+- **Email Client Compatibility**: Works across Outlook, Gmail, Apple Mail, etc.
+- **Dark Mode Support**: Built-in CSS media queries
+- **Maintainability**: Cleaner syntax than raw HTML
+- **Industry Standard**: Used by major SaaS companies
+
+#### MJML Template Structure
+
+**PasswordReset.mjml** (Example with Dark Mode)
+```mjml
+<mjml>
+  <mj-head>
+    <mj-title>Reset Your Password</mj-title>
+    <mj-preview>Reset your password for SaaS Platform</mj-preview>
+
+    <!-- Dark Mode Styles -->
+    <mj-style>
+      @media (prefers-color-scheme: dark) {
+        .dark-mode-bg { background-color: #111827 !important; }
+        .dark-mode-card { background-color: #1f2937 !important; }
+        .text-primary { color: #f3f4f6 !important; }
+      }
+    </mj-style>
+  </mj-head>
+
+  <mj-body background-color="#f9fafb" css-class="dark-mode-bg">
+
+    <!-- Header with Logo -->
+    <mj-section background-color="#ffffff" css-class="dark-mode-card">
+      <mj-column>
+        <mj-image
+          src="https://via.placeholder.com/200x60/14b8a6/ffffff?text=SaaS+Platform"
+          alt="Logo"
+          width="200px"
+        />
+      </mj-column>
+    </mj-section>
+
+    <!-- Main Content -->
+    <mj-section background-color="#ffffff" css-class="dark-mode-card">
+      <mj-column>
+        <mj-text font-size="28px" font-weight="700" color="#1f2937" css-class="text-primary">
+          Reset Your Password
+        </mj-text>
+
+        <mj-text font-size="16px" color="#374151" line-height="1.7">
+          We received a request to reset your password for {userName}.
+        </mj-text>
+
+        <mj-button
+          href="{resetLink}"
+          background-color="#14b8a6"
+          color="#ffffff"
+          font-size="16px"
+          border-radius="6px"
+        >
+          Reset Password
+        </mj-button>
+
+        <mj-text font-size="14px" color="#6b7280">
+          This link expires in <strong>{expiryTime}</strong>.
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+  </mj-body>
+</mjml>
+```
+
+**Template Variables**
+
+All templates use `{VariableName}` syntax for dynamic content:
+
+- **PasswordReset**:
+  - `{userName}` - User's display name
+  - `{resetLink}` - Password reset URL
+  - `{expiryTime}` - Link expiration time
+  - `{frontendUrl}` - Base frontend URL
+
+- **WelcomeEmail**:
+  - `{userName}` - User's display name
+  - `{companyName}` - Company/tenant name
+  - `{loginLink}` - Login page URL
+  - `{frontendUrl}` - Base frontend URL
+
+- **UserInvitation**:
+  - `{inviteeName}` - Person being invited
+  - `{inviterName}` - Person sending invite
+  - `{companyName}` - Company name
+  - `{invitationLink}` - Acceptance URL
+  - `{role}` - User role
+  - `{frontendUrl}` - Base frontend URL
+
+#### Compiling Templates
+
+**Option 1: PowerShell Script (Recommended)**
+```powershell
+cd backend/src/Infrastructure/Data/EmailTemplates
+.\compile-templates.ps1
+```
+
+**Option 2: NPM Commands**
+```bash
+cd backend/src/Infrastructure/Data/EmailTemplates
+npm install    # First time only
+npm run build  # Compile all templates
+npm run watch  # Auto-recompile on changes
+```
+
+**Build Output:**
+```
+Compiling templates from src/ to dist/...
+✓ PasswordReset.html
+✓ WelcomeEmail.html
+✓ UserInvitation.html
+```
+
+#### Creating New Templates
+
+1. **Create MJML file** in `src/` directory:
+```bash
+touch src/NewTemplate.mjml
+```
+
+2. **Use MJML components** (see [MJML docs](https://documentation.mjml.io/)):
+```mjml
+<mjml>
+  <mj-head>
+    <mj-title>Your Template</mj-title>
+    <!-- Include dark mode styles -->
+  </mj-head>
+  <mj-body>
+    <!-- Your content using mj-section, mj-column, mj-text, mj-button, etc. -->
+  </mj-body>
+</mjml>
+```
+
+3. **Compile to HTML**:
+```powershell
+.\compile-templates.ps1
+```
+
+4. **Update EmailService** to use new template:
+```csharp
+public async Task<Result> SendNewTemplateAsync(string email, Dictionary<string, string> variables)
+{
+    var message = new EmailMessage
+    {
+        To = email,
+        Subject = "Your Subject",
+        BodyHtml = await GetTemplateContentAsync("NewTemplate", variables),
+        Type = EmailType.Custom
+    };
+
+    return await SendEmailAsync(message);
+}
+```
+
+#### Dark Mode Implementation
+
+All templates include dark mode support via CSS media queries:
+
+```css
+@media (prefers-color-scheme: dark) {
+  .dark-mode-bg { background-color: #111827 !important; }
+  .dark-mode-card { background-color: #1f2937 !important; }
+  .text-primary { color: #f3f4f6 !important; }
+  .text-secondary { color: #9ca3af !important; }
+  .brand-primary { color: #5eead4 !important; }
+}
+```
+
+**Tested in:**
+- ✅ Apple Mail (macOS, iOS)
+- ✅ Gmail App (Android, iOS)
+- ✅ Outlook Mobile
+- ⚠️ Gmail Web (limited support)
+
+#### Template Testing Workflow
+
+1. **Start Mailpit**:
+```powershell
+docker-compose up mailpit
+```
+
+2. **Compile Templates**:
+```powershell
+cd backend/src/Infrastructure/Data/EmailTemplates
+.\compile-templates.ps1
+```
+
+3. **Send Test Emails**:
+```powershell
+.\test-templates.ps1
+# Or manually via API:
+# POST http://localhost:5000/api/v1/testemail/send-password-reset
+# Body: "test@example.com"
+```
+
+4. **View in Mailpit**: http://localhost:8025
+
+5. **Verify**:
+   - ✓ Template renders correctly
+   - ✓ Variables replaced properly
+   - ✓ Responsive on mobile
+   - ✓ Dark mode triggers correctly
+   - ✓ Buttons/links work
 ```
 
 ### 7. Template Seeding

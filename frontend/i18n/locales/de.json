@@ -10,6 +10,8 @@
     "create": "Erstellen",
     "search": "Suchen",
     "loading": "Laden...",
+    "sending": "Wird gesendet...",
+    "processing": "Verarbeitung...",
     "no_data": "Keine Daten verfügbar",
     "toggle_theme": "Design wechseln",
     "theme": "Design",
@@ -78,7 +80,33 @@
     "company_slug_placeholder": "ihre-firma",
     "slug_helper": "Nur Kleinbuchstaben, Zahlen und Bindestriche. Dies wird Ihre eindeutige Kennung sein.",
     "full_name": "Vollständiger Name",
-    "full_name_placeholder": "Max Mustermann"
+    "full_name_placeholder": "Max Mustermann",
+    "newPassword": "Neues Passwort",
+    "confirmPassword": "Passwort Bestätigen",
+    "passwordRequirements": "Muss mindestens 8 Zeichen mit Groß-, Kleinbuchstaben, Zahlen und Sonderzeichen enthalten",
+    "forgotPassword": {
+      "title": "Passwort Vergessen",
+      "subtitle": "Geben Sie Ihre E-Mail ein, um einen Link zum Zurücksetzen zu erhalten",
+      "sendResetLink": "Link Senden",
+      "backToLogin": "Zurück zur Anmeldung",
+      "successTitle": "E-Mail gesendet!",
+      "successMessage": "Wenn die E-Mail in unserem System existiert, erhalten Sie in Kürze einen Link zum Zurücksetzen."
+    },
+    "resetPassword": {
+      "title": "Passwort Zurücksetzen",
+      "subtitle": "Geben Sie Ihr neues Passwort ein",
+      "resetButton": "Passwort Zurücksetzen",
+      "backToLogin": "Zurück zur Anmeldung",
+      "goToLogin": "Zur Anmeldung",
+      "requestNewLink": "Neuen Link Anfordern",
+      "successTitle": "Passwort zurückgesetzt!",
+      "successMessage": "Ihr Passwort wurde erfolgreich zurückgesetzt. Sie können sich jetzt mit Ihrem neuen Passwort anmelden.",
+      "invalidTokenTitle": "Ungültiger oder abgelaufener Link",
+      "invalidTokenMessage": "Dieser Link zum Zurücksetzen ist ungültig oder abgelaufen. Bitte fordern Sie einen neuen an."
+    },
+    "register": {
+      "createAccount": "Konto erstellen"
+    }
   },
   "dashboard": {
     "welcome": "Willkommen zu Ihrem Dashboard",
@@ -176,7 +204,11 @@
     "warehouse_code_format": "Lagercode darf nur Großbuchstaben, Zahlen und Bindestriche enthalten",
     "invalid_field": "Dieses Feld ist ungültig",
     "invalid_form": "Formular enthält Fehler",
-    "fix_errors": "Bitte beheben Sie die Fehler vor dem Absenden"
+    "fix_errors": "Bitte beheben Sie die Fehler vor dem Absenden",
+    "invalidEmail": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
+    "minLength": "{field} muss mindestens {min} Zeichen lang sein",
+    "passwordComplexity": "Das Passwort muss Groß-, Kleinbuchstaben, Zahlen und Sonderzeichen enthalten",
+    "passwordMismatch": "Die Passwörter stimmen nicht überein"
   },
   "messages": {
     "success_save": "Erfolgreich gespeichert",

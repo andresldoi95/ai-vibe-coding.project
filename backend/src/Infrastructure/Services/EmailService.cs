@@ -147,13 +147,16 @@ public class EmailService : IEmailService
 
     public async Task<Result> SendUserInvitationAsync(string email, string companyName, string inviteToken, Guid tenantId)
     {
-        var inviteUrl = $"https://yoursaas.com/accept-invitation?token={inviteToken}";
+        var inviteUrl = $"{_settings.FrontendUrl}/accept-invitation?token={inviteToken}";
 
         var variables = new Dictionary<string, string>
         {
-            { "{CompanyName}", companyName },
-            { "{InviteUrl}", inviteUrl },
-            { "{Email}", email }
+            { "{inviteeName}", email.Split('@')[0] },
+            { "{inviterName}", "Admin" },
+            { "{companyName}", companyName },
+            { "{invitationLink}", inviteUrl },
+            { "{role}", "Team Member" },
+            { "{frontendUrl}", _settings.FrontendUrl }
         };
 
         var message = new EmailMessage
@@ -170,12 +173,14 @@ public class EmailService : IEmailService
 
     public async Task<Result> SendPasswordResetAsync(string email, string resetToken)
     {
-        var resetUrl = $"https://yoursaas.com/reset-password?token={resetToken}";
+        var resetUrl = $"{_settings.FrontendUrl}/reset-password?token={resetToken}";
 
         var variables = new Dictionary<string, string>
         {
-            { "{ResetUrl}", resetUrl },
-            { "{Email}", email }
+            { "{userName}", email.Split('@')[0] },
+            { "{resetLink}", resetUrl },
+            { "{expiryTime}", "1 hour" },
+            { "{frontendUrl}", _settings.FrontendUrl }
         };
 
         var message = new EmailMessage
@@ -214,8 +219,10 @@ public class EmailService : IEmailService
     {
         var variables = new Dictionary<string, string>
         {
-            { "{UserName}", userName },
-            { "{DashboardUrl}", "https://yoursaas.com/dashboard" }
+            { "{userName}", userName },
+            { "{companyName}", "SaaS Platform" },
+            { "{loginLink}", $"{_settings.FrontendUrl}/login" },
+            { "{frontendUrl}", _settings.FrontendUrl }
         };
 
         var message = new EmailMessage
@@ -232,11 +239,12 @@ public class EmailService : IEmailService
 
     private async Task<string> GetTemplateContentAsync(string templateName, Dictionary<string, string> variables)
     {
-        var templatePath = Path.Combine("Infrastructure", "Data", "EmailTemplates", $"{templateName}.html");
+        // Use compiled templates from dist/ folder (compiled from MJML source)
+        var templatePath = Path.Combine("Data", "EmailTemplates", "dist", $"{templateName}.html");
 
         if (!File.Exists(templatePath))
         {
-            _logger.LogWarning("Email template not found: {TemplatePath}", templatePath);
+            _logger.LogWarning("Email template not found: {TemplatePath}. Make sure templates are compiled from MJML.", templatePath);
             return BuildSimpleEmailTemplate(variables);
         }
 
