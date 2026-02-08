@@ -36,6 +36,11 @@ services:
       - JWT__Issuer=SaaS.Backend
       - JWT__Audience=SaaS.Frontend
       - JWT__ExpirationMinutes=15
+      - Email__SmtpHost=mailpit
+      - Email__SmtpPort=1025
+      - Email__FromEmail=noreply@saas.local
+      - Email__FromName=SaaS Platform
+      - Email__EnableSsl=false
     depends_on:
       db:
         condition: service_healthy
@@ -60,6 +65,21 @@ services:
       - frontend_nuxt:/app/.nuxt
     depends_on:
       - backend
+    networks:
+      - saas-network
+    restart: unless-stopped
+
+  # Mailpit (Email Testing)
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: saas-mailpit
+    ports:
+      - "1025:1025"  # SMTP server
+      - "8025:8025"  # Web UI
+    environment:
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
+      MP_MAX_MESSAGES: 500
     networks:
       - saas-network
     restart: unless-stopped

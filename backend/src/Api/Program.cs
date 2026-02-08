@@ -123,12 +123,21 @@ builder.Services.AddScoped<ITenantContext, TenantContext>();
 builder.Services.AddScoped<IApplicationDbContext>(sp => sp.GetRequiredService<ApplicationDbContext>());
 builder.Services.AddScoped<IAuthService, AuthService>();
 
+// Configure Email Settings
+builder.Services.Configure<SaaS.Application.Common.Models.EmailSettings>(
+    builder.Configuration.GetSection("Email"));
+
+// Register Email Service
+builder.Services.AddScoped<IEmailService, SaaS.Infrastructure.Services.EmailService>();
+
 // Register Repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ITenantRepository, TenantRepository>();
 builder.Services.AddScoped<IUserTenantRepository, UserTenantRepository>();
 builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 builder.Services.AddScoped<IWarehouseRepository, WarehouseRepository>();
+builder.Services.AddScoped<IEmailLogRepository, SaaS.Infrastructure.Persistence.Repositories.EmailLogRepository>();
+builder.Services.AddScoped<IEmailTemplateRepository, SaaS.Infrastructure.Persistence.Repositories.EmailTemplateRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 var app = builder.Build();

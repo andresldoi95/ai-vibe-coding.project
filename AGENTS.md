@@ -15,6 +15,8 @@ All agents operate within their defined scope. **Instructions executed by agents
 | Backend Agent              | Implements .NET 8 backend with EF Core, CQRS, Swagger, authorization guards, and SOLID principles                                          | Backend standards, DB models, Entity Framework, CQRS with MediatR, API design, authorization policies, repository pattern, validation                       |
 | Frontend Agent             | Implements Nuxt 3 + TypeScript frontend with PrimeVue (Teal theme) and Tailwind CSS, focusing on rapid development with default components | Nuxt 3 configuration, PrimeVue integration, TypeScript, Tailwind layouts, Pinia state management, API integration, responsive design, minimal customization |
 | UX Agent                   | Defines UX/UI patterns, design system policies, spacing standards, and reusable components for consistent user experience                  | Design system, spacing/typography, component patterns, accessibility (WCAG 2.1 AA), responsive design, user feedback, reusable components                   |
+| Auth Agent                 | Handles authentication, authorization, role-based access control (RBAC), and multi-tenant security with user-company associations          | JWT authentication, RBAC implementation, permission management, multi-company user access, policy-based authorization, role hierarchy, security patterns     |
+| Email Agent                | Implements email service with Mailpit testing, transactional emails, templates, and SMTP configuration with MailKit                        | Email templates, SMTP integration, Mailpit setup, transactional emails, email logging, background jobs, template management, email conventions              |
 
 ## Usage Guidelines
 
