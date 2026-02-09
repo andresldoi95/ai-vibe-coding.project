@@ -1,19 +1,31 @@
 // Inventory module types
 export interface Product {
   id: string
-  tenantId: string
   name: string
-  sku: string
+  code: string
   description?: string
-  category: string
+  sku: string
+  category?: string
+  brand?: string
   unitPrice: number
   costPrice: number
-  taxRate: number
-  stockQuantity: number
-  reorderPoint: number
+  minimumStockLevel: number
+  currentStockLevel?: number
+  weight?: number
+  dimensions?: string
   isActive: boolean
   createdAt: string
   updatedAt: string
+}
+
+export interface ProductFilters {
+  searchTerm?: string
+  category?: string
+  brand?: string
+  isActive?: boolean
+  minPrice?: number
+  maxPrice?: number
+  lowStock?: boolean
 }
 
 export interface Warehouse {
