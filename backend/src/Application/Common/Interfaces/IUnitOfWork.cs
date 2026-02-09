@@ -11,6 +11,7 @@ public interface IUnitOfWork : IDisposable
     IRefreshTokenRepository RefreshTokens { get; }
     IWarehouseRepository Warehouses { get; }
     IProductRepository Products { get; }
+    ICustomerRepository Customers { get; }
     IRoleRepository Roles { get; }
     IPermissionRepository Permissions { get; }
 

@@ -45,3 +45,10 @@ obj/
 tmp/
 temp/
 .temp/
+
+# Temporary documentation and setup scripts
+CUSTOMERS_*.md
+CUSTOMERS_*.txt
+*.sh
+*.ps1
+UpdateCustomerCommand.cs.txt

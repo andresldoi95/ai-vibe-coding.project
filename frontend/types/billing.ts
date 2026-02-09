@@ -35,11 +35,41 @@ export interface Customer {
   name: string
   email: string
   phone?: string
-  address?: string
   taxId?: string
+  contactPerson?: string
+  
+  // Billing Address
+  billingStreet?: string
+  billingCity?: string
+  billingState?: string
+  billingPostalCode?: string
+  billingCountry?: string
+  
+  // Shipping Address
+  shippingStreet?: string
+  shippingCity?: string
+  shippingState?: string
+  shippingPostalCode?: string
+  shippingCountry?: string
+  
+  // Additional Information
+  notes?: string
+  website?: string
+  
   isActive: boolean
   createdAt: string
   updatedAt: string
+}
+
+export interface CustomerFilters {
+  searchTerm?: string
+  name?: string
+  email?: string
+  phone?: string
+  taxId?: string
+  city?: string
+  country?: string
+  isActive?: boolean
 }
 
 export interface Payment {
