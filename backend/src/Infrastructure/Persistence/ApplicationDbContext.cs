@@ -23,6 +23,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<UserTenant> UserTenants => Set<UserTenant>();
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
     public DbSet<Warehouse> Warehouses => Set<Warehouse>();
+    public DbSet<Product> Products => Set<Product>();
     public DbSet<EmailLog> EmailLogs => Set<EmailLog>();
     public DbSet<EmailTemplate> EmailTemplates => Set<EmailTemplate>();
     public DbSet<Permission> Permissions => Set<Permission>();

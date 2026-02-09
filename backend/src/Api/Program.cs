@@ -166,6 +166,7 @@ builder.Services.AddScoped<ITenantRepository, TenantRepository>();
 builder.Services.AddScoped<IUserTenantRepository, UserTenantRepository>();
 builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 builder.Services.AddScoped<IWarehouseRepository, WarehouseRepository>();
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IEmailLogRepository, SaaS.Infrastructure.Persistence.Repositories.EmailLogRepository>();
 builder.Services.AddScoped<IEmailTemplateRepository, SaaS.Infrastructure.Persistence.Repositories.EmailTemplateRepository>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
