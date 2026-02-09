@@ -61,11 +61,6 @@ async function handleDelete() {
   }
 }
 
-function formatAddress(street?: string, city?: string, state?: string, postalCode?: string, country?: string): string {
-  const parts = [street, city, state, postalCode, country].filter(Boolean)
-  return parts.length > 0 ? parts.join(', ') : '—'
-}
-
 onMounted(() => {
   loadCustomer()
 })
@@ -261,7 +256,7 @@ onMounted(() => {
                     {{ t('customers.website') }}
                   </label>
                   <p class="text-slate-900 dark:text-white">
-                    <a :href="customer.website" target="_blank" class="text-teal-600 hover:underline">
+                    <a :href="customer.website" target="_blank" rel="noopener noreferrer" class="text-teal-600 hover:underline">
                       {{ customer.website }}
                     </a>
                   </p>

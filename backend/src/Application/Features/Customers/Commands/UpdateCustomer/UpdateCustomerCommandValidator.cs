@@ -32,7 +32,7 @@ public class UpdateCustomerCommandValidator : AbstractValidator<UpdateCustomerCo
 
         // Billing Address Validations
         RuleFor(x => x.BillingStreet)
-            .MaximumLength(256).WithMessage("Billing street cannot exceed 256 characters")
+            .MaximumLength(512).WithMessage("Billing street cannot exceed 512 characters")
             .When(x => !string.IsNullOrEmpty(x.BillingStreet));
 
         RuleFor(x => x.BillingCity)
@@ -53,7 +53,7 @@ public class UpdateCustomerCommandValidator : AbstractValidator<UpdateCustomerCo
 
         // Shipping Address Validations
         RuleFor(x => x.ShippingStreet)
-            .MaximumLength(256).WithMessage("Shipping street cannot exceed 256 characters")
+            .MaximumLength(512).WithMessage("Shipping street cannot exceed 512 characters")
             .When(x => !string.IsNullOrEmpty(x.ShippingStreet));
 
         RuleFor(x => x.ShippingCity)

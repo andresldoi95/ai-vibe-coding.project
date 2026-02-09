@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useVuelidate } from '@vuelidate/core'
-import { email, helpers, maxLength, required } from '@vuelidate/validators'
+import { email, maxLength, required } from '@vuelidate/validators'
 import type { Customer } from '~/types/billing'
 
 definePageMeta({

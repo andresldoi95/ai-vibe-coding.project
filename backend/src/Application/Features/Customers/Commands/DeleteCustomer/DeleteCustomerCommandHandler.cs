@@ -46,11 +46,14 @@ public class DeleteCustomerCommandHandler : IRequestHandler<DeleteCustomerComman
                 return Result<bool>.Failure("Unauthorized access to customer");
             }
 
-            await _unitOfWork.Customers.DeleteAsync(customer, cancellationToken);
+            // Soft delete: Mark as deleted instead of removing from database
+            customer.IsDeleted = true;
+            customer.DeletedAt = DateTime.UtcNow;
+            
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             _logger.LogInformation(
-                "Customer {Id} deleted successfully for tenant {TenantId}",
+                "Customer {Id} soft deleted successfully for tenant {TenantId}",
                 customer.Id,
                 customer.TenantId);
 
