@@ -102,6 +102,8 @@ builder.Services.AddAuthorization(options =>
         "warehouses.read", "warehouses.create", "warehouses.update", "warehouses.delete",
         // Products
         "products.read", "products.create", "products.update", "products.delete",
+        // Customers
+        "customers.read", "customers.create", "customers.update", "customers.delete",
         // Stock
         "stock.read", "stock.create", "stock.update", "stock.delete",
         // Tenants
