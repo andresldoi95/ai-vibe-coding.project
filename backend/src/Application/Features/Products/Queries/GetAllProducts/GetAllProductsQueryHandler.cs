@@ -39,6 +39,11 @@ public class GetAllProductsQueryHandler : IRequestHandler<GetAllProductsQuery, R
                 request.Filters,
                 cancellationToken);
 
+            // Get total stock levels from WarehouseInventory for all products
+            var productIds = products.Select(p => p.Id).ToList();
+            var inventoryDict = await _unitOfWork.WarehouseInventory
+                .GetTotalStockByProductIdsAsync(productIds, _tenantContext.TenantId.Value, cancellationToken);
+
             var productDtos = products.Select(p => new ProductDto
             {
                 Id = p.Id,
@@ -52,7 +57,7 @@ public class GetAllProductsQueryHandler : IRequestHandler<GetAllProductsQuery, R
                 UnitPrice = p.UnitPrice,
                 CostPrice = p.CostPrice,
                 MinimumStockLevel = p.MinimumStockLevel,
-                CurrentStockLevel = p.CurrentStockLevel,
+                CurrentStockLevel = inventoryDict.ContainsKey(p.Id) ? inventoryDict[p.Id] : 0,
                 Weight = p.Weight,
                 Dimensions = p.Dimensions,
                 IsActive = p.IsActive,

@@ -154,6 +154,7 @@ builder.Services.AddScoped<ITenantContext, TenantContext>();
 builder.Services.AddScoped<IApplicationDbContext>(sp => sp.GetRequiredService<ApplicationDbContext>());
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserPermissionService, UserPermissionService>();
+builder.Services.AddScoped<SaaS.Application.Services.IStockLevelService, SaaS.Application.Services.StockLevelService>();
 
 // Configure Email Settings
 builder.Services.Configure<SaaS.Application.Common.Models.EmailSettings>(
@@ -170,6 +171,8 @@ builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 builder.Services.AddScoped<IWarehouseRepository, WarehouseRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
+builder.Services.AddScoped<IStockMovementRepository, StockMovementRepository>();
+builder.Services.AddScoped<IWarehouseInventoryRepository, WarehouseInventoryRepository>();
 builder.Services.AddScoped<IEmailLogRepository, SaaS.Infrastructure.Persistence.Repositories.EmailLogRepository>();
 builder.Services.AddScoped<IEmailTemplateRepository, SaaS.Infrastructure.Persistence.Repositories.EmailTemplateRepository>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();

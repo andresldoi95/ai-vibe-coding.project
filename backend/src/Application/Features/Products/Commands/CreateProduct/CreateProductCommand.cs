@@ -33,4 +33,8 @@ public record CreateProductCommand : IRequest<Result<ProductDto>>
 
     // Status
     public bool IsActive { get; init; } = true;
+
+    // Optional: Initial Inventory
+    public int? InitialQuantity { get; init; }
+    public Guid? InitialWarehouseId { get; init; }
 }

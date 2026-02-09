@@ -18,6 +18,8 @@ public class UnitOfWork : IUnitOfWork
     public IWarehouseRepository Warehouses { get; }
     public IProductRepository Products { get; }
     public ICustomerRepository Customers { get; }
+    public IStockMovementRepository StockMovements { get; }
+    public IWarehouseInventoryRepository WarehouseInventory { get; }
     public IRoleRepository Roles { get; }
     public IPermissionRepository Permissions { get; }
 
@@ -30,6 +32,8 @@ public class UnitOfWork : IUnitOfWork
         IWarehouseRepository warehouseRepository,
         IProductRepository productRepository,
         ICustomerRepository customerRepository,
+        IStockMovementRepository stockMovementRepository,
+        IWarehouseInventoryRepository warehouseInventoryRepository,
         IRoleRepository roleRepository,
         IPermissionRepository permissionRepository)
     {
@@ -41,6 +45,8 @@ public class UnitOfWork : IUnitOfWork
         Warehouses = warehouseRepository;
         Products = productRepository;
         Customers = customerRepository;
+        StockMovements = stockMovementRepository;
+        WarehouseInventory = warehouseInventoryRepository;
         Roles = roleRepository;
         Permissions = permissionRepository;
     }

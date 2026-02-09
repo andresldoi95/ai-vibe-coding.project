@@ -7,6 +7,7 @@ using SaaS.Application.Features.Products.Commands.DeleteProduct;
 using SaaS.Application.Features.Products.Commands.UpdateProduct;
 using SaaS.Application.Features.Products.Queries.GetAllProducts;
 using SaaS.Application.Features.Products.Queries.GetProductById;
+using SaaS.Application.Features.Products.Queries.GetProductInventory;
 
 namespace SaaS.Api.Controllers;
 
@@ -113,5 +114,23 @@ public class ProductsController : BaseController
         }
 
         return Ok(new { message = "Product deleted successfully", success = true });
+    }
+
+    /// <summary>
+    /// Get warehouse inventory for a specific product
+    /// </summary>
+    [HttpGet("{id:guid}/inventory")]
+    [Authorize(Policy = "products.read")]
+    public async Task<IActionResult> GetInventory(Guid id)
+    {
+        var query = new GetProductInventoryQuery(id);
+        var result = await _mediator.Send(query);
+
+        if (!result.IsSuccess)
+        {
+            return BadRequest(new { message = result.Error, success = false });
+        }
+
+        return Ok(new { data = result.Value, success = true });
     }
 }
