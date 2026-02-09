@@ -50,7 +50,7 @@ public class DeleteProductCommandHandler : IRequestHandler<DeleteProductCommand,
             product.IsDeleted = true;
             product.DeletedAt = DateTime.UtcNow;
 
-            _unitOfWork.Products.Update(product);
+            await _unitOfWork.Products.UpdateAsync(product, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             _logger.LogInformation(

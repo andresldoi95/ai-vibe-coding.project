@@ -91,7 +91,7 @@ public class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand,
             product.Dimensions = request.Dimensions;
             product.IsActive = request.IsActive;
 
-            _unitOfWork.Products.Update(product);
+            await _unitOfWork.Products.UpdateAsync(product, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             _logger.LogInformation(
