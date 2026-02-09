@@ -36,7 +36,7 @@ export function useCustomer() {
   async function getAllCustomers(filters?: CustomerFilters): Promise<Customer[]> {
     // Build query string from filters
     const params = new URLSearchParams()
-    
+
     if (filters) {
       if (filters.searchTerm)
         params.append('searchTerm', filters.searchTerm)

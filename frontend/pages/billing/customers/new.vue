@@ -21,21 +21,21 @@ const formData = reactive({
   phone: '',
   taxId: '',
   contactPerson: '',
-  
+
   // Billing Address
   billingStreet: '',
   billingCity: '',
   billingState: '',
   billingPostalCode: '',
   billingCountry: '',
-  
+
   // Shipping Address
   shippingStreet: '',
   shippingCity: '',
   shippingState: '',
   shippingPostalCode: '',
   shippingCountry: '',
-  
+
   // Additional Information
   notes: '',
   website: '',
@@ -117,19 +117,19 @@ async function handleSubmit() {
       phone: formData.phone || undefined,
       taxId: formData.taxId || undefined,
       contactPerson: formData.contactPerson || undefined,
-      
+
       billingStreet: formData.billingStreet || undefined,
       billingCity: formData.billingCity || undefined,
       billingState: formData.billingState || undefined,
       billingPostalCode: formData.billingPostalCode || undefined,
       billingCountry: formData.billingCountry || undefined,
-      
+
       shippingStreet: formData.shippingStreet || undefined,
       shippingCity: formData.shippingCity || undefined,
       shippingState: formData.shippingState || undefined,
       shippingPostalCode: formData.shippingPostalCode || undefined,
       shippingCountry: formData.shippingCountry || undefined,
-      
+
       notes: formData.notes || undefined,
       website: formData.website || undefined,
       isActive: formData.isActive,

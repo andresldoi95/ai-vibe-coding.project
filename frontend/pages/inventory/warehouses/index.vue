@@ -59,17 +59,6 @@ async function handleDelete() {
   }
 }
 
-function getFullAddress(warehouse: Warehouse): string {
-  const parts = [
-    warehouse.streetAddress,
-    warehouse.city,
-    warehouse.state,
-    warehouse.postalCode,
-    warehouse.country,
-  ].filter(Boolean)
-  return parts.join(', ')
-}
-
 function getStatusLabel(isActive: boolean): string {
   return isActive ? t('common.active') : t('common.inactive')
 }

@@ -242,11 +242,11 @@ onMounted(() => {
                   <label class="text-sm font-medium text-slate-600 dark:text-slate-400">
                     {{ t('products.current_stock_level') }}
                   </label>
-                  <p 
+                  <p
                     class="text-slate-900 dark:text-white"
-                    :class="{ 
-                      'text-orange-600 dark:text-orange-400 font-semibold': 
-                        product.currentStockLevel !== undefined && product.currentStockLevel < product.minimumStockLevel 
+                    :class="{
+                      'text-orange-600 dark:text-orange-400 font-semibold':
+                        product.currentStockLevel !== undefined && product.currentStockLevel < product.minimumStockLevel,
                     }"
                   >
                     {{ product.currentStockLevel ?? '—' }}

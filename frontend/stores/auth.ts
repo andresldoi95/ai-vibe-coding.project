@@ -12,6 +12,32 @@ export const useAuthStore = defineStore(
 
     const isAuthenticated = computed(() => !!token.value && !!user.value)
 
+    const selectTenant = async (tenantId: string): Promise<void> => {
+      const { apiFetch } = useApi()
+
+      // eslint-disable-next-line no-console
+      console.log('[AuthStore] Selecting tenant:', tenantId)
+
+      const apiResponse = await apiFetch<ApiResponse<SelectTenantResponse>>(
+        `/auth/select-tenant/${tenantId}`,
+        { method: 'POST' },
+      )
+
+      const response = apiResponse.data
+
+      // Update token with tenant-scoped JWT that includes role and permissions
+      token.value = response.accessToken
+      role.value = response.role
+      permissions.value = response.permissions
+
+      // Also update tenant store
+      const tenantStore = useTenantStore()
+      tenantStore.selectTenant(tenantId)
+
+      // eslint-disable-next-line no-console
+      console.log('[AuthStore] Tenant selected. Role:', response.role.name, 'Permissions:', response.permissions.length)
+    }
+
     const login = async (credentials: LoginCredentials): Promise<LoginResponse> => {
       const { apiFetch } = useApi()
 
@@ -141,32 +167,6 @@ export const useAuthStore = defineStore(
       // eslint-disable-next-line no-console
       console.log('[AuthStore] Registration complete')
       return response
-    }
-
-    const selectTenant = async (tenantId: string): Promise<void> => {
-      const { apiFetch } = useApi()
-
-      // eslint-disable-next-line no-console
-      console.log('[AuthStore] Selecting tenant:', tenantId)
-
-      const apiResponse = await apiFetch<ApiResponse<SelectTenantResponse>>(
-        `/auth/select-tenant/${tenantId}`,
-        { method: 'POST' },
-      )
-
-      const response = apiResponse.data
-
-      // Update token with tenant-scoped JWT that includes role and permissions
-      token.value = response.accessToken
-      role.value = response.role
-      permissions.value = response.permissions
-
-      // Also update tenant store
-      const tenantStore = useTenantStore()
-      tenantStore.selectTenant(tenantId)
-
-      // eslint-disable-next-line no-console
-      console.log('[AuthStore] Tenant selected. Role:', response.role.name, 'Permissions:', response.permissions.length)
     }
 
     const hasPermission = (permission: string): boolean => {

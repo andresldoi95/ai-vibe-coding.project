@@ -203,7 +203,6 @@
     "sku": "SKU",
     "sku_placeholder": "SKU-12345",
     "sku_helper": "Stock Keeping Unit. Must be unique.",
-    "description": "Description",
     "description_placeholder": "Detailed product description",
     "category": "Category",
     "category_placeholder": "Electronics",

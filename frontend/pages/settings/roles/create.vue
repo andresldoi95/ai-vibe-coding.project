@@ -64,7 +64,7 @@ async function fetchRole() {
     }
     isSystemRole.value = role.isSystemRole || false
   }
-  catch (error) {
+  catch {
     showError(t('messages.error_load'))
     navigateTo('/settings/roles')
   }
@@ -80,7 +80,7 @@ async function fetchPermissions() {
     const roleService = useRole()
     allPermissions.value = await roleService.getAllPermissions()
   }
-  catch (error) {
+  catch {
     showError(t('messages.error_load'))
   }
   finally {
@@ -151,7 +151,7 @@ async function handleSubmit() {
 
     navigateTo('/settings/roles')
   }
-  catch (error: any) {
+  catch (error) {
     const message = error?.data?.message || t('messages.error_save')
     showError(message)
   }

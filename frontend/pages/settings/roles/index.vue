@@ -6,7 +6,6 @@ definePageMeta({
   layout: 'default',
 })
 
-const { $api } = useNuxtApp()
 const { can } = usePermissions()
 const { showSuccess, showError } = useNotification()
 const { t } = useI18n()
@@ -31,7 +30,7 @@ async function fetchRoles() {
     const roleService = useRole()
     roles.value = await roleService.getAllRoles()
   }
-  catch (error) {
+  catch {
     showError(t('messages.error_load'))
   }
   finally {
@@ -68,7 +67,7 @@ async function deleteRole() {
     deleteDialogVisible.value = false
     await fetchRoles()
   }
-  catch (error) {
+  catch {
     showError(t('messages.error_delete'))
   }
   finally {
