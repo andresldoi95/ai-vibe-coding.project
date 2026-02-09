@@ -53,16 +53,39 @@ export interface StockMovement {
   tenantId: string
   productId: string
   warehouseId: string
+  destinationWarehouseId?: string
   movementType: MovementType
   quantity: number
-  referenceNumber?: string
+  unitCost?: number
+  totalCost?: number
+  reference?: string
   notes?: string
-  createdDate: string
+  movementDate: string
   createdAt: string
   updatedAt: string
+  // Navigation properties
+  product?: Product
+  warehouse?: Warehouse
+  destinationWarehouse?: Warehouse
 }
 
-export type MovementType = 'in' | 'out' | 'transfer' | 'adjustment'
+export enum MovementType {
+  InitialInventory = 0,
+  Purchase = 1,
+  Sale = 2,
+  Transfer = 3,
+  Adjustment = 4,
+  Return = 5
+}
+
+export const MovementTypeLabels: Record<MovementType, string> = {
+  [MovementType.InitialInventory]: 'Initial Inventory',
+  [MovementType.Purchase]: 'Purchase',
+  [MovementType.Sale]: 'Sale',
+  [MovementType.Transfer]: 'Transfer',
+  [MovementType.Adjustment]: 'Adjustment',
+  [MovementType.Return]: 'Return'
+}
 
 export interface InventoryLevel {
   productId: string
