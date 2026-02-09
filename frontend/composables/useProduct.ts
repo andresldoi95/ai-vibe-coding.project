@@ -31,7 +31,7 @@ export function useProduct() {
   async function getAllProducts(filters?: ProductFilters): Promise<Product[]> {
     // Build query string from filters
     const params = new URLSearchParams()
-    
+
     if (filters) {
       if (filters.searchTerm)
         params.append('searchTerm', filters.searchTerm)

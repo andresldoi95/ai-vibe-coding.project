@@ -204,7 +204,6 @@
     "sku": "SKU",
     "sku_placeholder": "SKU-12345",
     "sku_helper": "Stock Keeping Unit. Muss eindeutig sein.",
-    "description": "Beschreibung",
     "description_placeholder": "Detaillierte Produktbeschreibung",
     "category": "Kategorie",
     "category_placeholder": "Elektronik",

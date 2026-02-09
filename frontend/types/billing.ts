@@ -37,25 +37,25 @@ export interface Customer {
   phone?: string
   taxId?: string
   contactPerson?: string
-  
+
   // Billing Address
   billingStreet?: string
   billingCity?: string
   billingState?: string
   billingPostalCode?: string
   billingCountry?: string
-  
+
   // Shipping Address
   shippingStreet?: string
   shippingCity?: string
   shippingState?: string
   shippingPostalCode?: string
   shippingCountry?: string
-  
+
   // Additional Information
   notes?: string
   website?: string
-  
+
   isActive: boolean
   createdAt: string
   updatedAt: string

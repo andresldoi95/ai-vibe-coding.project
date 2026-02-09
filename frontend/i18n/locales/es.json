@@ -204,7 +204,6 @@
     "sku": "SKU",
     "sku_placeholder": "SKU-12345",
     "sku_helper": "Unidad de Mantenimiento de Stock. Debe ser único.",
-    "description": "Descripción",
     "description_placeholder": "Descripción detallada del producto",
     "category": "Categoría",
     "category_placeholder": "Electrónica",

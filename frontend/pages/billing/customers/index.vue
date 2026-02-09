@@ -9,8 +9,6 @@ definePageMeta({
 const { t } = useI18n()
 const uiStore = useUiStore()
 const toast = useNotification()
-const route = useRoute()
-const router = useRouter()
 const { getAllCustomers, deleteCustomer } = useCustomer()
 const { can } = usePermissions()
 

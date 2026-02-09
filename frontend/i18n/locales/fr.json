@@ -204,7 +204,7 @@
     "sku": "SKU",
     "sku_placeholder": "SKU-12345",
     "sku_helper": "Unité de Gestion des Stocks. Doit être unique.",
-    "description": "Description",
+
     "description_placeholder": "Description détaillée du produit",
     "category": "Catégorie",
     "category_placeholder": "Électronique",
