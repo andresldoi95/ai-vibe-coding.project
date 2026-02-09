@@ -41,6 +41,12 @@ export function usePermissions() {
     editProduct: () => hasPermission('products.update'),
     deleteProduct: () => hasPermission('products.delete'),
 
+    // Customers
+    viewCustomers: () => hasPermission('customers.read'),
+    createCustomer: () => hasPermission('customers.create'),
+    editCustomer: () => hasPermission('customers.update'),
+    deleteCustomer: () => hasPermission('customers.delete'),
+
     // Stock
     viewStock: () => hasPermission('stock.read'),
     createStock: () => hasPermission('stock.create'),

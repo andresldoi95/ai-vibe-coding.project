@@ -102,6 +102,8 @@ builder.Services.AddAuthorization(options =>
         "warehouses.read", "warehouses.create", "warehouses.update", "warehouses.delete",
         // Products
         "products.read", "products.create", "products.update", "products.delete",
+        // Customers
+        "customers.read", "customers.create", "customers.update", "customers.delete",
         // Stock
         "stock.read", "stock.create", "stock.update", "stock.delete",
         // Tenants
@@ -167,6 +169,7 @@ builder.Services.AddScoped<IUserTenantRepository, UserTenantRepository>();
 builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 builder.Services.AddScoped<IWarehouseRepository, WarehouseRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<IEmailLogRepository, SaaS.Infrastructure.Persistence.Repositories.EmailLogRepository>();
 builder.Services.AddScoped<IEmailTemplateRepository, SaaS.Infrastructure.Persistence.Repositories.EmailTemplateRepository>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();

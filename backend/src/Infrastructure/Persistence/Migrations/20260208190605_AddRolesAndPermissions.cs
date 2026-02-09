@@ -176,6 +176,12 @@ namespace SaaS.Infrastructure.Persistence.Migrations
                 ("products.update", "Update products", "products", "update"),
                 ("products.delete", "Delete products", "products", "delete"),
 
+                // Customers permissions
+                ("customers.read", "View customers", "customers", "read"),
+                ("customers.create", "Create customers", "customers", "create"),
+                ("customers.update", "Update customers", "customers", "update"),
+                ("customers.delete", "Delete customers", "customers", "delete"),
+
                 // Stock movements permissions
                 ("stock.read", "View stock movements", "stock", "read"),
                 ("stock.create", "Create stock movements", "stock", "create"),
@@ -297,7 +303,7 @@ namespace SaaS.Infrastructure.Persistence.Migrations
                   AND p.""Name"" NOT IN ('tenants.delete', 'users.remove');
             ");
 
-            // Manager gets read + update for warehouses, products, stock; read for users, tenants
+            // Manager gets read + update for warehouses, products, customers, stock; read for users, tenants
             migrationBuilder.Sql(@"
                 INSERT INTO ""RolePermissions"" (""Id"", ""RoleId"", ""PermissionId"")
                 SELECT gen_random_uuid(), r.""Id"", p.""Id""
@@ -307,6 +313,7 @@ namespace SaaS.Infrastructure.Persistence.Migrations
                   AND p.""Name"" IN (
                       'warehouses.read', 'warehouses.update',
                       'products.read', 'products.update',
+                      'customers.read', 'customers.update',
                       'stock.read', 'stock.update',
                       'users.read',
                       'tenants.read'

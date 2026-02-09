@@ -230,9 +230,9 @@ public class SeedController : ControllerBase
                 }).ToList();
             await _context.RolePermissions.AddRangeAsync(adminPermissions);
 
-            // Manager: Warehouses, Products, Stock (all actions)
+            // Manager: Warehouses, Products, Customers, Stock (all actions)
             var managerPermissions = allPermissions
-                .Where(p => p.Resource == "warehouses" || p.Resource == "products" || p.Resource == "stock" || p.Resource == "roles")
+                .Where(p => p.Resource == "warehouses" || p.Resource == "products" || p.Resource == "customers" || p.Resource == "stock" || p.Resource == "roles")
                 .Select(p => new RolePermission
                 {
                     Id = Guid.NewGuid(),
@@ -241,9 +241,9 @@ public class SeedController : ControllerBase
                 }).ToList();
             await _context.RolePermissions.AddRangeAsync(managerPermissions);
 
-            // User: Warehouses, Products, Stock (read-only)
+            // User: Warehouses, Products, Customers, Stock (read-only)
             var userPermissions = allPermissions
-                .Where(p => p.Action == "read" && (p.Resource == "warehouses" || p.Resource == "products" || p.Resource == "stock"))
+                .Where(p => p.Action == "read" && (p.Resource == "warehouses" || p.Resource == "products" || p.Resource == "customers" || p.Resource == "stock"))
                 .Select(p => new RolePermission
                 {
                     Id = Guid.NewGuid(),
@@ -367,6 +367,255 @@ public class SeedController : ControllerBase
 
             await _context.Warehouses.AddRangeAsync(warehouses);
 
+            // 6. Create Sample Products
+            var products = new List<Product>
+            {
+                new Product
+                {
+                    Id = Guid.NewGuid(),
+                    TenantId = demoTenantId,
+                    Name = "Laptop - Dell XPS 15",
+                    Code = "LAPTOP-DELL-XPS15",
+                    SKU = "DELL-XPS-15-001",
+                    Description = "High-performance laptop with 15.6\" display, Intel i7, 16GB RAM, 512GB SSD",
+                    Category = "Electronics",
+                    Brand = "Dell",
+                    UnitPrice = 1499.99m,
+                    CostPrice = 1200.00m,
+                    MinimumStockLevel = 10,
+                    CurrentStockLevel = 25,
+                    Weight = 4.5m,
+                    Dimensions = "14.0 x 9.3 x 0.7 inches",
+                    IsActive = true,
+                    CreatedAt = now,
+                    UpdatedAt = now,
+                    IsDeleted = false
+                },
+                new Product
+                {
+                    Id = Guid.NewGuid(),
+                    TenantId = demoTenantId,
+                    Name = "Wireless Mouse - Logitech MX Master 3",
+                    Code = "MOUSE-LOG-MX3",
+                    SKU = "LOG-MX-MASTER3-BLK",
+                    Description = "Ergonomic wireless mouse with precision scrolling and customizable buttons",
+                    Category = "Accessories",
+                    Brand = "Logitech",
+                    UnitPrice = 99.99m,
+                    CostPrice = 65.00m,
+                    MinimumStockLevel = 50,
+                    CurrentStockLevel = 120,
+                    Weight = 0.31m,
+                    Dimensions = "4.9 x 3.3 x 2.0 inches",
+                    IsActive = true,
+                    CreatedAt = now,
+                    UpdatedAt = now,
+                    IsDeleted = false
+                },
+                new Product
+                {
+                    Id = Guid.NewGuid(),
+                    TenantId = demoTenantId,
+                    Name = "Monitor - LG 27\" 4K UHD",
+                    Code = "MON-LG-27-4K",
+                    SKU = "LG-27UK850-W",
+                    Description = "27-inch 4K UHD IPS monitor with HDR support and USB-C connectivity",
+                    Category = "Electronics",
+                    Brand = "LG",
+                    UnitPrice = 449.99m,
+                    CostPrice = 350.00m,
+                    MinimumStockLevel = 15,
+                    CurrentStockLevel = 8,
+                    Weight = 13.2m,
+                    Dimensions = "24.1 x 18.5 x 7.9 inches",
+                    IsActive = true,
+                    CreatedAt = now,
+                    UpdatedAt = now,
+                    IsDeleted = false
+                },
+                new Product
+                {
+                    Id = Guid.NewGuid(),
+                    TenantId = demoTenantId,
+                    Name = "Keyboard - Mechanical RGB",
+                    Code = "KEY-MECH-RGB-001",
+                    SKU = "CORSAIR-K95-RGB",
+                    Description = "Mechanical gaming keyboard with RGB backlighting and programmable macro keys",
+                    Category = "Accessories",
+                    Brand = "Corsair",
+                    UnitPrice = 179.99m,
+                    CostPrice = 120.00m,
+                    MinimumStockLevel = 20,
+                    CurrentStockLevel = 45,
+                    Weight = 2.7m,
+                    Dimensions = "17.4 x 6.5 x 1.5 inches",
+                    IsActive = true,
+                    CreatedAt = now,
+                    UpdatedAt = now,
+                    IsDeleted = false
+                },
+                new Product
+                {
+                    Id = Guid.NewGuid(),
+                    TenantId = demoTenantId,
+                    Name = "USB-C Hub - Anker 7-in-1",
+                    Code = "HUB-ANKER-7IN1",
+                    SKU = "ANKER-A8346",
+                    Description = "7-in-1 USB-C hub with HDMI, ethernet, USB 3.0, and SD card reader",
+                    Category = "Accessories",
+                    Brand = "Anker",
+                    UnitPrice = 49.99m,
+                    CostPrice = 30.00m,
+                    MinimumStockLevel = 30,
+                    CurrentStockLevel = 75,
+                    Weight = 0.22m,
+                    Dimensions = "4.5 x 2.0 x 0.6 inches",
+                    IsActive = true,
+                    CreatedAt = now,
+                    UpdatedAt = now,
+                    IsDeleted = false
+                }
+            };
+
+            await _context.Products.AddRangeAsync(products);
+
+            // 7. Create Sample Customers
+            var customers = new List<Customer>
+            {
+                new Customer
+                {
+                    Id = Guid.NewGuid(),
+                    TenantId = demoTenantId,
+                    Name = "Acme Corporation",
+                    Email = "contact@acmecorp.example.com",
+                    Phone = "+1 (555) 123-4567",
+                    TaxId = "TAX-ACME-001",
+                    ContactPerson = "John Smith",
+                    BillingStreet = "123 Business Ave",
+                    BillingCity = "New York",
+                    BillingState = "NY",
+                    BillingPostalCode = "10001",
+                    BillingCountry = "United States",
+                    ShippingStreet = "123 Business Ave",
+                    ShippingCity = "New York",
+                    ShippingState = "NY",
+                    ShippingPostalCode = "10001",
+                    ShippingCountry = "United States",
+                    Website = "https://acmecorp.example.com",
+                    Notes = "Major client - priority shipping",
+                    IsActive = true,
+                    CreatedAt = now,
+                    UpdatedAt = now,
+                    IsDeleted = false
+                },
+                new Customer
+                {
+                    Id = Guid.NewGuid(),
+                    TenantId = demoTenantId,
+                    Name = "Tech Solutions Inc",
+                    Email = "sales@techsolutions.example.com",
+                    Phone = "+1 (555) 234-5678",
+                    TaxId = "TAX-TECH-002",
+                    ContactPerson = "Sarah Johnson",
+                    BillingStreet = "456 Innovation Dr",
+                    BillingCity = "San Francisco",
+                    BillingState = "CA",
+                    BillingPostalCode = "94105",
+                    BillingCountry = "United States",
+                    ShippingStreet = "456 Innovation Dr",
+                    ShippingCity = "San Francisco",
+                    ShippingState = "CA",
+                    ShippingPostalCode = "94105",
+                    ShippingCountry = "United States",
+                    Website = "https://techsolutions.example.com",
+                    Notes = "Net 30 payment terms",
+                    IsActive = true,
+                    CreatedAt = now,
+                    UpdatedAt = now,
+                    IsDeleted = false
+                },
+                new Customer
+                {
+                    Id = Guid.NewGuid(),
+                    TenantId = demoTenantId,
+                    Name = "Global Enterprises LLC",
+                    Email = "procurement@globalent.example.com",
+                    Phone = "+1 (555) 345-6789",
+                    TaxId = "TAX-GLOBAL-003",
+                    ContactPerson = "Michael Chen",
+                    BillingStreet = "789 Commerce Blvd",
+                    BillingCity = "Chicago",
+                    BillingState = "IL",
+                    BillingPostalCode = "60601",
+                    BillingCountry = "United States",
+                    ShippingStreet = "321 Distribution Way",
+                    ShippingCity = "Chicago",
+                    ShippingState = "IL",
+                    ShippingPostalCode = "60602",
+                    ShippingCountry = "United States",
+                    Website = "https://globalenterprises.example.com",
+                    Notes = "Requires detailed invoicing",
+                    IsActive = true,
+                    CreatedAt = now,
+                    UpdatedAt = now,
+                    IsDeleted = false
+                },
+                new Customer
+                {
+                    Id = Guid.NewGuid(),
+                    TenantId = demoTenantId,
+                    Name = "Retail Partners Co",
+                    Email = "orders@retailpartners.example.com",
+                    Phone = "+1 (555) 456-7890",
+                    TaxId = "TAX-RETAIL-004",
+                    ContactPerson = "Emily Rodriguez",
+                    BillingStreet = "555 Retail Plaza",
+                    BillingCity = "Miami",
+                    BillingState = "FL",
+                    BillingPostalCode = "33101",
+                    BillingCountry = "United States",
+                    ShippingStreet = "555 Retail Plaza",
+                    ShippingCity = "Miami",
+                    ShippingState = "FL",
+                    ShippingPostalCode = "33101",
+                    ShippingCountry = "United States",
+                    Website = "https://retailpartners.example.com",
+                    Notes = "Bulk orders - discount applied",
+                    IsActive = true,
+                    CreatedAt = now,
+                    UpdatedAt = now,
+                    IsDeleted = false
+                },
+                new Customer
+                {
+                    Id = Guid.NewGuid(),
+                    TenantId = demoTenantId,
+                    Name = "Startup Innovations",
+                    Email = "hello@startupinnovations.example.com",
+                    Phone = "+1 (555) 567-8901",
+                    TaxId = "TAX-STARTUP-005",
+                    ContactPerson = "David Park",
+                    BillingStreet = "100 Startup Lane",
+                    BillingCity = "Austin",
+                    BillingState = "TX",
+                    BillingPostalCode = "78701",
+                    BillingCountry = "United States",
+                    ShippingStreet = "100 Startup Lane",
+                    ShippingCity = "Austin",
+                    ShippingState = "TX",
+                    ShippingPostalCode = "78701",
+                    ShippingCountry = "United States",
+                    Website = "https://startupinnovations.example.com",
+                    Notes = "Growing account - good potential",
+                    IsActive = true,
+                    CreatedAt = now,
+                    UpdatedAt = now,
+                    IsDeleted = false
+                }
+            };
+
+            await _context.Customers.AddRangeAsync(customers);
+
             // Save all changes
             await _context.SaveChangesAsync();
 
@@ -387,6 +636,8 @@ public class SeedController : ControllerBase
                         new { email = "user@demo.com", role = "User" }
                     },
                     warehouses = warehouses.Count,
+                    products = products.Count,
+                    customers = customers.Count,
                     note = "All users have password: 'password'"
                 }
             });

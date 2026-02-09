@@ -17,6 +17,7 @@ public class UnitOfWork : IUnitOfWork
     public IRefreshTokenRepository RefreshTokens { get; }
     public IWarehouseRepository Warehouses { get; }
     public IProductRepository Products { get; }
+    public ICustomerRepository Customers { get; }
     public IRoleRepository Roles { get; }
     public IPermissionRepository Permissions { get; }
 
@@ -28,6 +29,7 @@ public class UnitOfWork : IUnitOfWork
         IRefreshTokenRepository refreshTokenRepository,
         IWarehouseRepository warehouseRepository,
         IProductRepository productRepository,
+        ICustomerRepository customerRepository,
         IRoleRepository roleRepository,
         IPermissionRepository permissionRepository)
     {
@@ -38,6 +40,7 @@ public class UnitOfWork : IUnitOfWork
         RefreshTokens = refreshTokenRepository;
         Warehouses = warehouseRepository;
         Products = productRepository;
+        Customers = customerRepository;
         Roles = roleRepository;
         Permissions = permissionRepository;
     }
