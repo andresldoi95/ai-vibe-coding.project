@@ -63,6 +63,7 @@ public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand,
             }
 
             // Create product entity
+#pragma warning disable CS0618 // Type or member is obsolete
             var product = new Product
             {
                 TenantId = _tenantContext.TenantId.Value,
@@ -75,11 +76,12 @@ public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand,
                 UnitPrice = request.UnitPrice,
                 CostPrice = request.CostPrice,
                 MinimumStockLevel = request.MinimumStockLevel,
-                CurrentStockLevel = request.CurrentStockLevel,
+                CurrentStockLevel = request.CurrentStockLevel, // Deprecated: kept for backward compatibility
                 Weight = request.Weight,
                 Dimensions = request.Dimensions,
                 IsActive = request.IsActive
             };
+#pragma warning restore CS0618 // Type or member is obsolete
 
             await _unitOfWork.Products.AddAsync(product, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);

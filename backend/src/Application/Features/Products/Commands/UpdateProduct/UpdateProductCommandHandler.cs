@@ -86,7 +86,8 @@ public class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand,
             product.UnitPrice = request.UnitPrice;
             product.CostPrice = request.CostPrice;
             product.MinimumStockLevel = request.MinimumStockLevel;
-            product.CurrentStockLevel = request.CurrentStockLevel;
+            // NOTE: CurrentStockLevel is NOT updated here - it's calculated from WarehouseInventory
+            // Stock levels can only be changed via StockMovement
             product.Weight = request.Weight;
             product.Dimensions = request.Dimensions;
             product.IsActive = request.IsActive;
@@ -98,6 +99,10 @@ public class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand,
                 "Product {Code} updated successfully for tenant {TenantId}",
                 product.Code,
                 product.TenantId);
+
+            // Calculate current stock from WarehouseInventory
+            var totalStock = await _unitOfWork.WarehouseInventory
+                .GetTotalStockByProductIdAsync(product.Id, _tenantContext.TenantId.Value, cancellationToken);
 
             // Map to DTO
             var productDto = new ProductDto
@@ -113,7 +118,7 @@ public class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand,
                 UnitPrice = product.UnitPrice,
                 CostPrice = product.CostPrice,
                 MinimumStockLevel = product.MinimumStockLevel,
-                CurrentStockLevel = product.CurrentStockLevel,
+                CurrentStockLevel = totalStock, // Calculated from WarehouseInventory
                 Weight = product.Weight,
                 Dimensions = product.Dimensions,
                 IsActive = product.IsActive,
