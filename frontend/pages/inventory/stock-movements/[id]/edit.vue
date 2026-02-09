@@ -92,11 +92,11 @@ async function loadData() {
       getAllProducts(),
       getAllWarehouses(),
     ])
-    
+
     stockMovement.value = movementData
     products.value = productsData
     warehouses.value = warehousesData
-    
+
     // Populate form with existing data
     formData.productId = movementData.productId
     formData.warehouseId = movementData.warehouseId
