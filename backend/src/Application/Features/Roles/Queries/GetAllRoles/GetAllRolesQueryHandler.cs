@@ -26,28 +26,33 @@ public class GetAllRolesQueryHandler : IRequestHandler<GetAllRolesQuery, Result<
 
         var roles = await _unitOfWork.Roles.GetAllWithPermissionsByTenantAsync(tenantId.Value, cancellationToken);
 
-        var roleDtos = roles.Select(r => new RoleWithPermissionsDto
+        var roleDtos = new List<RoleWithPermissionsDto>();
+        foreach (var r in roles)
         {
-            Id = r.Id,
-            Name = r.Name,
-            Description = r.Description,
-            Priority = r.Priority,
-            IsSystemRole = r.IsSystemRole,
-            IsActive = r.IsActive,
-            UserCount = 0, // TODO: Query user count separately if needed
-            Permissions = r.RolePermissions
-                .Select(rp => new PermissionDto
-                {
-                    Id = rp.Permission.Id,
-                    Name = rp.Permission.Name,
-                    Description = rp.Permission.Description,
-                    Resource = rp.Permission.Resource,
-                    Action = rp.Permission.Action
-                })
-                .OrderBy(p => p.Resource)
-                .ThenBy(p => p.Action)
-                .ToList()
-        }).ToList();
+            var userCount = await _unitOfWork.Roles.GetUserCountAsync(r.Id, cancellationToken);
+            roleDtos.Add(new RoleWithPermissionsDto
+            {
+                Id = r.Id,
+                Name = r.Name,
+                Description = r.Description,
+                Priority = r.Priority,
+                IsSystemRole = r.IsSystemRole,
+                IsActive = r.IsActive,
+                UserCount = userCount,
+                Permissions = r.RolePermissions
+                    .Select(rp => new PermissionDto
+                    {
+                        Id = rp.Permission.Id,
+                        Name = rp.Permission.Name,
+                        Description = rp.Permission.Description,
+                        Resource = rp.Permission.Resource,
+                        Action = rp.Permission.Action
+                    })
+                    .OrderBy(p => p.Resource)
+                    .ThenBy(p => p.Action)
+                    .ToList()
+            });
+        }
 
         return Result<List<RoleWithPermissionsDto>>.Success(roleDtos);
     }

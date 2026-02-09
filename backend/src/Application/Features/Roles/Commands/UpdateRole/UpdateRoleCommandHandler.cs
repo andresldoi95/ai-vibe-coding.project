@@ -35,11 +35,8 @@ public class UpdateRoleCommandHandler : IRequestHandler<UpdateRoleCommand, Resul
         // Prevent editing system role core properties (allow permission updates)
         if (role.IsSystemRole)
         {
-            // Only allow permission updates for system roles
-            if (role.Name != request.Name || role.Priority != request.Priority)
-            {
-                return Result<RoleWithPermissionsDto>.Failure("System roles cannot have their name or priority changed");
-            }
+            // System roles cannot be modified at all
+            return Result<RoleWithPermissionsDto>.Failure("System roles cannot be modified. Their name, priority, and permissions are protected.");
         }
         else
         {
@@ -72,6 +69,7 @@ public class UpdateRoleCommandHandler : IRequestHandler<UpdateRoleCommand, Resul
 
         // Load permissions for response
         var permissions = await _unitOfWork.Permissions.GetByIdsAsync(request.PermissionIds, cancellationToken);
+        var userCount = await _unitOfWork.Roles.GetUserCountAsync(role.Id, cancellationToken);
 
         var roleDto = new RoleWithPermissionsDto
         {
@@ -81,7 +79,7 @@ public class UpdateRoleCommandHandler : IRequestHandler<UpdateRoleCommand, Resul
             Priority = role.Priority,
             IsSystemRole = role.IsSystemRole,
             IsActive = role.IsActive,
-            UserCount = 0, // TODO: Query user count separately if needed
+            UserCount = userCount,
             Permissions = permissions.Select(p => new PermissionDto
             {
                 Id = p.Id,

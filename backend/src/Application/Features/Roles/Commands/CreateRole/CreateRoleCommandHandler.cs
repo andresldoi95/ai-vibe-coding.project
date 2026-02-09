@@ -57,6 +57,7 @@ public class CreateRoleCommandHandler : IRequestHandler<CreateRoleCommand, Resul
 
         // Load permissions for response
         var permissions = await _unitOfWork.Permissions.GetByIdsAsync(request.PermissionIds, cancellationToken);
+        var userCount = await _unitOfWork.Roles.GetUserCountAsync(role.Id, cancellationToken);
 
         var roleDto = new RoleWithPermissionsDto
         {
@@ -66,7 +67,7 @@ public class CreateRoleCommandHandler : IRequestHandler<CreateRoleCommand, Resul
             Priority = role.Priority,
             IsSystemRole = role.IsSystemRole,
             IsActive = role.IsActive,
-            UserCount = 0,
+            UserCount = userCount,
             Permissions = permissions.Select(p => new PermissionDto
             {
                 Id = p.Id,

@@ -2,6 +2,16 @@
 
 This document defines the specialized agents available in the `/docs` directory. Each agent handles specific scenarios within a constrained scope. **Always consult the appropriate agent before implementing features outside your domain.**
 
+## Code Generation Guidelines
+
+Before generating any code, **always**:
+1. Review relevant `/docs` files to understand established patterns and guidelines
+2. Consult the appropriate specialized agent for your domain
+3. Reference the canonical implementation examples (e.g., `WAREHOUSE_IMPLEMENTATION_REFERENCE.md`)
+4. Ensure your implementation aligns with project standards and conventions
+5. Never generate code without reviewing the documentation first
+
+
 
 ## Agent Specialization
 

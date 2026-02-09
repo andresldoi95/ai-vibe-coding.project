@@ -123,6 +123,22 @@ Before committing code, ensure:
 
 **IMPORTANT**: Always generate code that passes ESLint validation. When creating new files or modifying existing ones, follow the ESLint configuration strictly to avoid formatting inconsistencies.
 
+## Development Workflow
+
+**IMPORTANT**: After making ANY changes to frontend code (components, pages, composables, types, i18n translations, etc.), you MUST restart the frontend service to apply the changes:
+
+```powershell
+# From project root - restart frontend container
+docker-compose restart frontend
+
+# Verify the service is running
+docker-compose ps frontend
+```
+
+**For i18n changes specifically**, the frontend hot-reload should pick up translation changes automatically, but if changes don't appear, restart the service.
+
+**Always verify the application rebuilds successfully and is accessible** at http://localhost:3000 before marking the task as complete. Check the browser console for any runtime errors.
+
 ## Core Responsibilities
 
 ### 1. Project Structure & Organization

@@ -51,6 +51,24 @@ Expert in .NET 8 backend development with Entity Framework Core, CQRS patterns, 
 - **Inventory Module - Warehouses**: ✅ Completed (entity, CQRS, API, migrations)
 - Products and Stock Movements (next priority)
 
+## Development Workflow
+
+**IMPORTANT**: After making ANY changes to backend code (entities, CQRS handlers, repositories, controllers, configurations, etc.), you MUST rebuild and restart the backend service:
+
+```powershell
+# Option 1: Use the rebuild script (recommended)
+.\rebuild-backend.ps1
+
+# Option 2: Manual rebuild (from project root)
+docker-compose build backend
+docker-compose restart backend
+
+# Verify the service is running
+docker-compose ps backend
+```
+
+**Always verify the build completes successfully before marking the task as complete.** Check for compilation errors and ensure the container starts properly.
+
 ## Core Responsibilities
 
 ### 1. Project Structure & Organization

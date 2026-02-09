@@ -11,6 +11,7 @@ const uiStore = useUiStore()
 const toast = useNotification()
 const route = useRoute()
 const router = useRouter()
+const { can } = usePermissions()
 const { getWarehouseById, deleteWarehouse } = useWarehouse()
 
 const warehouse = ref<Warehouse | null>(null)
@@ -88,11 +89,13 @@ onMounted(() => {
       >
         <template #actions>
           <Button
+            v-if="can.editWarehouse()"
             :label="t('common.edit')"
             icon="pi pi-pencil"
             @click="editWarehouse"
           />
           <Button
+            v-if="can.deleteWarehouse()"
             :label="t('common.delete')"
             icon="pi pi-trash"
             severity="danger"

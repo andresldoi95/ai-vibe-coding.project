@@ -49,6 +49,6 @@ public class RoleRepository : Repository<Role>, IRoleRepository
     public async Task<int> GetUserCountAsync(Guid roleId, CancellationToken cancellationToken = default)
     {
         return await _context.UserTenants
-            .CountAsync(ut => ut.RoleId == roleId && ut.IsActive, cancellationToken);
+            .CountAsync(ut => ut.RoleId.HasValue && ut.RoleId.Value == roleId && ut.IsActive, cancellationToken);
     }
 }

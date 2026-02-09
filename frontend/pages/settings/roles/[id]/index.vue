@@ -121,7 +121,7 @@ onMounted(() => {
       >
         <template #actions>
           <Button
-            v-if="can.manageRoles()"
+            v-if="can.manageRoles() && !role.isSystemRole"
             :label="t('common.edit')"
             icon="pi pi-pencil"
             @click="editRole"

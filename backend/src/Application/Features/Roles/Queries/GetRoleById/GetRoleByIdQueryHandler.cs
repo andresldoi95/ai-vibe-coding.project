@@ -31,6 +31,8 @@ public class GetRoleByIdQueryHandler : IRequestHandler<GetRoleByIdQuery, Result<
             return Result<RoleWithPermissionsDto>.Failure("Role not found");
         }
 
+        var userCount = await _unitOfWork.Roles.GetUserCountAsync(role.Id, cancellationToken);
+
         var roleDto = new RoleWithPermissionsDto
         {
             Id = role.Id,
@@ -39,7 +41,7 @@ public class GetRoleByIdQueryHandler : IRequestHandler<GetRoleByIdQuery, Result<
             Priority = role.Priority,
             IsSystemRole = role.IsSystemRole,
             IsActive = role.IsActive,
-            UserCount = 0, // TODO: Query user count separately if needed
+            UserCount = userCount,
             Permissions = role.RolePermissions
                 .Select(rp => new PermissionDto
                 {

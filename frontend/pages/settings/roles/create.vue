@@ -120,8 +120,8 @@ function validateForm(): boolean {
     errors.value.name = 'Role name is required'
   }
 
-  if (formData.value.priority < 1 || formData.value.priority > 99) {
-    errors.value.priority = 'Priority must be between 1 and 99'
+  if (formData.value.priority < 1 || formData.value.priority > 100) {
+    errors.value.priority = 'Priority must be between 1 and 100'
   }
 
   if (formData.value.permissionIds.length === 0) {
@@ -215,7 +215,7 @@ onMounted(async () => {
                 :invalid="!!errors.priority"
                 :disabled="isSystemRole"
                 :min="1"
-                :max="99"
+                :max="100"
                 class="w-full"
                 required
               />

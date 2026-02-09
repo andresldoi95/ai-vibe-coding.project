@@ -78,6 +78,37 @@ Email: admin@example.com
 Password: password
 ```
 
+### Reset Database with Demo Data
+
+Use the **reset-demo-data.ps1** script to completely reset your database and seed it with demo data:
+
+```powershell
+# Interactive mode (asks for confirmation)
+.\reset-demo-data.ps1
+
+# Unattended mode (skips confirmation)
+.\reset-demo-data.ps1 -Force
+```
+
+This will:
+- **Drop and recreate the database** (⚠️ ALL DATA WILL BE LOST)
+- Apply all migrations
+- Create a demo company: **Demo Company** (`demo-company`)
+- Create 4 demo users with different roles
+- Create 3 sample warehouses
+
+**Demo Users** (all passwords are `password`):
+- **Owner**: owner@demo.com
+- **Admin**: admin@demo.com
+- **Manager**: manager@demo.com
+- **User**: user@demo.com
+
+**Use Case**: Perfect for:
+- Starting fresh with clean test data
+- Testing different user roles and permissions
+- Demonstrating the application
+- Development and testing workflows
+
 ## 🎨 Theme Testing
 
 - Click the **moon icon** 🌙 to switch to dark mode

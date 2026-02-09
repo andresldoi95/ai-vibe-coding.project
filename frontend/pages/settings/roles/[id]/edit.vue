@@ -60,7 +60,7 @@ async function fetchRole() {
     }
     isSystemRole.value = role.isSystemRole || false
   }
-  catch (error) {
+  catch {
     showError(t('messages.error_load'))
     navigateTo('/settings/roles')
   }
@@ -76,7 +76,7 @@ async function fetchPermissions() {
     const roleService = useRole()
     allPermissions.value = await roleService.getAllPermissions()
   }
-  catch (error) {
+  catch {
     showError(t('messages.error_load'))
   }
   finally {
@@ -116,8 +116,8 @@ function validateForm(): boolean {
     errors.value.name = 'Role name is required'
   }
 
-  if (formData.value.priority < 1 || formData.value.priority > 99) {
-    errors.value.priority = 'Priority must be between 1 and 99'
+  if (formData.value.priority < 1 || formData.value.priority > 100) {
+    errors.value.priority = 'Priority must be between 1 and 100'
   }
 
   if (formData.value.permissionIds.length === 0) {
@@ -139,8 +139,8 @@ async function handleSubmit() {
     showSuccess(t('messages.success_update'))
     navigateTo('/settings/roles')
   }
-  catch (error: any) {
-    const message = error?.data?.message || t('messages.error_save')
+  catch (error) {
+    const message = error instanceof Error ? error.message : t('messages.error_save')
     showError(message)
   }
   finally {
@@ -201,7 +201,7 @@ onMounted(async () => {
                 :invalid="!!errors.priority"
                 :disabled="isSystemRole"
                 :min="1"
-                :max="99"
+                :max="100"
                 class="w-full"
                 required
               />
@@ -230,7 +230,7 @@ onMounted(async () => {
               <h3 class="text-lg font-medium">
                 {{ $t('roles.permissions') }}
               </h3>
-              <div class="flex gap-2">
+              <div v-if="!isSystemRole" class="flex gap-2">
                 <Button
                   type="button"
                   label="Select All"
@@ -247,6 +247,10 @@ onMounted(async () => {
                 />
               </div>
             </div>
+
+            <Message v-if="isSystemRole" severity="info" :closable="false">
+              {{ $t('roles.system_role_permissions_readonly') }}
+            </Message>
 
             <LoadingState v-if="permissionsLoading" message="Loading permissions..." />
 
@@ -270,8 +274,9 @@ onMounted(async () => {
                       v-model="formData.permissionIds"
                       :value="permission.id"
                       :binary="false"
+                      :disabled="isSystemRole"
                     />
-                    <label :for="permission.id" class="ml-2 cursor-pointer">
+                    <label :for="permission.id" class="ml-2" :class="{ 'cursor-pointer': !isSystemRole, 'opacity-60': isSystemRole }">
                       {{ getActionLabel(permission.action) }}
                     </label>
                   </div>
