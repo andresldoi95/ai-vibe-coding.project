@@ -140,13 +140,13 @@ onMounted(() => {
       >
         <template #actions>
           <Button
-            v-if="can('update', 'stock')"
+            v-if="can.editStock()"
             :label="t('common.edit')"
             icon="pi pi-pencil"
             @click="editStockMovement"
           />
           <Button
-            v-if="can('delete', 'stock')"
+            v-if="can.deleteStock()"
             :label="t('common.delete')"
             icon="pi pi-trash"
             severity="danger"

@@ -1421,6 +1421,97 @@ export default defineNuxtRouteMiddleware((to, from) => {
 - Hide/disable UI elements based on permissions
 - Use v-if with permission checks
 
+#### Permission Checks (usePermissions Composable)
+
+**CRITICAL**: The `usePermissions` composable returns a `can` **object** with methods, NOT a function.
+
+**❌ INCORRECT Usage (causes `$setup.can is not a function` error):**
+```vue
+<script setup>
+const { can } = usePermissions()
+</script>
+
+<template>
+  <!-- WRONG: can is not a function -->
+  <Button v-if="can('create', 'products')" />
+  <Button v-if="can('update', 'stock')" />
+</template>
+```
+
+**✅ CORRECT Usage:**
+```vue
+<script setup>
+const { can } = usePermissions()
+</script>
+
+<template>
+  <!-- CORRECT: Use specific methods on the can object -->
+  <Button v-if="can.createProduct()" />
+  <Button v-if="can.editProduct()" />
+  <Button v-if="can.deleteProduct()" />
+  
+  <Button v-if="can.createStock()" />
+  <Button v-if="can.editStock()" />
+  <Button v-if="can.deleteStock()" />
+  
+  <Button v-if="can.createWarehouse()" />
+  <Button v-if="can.editWarehouse()" />
+  <Button v-if="can.deleteWarehouse()" />
+  
+  <Button v-if="can.createCustomer()" />
+  <Button v-if="can.editCustomer()" />
+  <Button v-if="can.deleteCustomer()" />
+</template>
+```
+
+**Available Permission Methods:**
+
+The `can` object provides these methods (from `composables/usePermissions.ts`):
+
+**Warehouses:**
+- `can.viewWarehouses()`
+- `can.createWarehouse()`
+- `can.editWarehouse()`
+- `can.deleteWarehouse()`
+
+**Products:**
+- `can.viewProducts()`
+- `can.createProduct()`
+- `can.editProduct()`
+- `can.deleteProduct()`
+
+**Stock:**
+- `can.viewStock()`
+- `can.createStock()`
+- `can.editStock()`
+- `can.deleteStock()`
+
+**Customers:**
+- `can.viewCustomers()`
+- `can.createCustomer()`
+- `can.editCustomer()`
+- `can.deleteCustomer()`
+
+**Users:**
+- `can.viewUsers()`
+- `can.createUser()`
+- `can.editUser()`
+- `can.deleteUser()`
+- `can.inviteUser()`
+- `can.removeUser()`
+
+**Roles:**
+- `can.viewRoles()`
+- `can.manageRoles()`
+
+**Tenants:**
+- `can.viewTenants()`
+- `can.createTenant()`
+- `can.editTenant()`
+- `can.deleteTenant()`
+
+**ALWAYS** use the correct method name from the list above. Never use `can()` as a function with parameters.
+
 ### 8. Multi-Tenant Context
 
 #### Tenant Selection

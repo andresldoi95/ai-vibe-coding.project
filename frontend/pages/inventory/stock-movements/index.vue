@@ -133,7 +133,7 @@ onMounted(() => {
     >
       <template #actions>
         <Button
-          v-if="can('create', 'stock')"
+          v-if="can.createStock()"
           :label="t('stock_movements.create')"
           icon="pi pi-plus"
           @click="createStockMovement"
@@ -219,7 +219,7 @@ onMounted(() => {
                   @click="viewMovement(data)"
                 />
                 <Button
-                  v-if="can('update', 'stock')"
+                  v-if="can.editStock()"
                   icon="pi pi-pencil"
                   text
                   rounded
@@ -228,7 +228,7 @@ onMounted(() => {
                   @click="editMovement(data)"
                 />
                 <Button
-                  v-if="can('delete', 'stock')"
+                  v-if="can.deleteStock()"
                   icon="pi pi-trash"
                   text
                   rounded
