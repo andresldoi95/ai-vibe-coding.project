@@ -12,7 +12,10 @@
     "postinstall": "nuxt prepare",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "typecheck": "nuxt typecheck"
+    "typecheck": "nuxt typecheck",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest --coverage"
   },
   "dependencies": {
     "@nuxtjs/color-mode": "^3.3.2",
@@ -35,11 +38,16 @@
   "devDependencies": {
     "@antfu/eslint-config": "^2.6.4",
     "@nuxt/devtools": "^1.0.8",
+    "@nuxt/test-utils": "^4.0.0",
     "@nuxtjs/tailwindcss": "^6.11.4",
     "@types/node": "^20.11.24",
+    "@vitest/ui": "^4.0.18",
+    "@vue/test-utils": "^2.4.6",
     "eslint": "^8.56.0",
+    "happy-dom": "^20.5.5",
     "typescript": "^5.3.3",
     "vite-plugin-eslint": "^1.8.1",
+    "vitest": "^4.0.18",
     "vue-tsc": "^1.8.27"
   }
 }
