@@ -19,14 +19,15 @@ All agents operate within their defined scope. **Instructions executed by agents
 
 ## Available Agents
 
-| Agent                      | Purpose                                                                                                                                    | Scope                                                                                                                                                       |
-| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Project Architecture Agent | Designs system architecture for SaaS Billing + Inventory using .NET 8, PostgreSQL, Nuxt 3, PrimeVue with multi-tenant patterns             | System architecture, tech stack integration, multi-tenant design, API contracts, database schema design                                                     |
-| Backend Agent              | Implements .NET 8 backend with EF Core, CQRS, Swagger, authorization guards, and SOLID principles                                          | Backend standards, DB models, Entity Framework, CQRS with MediatR, API design, authorization policies, repository pattern, validation                       |
-| Frontend Agent             | Implements Nuxt 3 + TypeScript frontend with PrimeVue (Teal theme) and Tailwind CSS, focusing on rapid development with default components | Nuxt 3 configuration, PrimeVue integration, TypeScript, Tailwind layouts, Pinia state management, API integration, responsive design, minimal customization |
-| UX Agent                   | Defines UX/UI patterns, design system policies, spacing standards, and reusable components for consistent user experience                  | Design system, spacing/typography, component patterns, accessibility (WCAG 2.1 AA), responsive design, user feedback, reusable components                   |
-| Auth Agent                 | Handles authentication, authorization, role-based access control (RBAC), and multi-tenant security with user-company associations          | JWT authentication, RBAC implementation, permission management, multi-company user access, policy-based authorization, role hierarchy, security patterns     |
-| Email Agent                | Implements email service with Mailpit testing, transactional emails, templates, and SMTP configuration with MailKit                        | Email templates, SMTP integration, Mailpit setup, transactional emails, email logging, background jobs, template management, email conventions              |
+| Agent                         | Purpose                                                                                                                                    | Scope                                                                                                                                                       |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Project Architecture Agent    | Designs system architecture for SaaS Billing + Inventory using .NET 8, PostgreSQL, Nuxt 3, PrimeVue with multi-tenant patterns             | System architecture, tech stack integration, multi-tenant design, API contracts, database schema design                                                     |
+| Backend Agent                 | Implements .NET 8 backend with EF Core, CQRS, Swagger, authorization guards, and SOLID principles                                          | Backend standards, DB models, Entity Framework, CQRS with MediatR, API design, authorization policies, repository pattern, validation                       |
+| Backend Unit Testing Agent    | Implements comprehensive unit tests for backend using xUnit, FluentAssertions, and Moq following Warehouse test patterns                   | Domain entity tests, CQRS handler tests, validator tests, mocking strategies, AAA pattern, test coverage, multi-tenant testing, soft delete verification    |
+| Frontend Agent                | Implements Nuxt 3 + TypeScript frontend with PrimeVue (Teal theme) and Tailwind CSS, focusing on rapid development with default components | Nuxt 3 configuration, PrimeVue integration, TypeScript, Tailwind layouts, Pinia state management, API integration, responsive design, minimal customization |
+| UX Agent                      | Defines UX/UI patterns, design system policies, spacing standards, and reusable components for consistent user experience                  | Design system, spacing/typography, component patterns, accessibility (WCAG 2.1 AA), responsive design, user feedback, reusable components                   |
+| Auth Agent                    | Handles authentication, authorization, role-based access control (RBAC), and multi-tenant security with user-company associations          | JWT authentication, RBAC implementation, permission management, multi-company user access, policy-based authorization, role hierarchy, security patterns     |
+| Email Agent                   | Implements email service with Mailpit testing, transactional emails, templates, and SMTP configuration with MailKit                        | Email templates, SMTP integration, Mailpit setup, transactional emails, email logging, background jobs, template management, email conventions              |
 
 ## Usage Guidelines
 
@@ -59,6 +60,7 @@ The Warehouse module serves as the **canonical reference implementation** for al
 - ✅ **Authentication**: User registration, login, JWT tokens, refresh tokens
 - ✅ **Multi-tenancy**: Tenant management, schema-per-tenant isolation
 - ✅ **Inventory - Warehouses**: Full CRUD with reference implementation (see above)
+- ✅ **Backend Unit Tests**: Comprehensive test coverage for Warehouses feature (73 tests: 14 Domain + 59 Application)
 
 ## Adding New Agents
 
