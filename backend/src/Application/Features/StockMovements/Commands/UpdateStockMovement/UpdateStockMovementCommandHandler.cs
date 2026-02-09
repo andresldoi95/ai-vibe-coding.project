@@ -75,6 +75,17 @@ public class UpdateStockMovementCommandHandler : IRequestHandler<UpdateStockMove
                 totalCost = request.UnitCost.Value * Math.Abs(request.Quantity);
             }
 
+            // Ensure MovementDate is UTC
+            var movementDate = request.MovementDate;
+            if (movementDate.Kind == DateTimeKind.Unspecified)
+            {
+                movementDate = DateTime.SpecifyKind(movementDate, DateTimeKind.Utc);
+            }
+            else if (movementDate.Kind == DateTimeKind.Local)
+            {
+                movementDate = movementDate.ToUniversalTime();
+            }
+
             // Update stock movement
             stockMovement.MovementType = request.MovementType;
             stockMovement.ProductId = request.ProductId;
@@ -85,7 +96,7 @@ public class UpdateStockMovementCommandHandler : IRequestHandler<UpdateStockMove
             stockMovement.TotalCost = totalCost;
             stockMovement.Reference = request.Reference;
             stockMovement.Notes = request.Notes;
-            stockMovement.MovementDate = request.MovementDate;
+            stockMovement.MovementDate = movementDate;
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 

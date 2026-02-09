@@ -11,6 +11,7 @@ definePageMeta({
 const { t } = useI18n()
 const toast = useNotification()
 const router = useRouter()
+const uiStore = useUiStore()
 const { createStockMovement } = useStockMovement()
 const { getAllProducts } = useProduct()
 const { getAllWarehouses } = useWarehouse()

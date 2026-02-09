@@ -70,6 +70,17 @@ public class CreateStockMovementCommandHandler : IRequestHandler<CreateStockMove
                 totalCost = request.UnitCost.Value * Math.Abs(request.Quantity);
             }
 
+            // Ensure MovementDate is UTC
+            var movementDate = request.MovementDate ?? DateTime.UtcNow;
+            if (movementDate.Kind == DateTimeKind.Unspecified)
+            {
+                movementDate = DateTime.SpecifyKind(movementDate, DateTimeKind.Utc);
+            }
+            else if (movementDate.Kind == DateTimeKind.Local)
+            {
+                movementDate = movementDate.ToUniversalTime();
+            }
+
             // Create stock movement entity
             var stockMovement = new StockMovement
             {
@@ -83,7 +94,7 @@ public class CreateStockMovementCommandHandler : IRequestHandler<CreateStockMove
                 TotalCost = totalCost,
                 Reference = request.Reference,
                 Notes = request.Notes,
-                MovementDate = request.MovementDate ?? DateTime.UtcNow
+                MovementDate = movementDate
             };
 
             await _unitOfWork.StockMovements.AddAsync(stockMovement, cancellationToken);

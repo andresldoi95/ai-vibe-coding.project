@@ -1,7 +1,6 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SaaS.Api.Controllers.Base;
 using SaaS.Application.Features.StockMovements.Commands.CreateStockMovement;
 using SaaS.Application.Features.StockMovements.Commands.DeleteStockMovement;
 using SaaS.Application.Features.StockMovements.Commands.UpdateStockMovement;
@@ -39,7 +38,7 @@ public class StockMovementsController : BaseController
             return BadRequest(new { success = false, message = result.Error });
         }
 
-        return Ok(new { success = true, data = result.Data });
+        return Ok(new { success = true, data = result.Value });
     }
 
     /// <summary>
@@ -61,7 +60,7 @@ public class StockMovementsController : BaseController
             return NotFound(new { success = false, message = result.Error });
         }
 
-        return Ok(new { success = true, data = result.Data });
+        return Ok(new { success = true, data = result.Value });
     }
 
     /// <summary>
@@ -84,8 +83,8 @@ public class StockMovementsController : BaseController
 
         return CreatedAtAction(
             nameof(GetById),
-            new { id = result.Data!.Id },
-            new { success = true, data = result.Data });
+            new { id = result.Value!.Id },
+            new { success = true, data = result.Value });
     }
 
     /// <summary>
@@ -113,7 +112,7 @@ public class StockMovementsController : BaseController
             return BadRequest(new { success = false, message = result.Error });
         }
 
-        return Ok(new { success = true, data = result.Data });
+        return Ok(new { success = true, data = result.Value });
     }
 
     /// <summary>
