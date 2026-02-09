@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useVuelidate } from '@vuelidate/core'
-import { helpers, maxLength, minValue, required } from '@vuelidate/validators'
+import { maxLength, minValue, required } from '@vuelidate/validators'
 import { MovementType, MovementTypeLabels } from '~/types/inventory'
 
 definePageMeta({

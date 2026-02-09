@@ -178,6 +178,9 @@ Tenant context is managed via:
 - `npm run generate` - Generate static site
 - `npm run lint` - Lint code
 - `npm run typecheck` - Run TypeScript type checking
+- `npm run test` - Run unit tests with Vitest
+- `npm run test:ui` - Run tests with visual UI
+- `npm run test:coverage` - Run tests with coverage report
 
 ## 🐳 Docker Commands
 
@@ -240,6 +243,29 @@ Key configurations in `nuxt.config.ts`:
 5. **i18n**: Never hardcode text - use translation keys
 6. **Layouts**: Use Tailwind for responsive design
 7. **Theme**: Test both light and dark modes
+8. **Testing**: Write unit tests for composables and critical components (see [TESTING.md](./TESTING.md))
+
+## 🧪 Testing
+
+The project uses Vitest for unit testing. See [TESTING.md](./TESTING.md) for comprehensive testing documentation including:
+
+- Testing infrastructure setup
+- How to write tests
+- Running tests
+- Best practices
+- Troubleshooting guide
+
+Quick start:
+```bash
+# Run tests
+npm run test
+
+# Run tests with UI
+npm run test:ui
+
+# Run tests with coverage
+npm run test:coverage
+```
 
 ## 🚀 Next Steps
 

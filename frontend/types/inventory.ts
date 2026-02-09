@@ -75,7 +75,7 @@ export enum MovementType {
   Sale = 2,
   Transfer = 3,
   Adjustment = 4,
-  Return = 5
+  Return = 5,
 }
 
 export const MovementTypeLabels: Record<MovementType, string> = {
@@ -84,7 +84,7 @@ export const MovementTypeLabels: Record<MovementType, string> = {
   [MovementType.Sale]: 'Sale',
   [MovementType.Transfer]: 'Transfer',
   [MovementType.Adjustment]: 'Adjustment',
-  [MovementType.Return]: 'Return'
+  [MovementType.Return]: 'Return',
 }
 
 export interface InventoryLevel {

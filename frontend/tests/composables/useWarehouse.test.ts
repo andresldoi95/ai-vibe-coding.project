@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
 import { mockApiFetch } from '../setup'
 import { useWarehouse } from '~/composables/useWarehouse'
 import type { Warehouse } from '~/types/inventory'

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Product, InventoryLevel } from '~/types/inventory'
+import type { InventoryLevel, Product } from '~/types/inventory'
 
 definePageMeta({
   middleware: ['auth', 'tenant'],
