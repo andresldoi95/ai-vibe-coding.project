@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Product } from '~/types/inventory'
+import type { Product, InventoryLevel } from '~/types/inventory'
 
 definePageMeta({
   middleware: ['auth', 'tenant'],
@@ -13,10 +13,13 @@ const route = useRoute()
 const router = useRouter()
 const { can } = usePermissions()
 const { getProductById, deleteProduct } = useProduct()
+const { getProductInventory, getTotalStock, getTotalAvailable } = useWarehouseInventory()
 
 const product = ref<Product | null>(null)
 const loading = ref(false)
 const deleteDialog = ref(false)
+const inventory = ref<InventoryLevel[]>([])
+const inventoryLoading = ref(false)
 
 async function loadProduct() {
   loading.value = true
@@ -28,6 +31,9 @@ async function loadProduct() {
       { label: t('products.title'), to: '/inventory/products' },
       { label: product.value.name },
     ])
+
+    // Load warehouse inventory
+    await loadInventory()
   }
   catch (error) {
     const errMessage = error instanceof Error ? error.message : 'Unknown error'
@@ -36,6 +42,23 @@ async function loadProduct() {
   }
   finally {
     loading.value = false
+  }
+}
+
+async function loadInventory() {
+  if (!product.value)
+    return
+
+  inventoryLoading.value = true
+  try {
+    inventory.value = await getProductInventory(product.value.id)
+  }
+  catch (error) {
+    const errMessage = error instanceof Error ? error.message : 'Unknown error'
+    toast.showError(t('messages.error_load'), errMessage)
+  }
+  finally {
+    inventoryLoading.value = false
   }
 }
 
@@ -310,6 +333,109 @@ onMounted(() => {
               </div>
             </div>
           </div>
+        </template>
+      </Card>
+
+      <!-- Warehouse Inventory Card -->
+      <Card class="mt-6">
+        <template #title>
+          <div class="flex items-center justify-between">
+            <h2 class="text-xl font-semibold text-slate-900 dark:text-white">
+              {{ t('inventory.warehouse_stock') }}
+            </h2>
+            <div class="text-right">
+              <div class="text-sm text-slate-600 dark:text-slate-400">
+                {{ t('inventory.total_stock') }}
+              </div>
+              <div class="text-2xl font-bold text-slate-900 dark:text-white">
+                {{ getTotalStock(inventory) }}
+              </div>
+              <div class="text-sm text-slate-600 dark:text-slate-400">
+                {{ t('inventory.available') }}: {{ getTotalAvailable(inventory) }}
+              </div>
+            </div>
+          </div>
+        </template>
+        <template #content>
+          <LoadingState v-if="inventoryLoading" :message="t('common.loading')" />
+
+          <div v-else-if="inventory.length === 0" class="py-8 text-center text-slate-500 dark:text-slate-400">
+            {{ t('inventory.no_stock_data') }}
+          </div>
+
+          <DataTable
+            v-else
+            :value="inventory"
+            responsive-layout="scroll"
+            class="text-sm"
+          >
+            <Column
+              field="warehouseName"
+              :header="t('warehouses.warehouse')"
+              sortable
+            >
+              <template #body="{ data }">
+                <div>
+                  <div class="font-medium text-slate-900 dark:text-white">
+                    {{ data.warehouseName }}
+                  </div>
+                  <div class="text-xs text-slate-500 dark:text-slate-400">
+                    {{ data.warehouseCode }}
+                  </div>
+                </div>
+              </template>
+            </Column>
+
+            <Column
+              field="quantity"
+              :header="t('inventory.quantity')"
+              sortable
+            >
+              <template #body="{ data }">
+                <span class="font-medium text-slate-900 dark:text-white">
+                  {{ data.quantity }}
+                </span>
+              </template>
+            </Column>
+
+            <Column
+              field="reservedQuantity"
+              :header="t('inventory.reserved')"
+              sortable
+            >
+              <template #body="{ data }">
+                <span class="text-slate-700 dark:text-slate-300">
+                  {{ data.reservedQuantity }}
+                </span>
+              </template>
+            </Column>
+
+            <Column
+              field="availableQuantity"
+              :header="t('inventory.available')"
+              sortable
+            >
+              <template #body="{ data }">
+                <Tag
+                  :value="data.availableQuantity"
+                  :severity="data.availableQuantity < product.minimumStockLevel ? 'warning' : 'success'"
+                />
+              </template>
+            </Column>
+
+            <Column
+              field="lastMovementDate"
+              :header="t('inventory.last_movement')"
+              sortable
+            >
+              <template #body="{ data }">
+                <span v-if="data.lastMovementDate" class="text-slate-600 dark:text-slate-400">
+                  {{ new Date(data.lastMovementDate).toLocaleDateString() }}
+                </span>
+                <span v-else class="text-slate-400 dark:text-slate-500">—</span>
+              </template>
+            </Column>
+          </DataTable>
         </template>
       </Card>
     </div>

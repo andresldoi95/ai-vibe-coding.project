@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using SaaS.Application.Common.Interfaces;
 using SaaS.Application.Common.Models;
 using SaaS.Application.DTOs;
+using SaaS.Application.Services;
 using SaaS.Domain.Entities;
 
 namespace SaaS.Application.Features.StockMovements.Commands.UpdateStockMovement;
@@ -14,15 +15,18 @@ public class UpdateStockMovementCommandHandler : IRequestHandler<UpdateStockMove
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ITenantContext _tenantContext;
+    private readonly IStockLevelService _stockLevelService;
     private readonly ILogger<UpdateStockMovementCommandHandler> _logger;
 
     public UpdateStockMovementCommandHandler(
         IUnitOfWork unitOfWork,
         ITenantContext tenantContext,
+        IStockLevelService stockLevelService,
         ILogger<UpdateStockMovementCommandHandler> logger)
     {
         _unitOfWork = unitOfWork;
         _tenantContext = tenantContext;
+        _stockLevelService = stockLevelService;
         _logger = logger;
     }
 
@@ -86,6 +90,21 @@ public class UpdateStockMovementCommandHandler : IRequestHandler<UpdateStockMove
                 movementDate = movementDate.ToUniversalTime();
             }
 
+            // Store old values for reversing stock levels
+            var oldMovement = new StockMovement
+            {
+                ProductId = stockMovement.ProductId,
+                WarehouseId = stockMovement.WarehouseId,
+                DestinationWarehouseId = stockMovement.DestinationWarehouseId,
+                MovementType = stockMovement.MovementType,
+                Quantity = stockMovement.Quantity,
+                MovementDate = stockMovement.MovementDate,
+                TenantId = stockMovement.TenantId
+            };
+
+            // Reverse old stock levels
+            await _stockLevelService.ReverseStockLevelsAsync(oldMovement, cancellationToken);
+
             // Update stock movement
             stockMovement.MovementType = request.MovementType;
             stockMovement.ProductId = request.ProductId;
@@ -97,6 +116,9 @@ public class UpdateStockMovementCommandHandler : IRequestHandler<UpdateStockMove
             stockMovement.Reference = request.Reference;
             stockMovement.Notes = request.Notes;
             stockMovement.MovementDate = movementDate;
+
+            // Apply new stock levels
+            await _stockLevelService.UpdateStockLevelsAsync(stockMovement, cancellationToken);
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 

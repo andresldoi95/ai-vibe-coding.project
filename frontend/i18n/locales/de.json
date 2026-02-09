@@ -146,7 +146,13 @@
     "cost_price": "Kostenpreis",
     "reorder_point": "Nachbestellpunkt",
     "create_product": "Produkt erstellen",
-    "edit_product": "Produkt bearbeiten"
+    "edit_product": "Produkt bearbeiten",
+    "warehouse_stock": "Lagerbestandsebenen",
+    "total_stock": "Gesamtbestand",
+    "available": "Verfügbar",
+    "reserved": "Reserviert",
+    "last_movement": "Letzte Bewegung",
+    "no_stock_data": "Keine Bestandsdaten für dieses Produkt verfügbar"
   },
   "warehouses": {
     "title": "Lager",

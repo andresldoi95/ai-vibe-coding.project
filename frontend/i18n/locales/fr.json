@@ -146,7 +146,13 @@
     "cost_price": "Prix de Revient",
     "reorder_point": "Point de Réapprovisionnement",
     "create_product": "Créer un Produit",
-    "edit_product": "Modifier le Produit"
+    "edit_product": "Modifier le Produit",
+    "warehouse_stock": "Niveaux de Stock par Entrepôt",
+    "total_stock": "Stock Total",
+    "available": "Disponible",
+    "reserved": "Réservé",
+    "last_movement": "Dernier Mouvement",
+    "no_stock_data": "Aucune donnée de stock disponible pour ce produit"
   },
   "warehouses": {
     "title": "Entrepôts",

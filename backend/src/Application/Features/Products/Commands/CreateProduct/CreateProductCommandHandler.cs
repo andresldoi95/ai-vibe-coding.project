@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using SaaS.Application.Common.Interfaces;
 using SaaS.Application.Common.Models;
 using SaaS.Application.DTOs;
+using SaaS.Application.Services;
 using SaaS.Domain.Entities;
 using SaaS.Domain.Enums;
 
@@ -15,15 +16,18 @@ public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand,
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ITenantContext _tenantContext;
+    private readonly IStockLevelService _stockLevelService;
     private readonly ILogger<CreateProductCommandHandler> _logger;
 
     public CreateProductCommandHandler(
         IUnitOfWork unitOfWork,
         ITenantContext tenantContext,
+        IStockLevelService stockLevelService,
         ILogger<CreateProductCommandHandler> logger)
     {
         _unitOfWork = unitOfWork;
         _tenantContext = tenantContext;
+        _stockLevelService = stockLevelService;
         _logger = logger;
     }
 
@@ -109,6 +113,10 @@ public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand,
                     await _unitOfWork.StockMovements.AddAsync(initialMovement, cancellationToken);
                     await _unitOfWork.SaveChangesAsync(cancellationToken);
 
+                    // Update warehouse inventory levels
+                    await _stockLevelService.UpdateStockLevelsAsync(initialMovement, cancellationToken);
+                    await _unitOfWork.SaveChangesAsync(cancellationToken);
+
                     _logger.LogInformation(
                         "Initial stock movement created for product {ProductId} in warehouse {WarehouseId} with quantity {Quantity}",
                         product.Id,
@@ -124,6 +132,10 @@ public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand,
                 }
             }
 
+            // Calculate actual stock level from WarehouseInventory
+            var actualStockLevel = await _unitOfWork.WarehouseInventory
+                .GetTotalStockByProductIdAsync(product.Id, _tenantContext.TenantId.Value, cancellationToken);
+
             // Map to DTO
             var productDto = new ProductDto
             {
@@ -138,7 +150,7 @@ public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand,
                 UnitPrice = product.UnitPrice,
                 CostPrice = product.CostPrice,
                 MinimumStockLevel = product.MinimumStockLevel,
-                CurrentStockLevel = product.CurrentStockLevel,
+                CurrentStockLevel = actualStockLevel,
                 Weight = product.Weight,
                 Dimensions = product.Dimensions,
                 IsActive = product.IsActive,

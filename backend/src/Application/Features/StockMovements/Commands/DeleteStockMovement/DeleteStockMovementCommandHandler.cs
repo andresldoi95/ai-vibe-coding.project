@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using SaaS.Application.Common.Interfaces;
 using SaaS.Application.Common.Models;
+using SaaS.Application.Services;
 
 namespace SaaS.Application.Features.StockMovements.Commands.DeleteStockMovement;
 
@@ -12,15 +13,18 @@ public class DeleteStockMovementCommandHandler : IRequestHandler<DeleteStockMove
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ITenantContext _tenantContext;
+    private readonly IStockLevelService _stockLevelService;
     private readonly ILogger<DeleteStockMovementCommandHandler> _logger;
 
     public DeleteStockMovementCommandHandler(
         IUnitOfWork unitOfWork,
         ITenantContext tenantContext,
+        IStockLevelService stockLevelService,
         ILogger<DeleteStockMovementCommandHandler> logger)
     {
         _unitOfWork = unitOfWork;
         _tenantContext = tenantContext;
+        _stockLevelService = stockLevelService;
         _logger = logger;
     }
 
@@ -41,6 +45,9 @@ public class DeleteStockMovementCommandHandler : IRequestHandler<DeleteStockMove
             {
                 return Result<bool>.Failure("Stock movement not found");
             }
+
+            // Reverse stock levels before deleting
+            await _stockLevelService.ReverseStockLevelsAsync(stockMovement, cancellationToken);
 
             // Soft delete
             stockMovement.IsDeleted = true;

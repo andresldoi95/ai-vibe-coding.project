@@ -146,7 +146,13 @@
     "cost_price": "Precio de Costo",
     "reorder_point": "Punto de Reorden",
     "create_product": "Crear Producto",
-    "edit_product": "Editar Producto"
+    "edit_product": "Editar Producto",
+    "warehouse_stock": "Niveles de Stock por Almacén",
+    "total_stock": "Stock Total",
+    "available": "Disponible",
+    "reserved": "Reservado",
+    "last_movement": "Último Movimiento",
+    "no_stock_data": "No hay datos de stock disponibles para este producto"
   },
   "warehouses": {
     "title": "Almacenes",

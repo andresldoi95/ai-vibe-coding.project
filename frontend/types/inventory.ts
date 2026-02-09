@@ -88,12 +88,20 @@ export const MovementTypeLabels: Record<MovementType, string> = {
 }
 
 export interface InventoryLevel {
+  id: string
+  tenantId: string
   productId: string
+  productName: string
+  productCode: string
   warehouseId: string
+  warehouseName: string
+  warehouseCode: string
   quantity: number
   reservedQuantity: number
   availableQuantity: number
-  lastUpdated: string
+  lastMovementDate?: string
+  createdAt: string
+  updatedAt: string
 }
 
 export interface Supplier {

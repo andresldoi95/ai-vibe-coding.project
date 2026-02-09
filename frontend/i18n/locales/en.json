@@ -145,7 +145,13 @@
     "cost_price": "Cost Price",
     "reorder_point": "Reorder Point",
     "create_product": "Create Product",
-    "edit_product": "Edit Product"
+    "edit_product": "Edit Product",
+    "warehouse_stock": "Warehouse Stock Levels",
+    "total_stock": "Total Stock",
+    "available": "Available",
+    "reserved": "Reserved",
+    "last_movement": "Last Movement",
+    "no_stock_data": "No stock data available for this product"
   },
   "warehouses": {
     "title": "Warehouses",

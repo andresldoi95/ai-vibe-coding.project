@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using SaaS.Application.Common.Interfaces;
 using SaaS.Application.Common.Models;
 using SaaS.Application.DTOs;
+using SaaS.Application.Services;
 using SaaS.Domain.Entities;
 
 namespace SaaS.Application.Features.StockMovements.Commands.CreateStockMovement;
@@ -15,15 +16,18 @@ public class CreateStockMovementCommandHandler : IRequestHandler<CreateStockMove
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ITenantContext _tenantContext;
+    private readonly IStockLevelService _stockLevelService;
     private readonly ILogger<CreateStockMovementCommandHandler> _logger;
 
     public CreateStockMovementCommandHandler(
         IUnitOfWork unitOfWork,
         ITenantContext tenantContext,
+        IStockLevelService stockLevelService,
         ILogger<CreateStockMovementCommandHandler> logger)
     {
         _unitOfWork = unitOfWork;
         _tenantContext = tenantContext;
+        _stockLevelService = stockLevelService;
         _logger = logger;
     }
 
@@ -98,6 +102,10 @@ public class CreateStockMovementCommandHandler : IRequestHandler<CreateStockMove
             };
 
             await _unitOfWork.StockMovements.AddAsync(stockMovement, cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            // Update warehouse inventory levels
+            await _stockLevelService.UpdateStockLevelsAsync(stockMovement, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             _logger.LogInformation(

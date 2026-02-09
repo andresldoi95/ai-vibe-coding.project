@@ -41,6 +41,10 @@ public class GetProductByIdQueryHandler : IRequestHandler<GetProductByIdQuery, R
                 return Result<ProductDto>.Failure("Product not found");
             }
 
+            // Calculate total stock from WarehouseInventory
+            var totalStock = await _unitOfWork.WarehouseInventory
+                .GetTotalStockByProductIdAsync(product.Id, _tenantContext.TenantId.Value, cancellationToken);
+
             var productDto = new ProductDto
             {
                 Id = product.Id,
@@ -54,7 +58,7 @@ public class GetProductByIdQueryHandler : IRequestHandler<GetProductByIdQuery, R
                 UnitPrice = product.UnitPrice,
                 CostPrice = product.CostPrice,
                 MinimumStockLevel = product.MinimumStockLevel,
-                CurrentStockLevel = product.CurrentStockLevel,
+                CurrentStockLevel = totalStock,
                 Weight = product.Weight,
                 Dimensions = product.Dimensions,
                 IsActive = product.IsActive,

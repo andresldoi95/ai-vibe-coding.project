@@ -10,6 +10,7 @@ definePageMeta({
 })
 
 const { t } = useI18n()
+const uiStore = useUiStore()
 const toast = useNotification()
 const router = useRouter()
 const route = useRoute()
