@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import type { ApiResponse, LoginCredentials, LoginResponse, RegisterData, User } from '~/types/auth'
+import type { ApiResponse, LoginCredentials, LoginResponse, RegisterData, Role, SelectTenantResponse, User } from '~/types/auth'
 
 export const useAuthStore = defineStore(
   'auth',
@@ -7,6 +7,8 @@ export const useAuthStore = defineStore(
     const token = ref<string | null>(null)
     const user = ref<User | null>(null)
     const refreshToken = ref<string | null>(null)
+    const role = ref<Role | null>(null)
+    const permissions = ref<string[]>([])
 
     const isAuthenticated = computed(() => !!token.value && !!user.value)
 
@@ -37,8 +39,8 @@ export const useAuthStore = defineStore(
         // eslint-disable-next-line no-console
         console.log('[AuthStore] Setting tenants:', response.tenants)
         tenantStore.setAvailableTenants(response.tenants)
-        // Auto-select first tenant
-        tenantStore.selectTenant(response.tenants[0].id)
+        // Auto-select first tenant (this will fetch role and permissions)
+        await selectTenant(response.tenants[0].id)
       }
 
       // eslint-disable-next-line no-console
@@ -48,6 +50,8 @@ export const useAuthStore = defineStore(
 
     const logout = () => {
       token.value = null
+      role.value = null
+      permissions.value = []
       user.value = null
       refreshToken.value = null
 
@@ -130,8 +134,8 @@ export const useAuthStore = defineStore(
         // eslint-disable-next-line no-console
         console.log('[AuthStore] Setting tenants:', response.tenants)
         tenantStore.setAvailableTenants(response.tenants)
-        // Auto-select first tenant
-        tenantStore.selectTenant(response.tenants[0].id)
+        // Auto-select first tenant (this will fetch role and permissions)
+        await selectTenant(response.tenants[0].id)
       }
 
       // eslint-disable-next-line no-console
@@ -139,22 +143,66 @@ export const useAuthStore = defineStore(
       return response
     }
 
+    const selectTenant = async (tenantId: string): Promise<void> => {
+      const { apiFetch } = useApi()
+
+      // eslint-disable-next-line no-console
+      console.log('[AuthStore] Selecting tenant:', tenantId)
+
+      const apiResponse = await apiFetch<ApiResponse<SelectTenantResponse>>(
+        `/auth/select-tenant/${tenantId}`,
+        { method: 'POST' },
+      )
+
+      const response = apiResponse.data
+
+      // Update token with tenant-scoped JWT that includes role and permissions
+      token.value = response.accessToken
+      role.value = response.role
+      permissions.value = response.permissions
+
+      // Also update tenant store
+      const tenantStore = useTenantStore()
+      tenantStore.selectTenant(tenantId)
+
+      // eslint-disable-next-line no-console
+      console.log('[AuthStore] Tenant selected. Role:', response.role.name, 'Permissions:', response.permissions.length)
+    }
+
+    const hasPermission = (permission: string): boolean => {
+      return permissions.value.includes(permission)
+    }
+
+    const hasAnyPermission = (requiredPermissions: string[]): boolean => {
+      return requiredPermissions.some(p => permissions.value.includes(p))
+    }
+
+    const hasAllPermissions = (requiredPermissions: string[]): boolean => {
+      return requiredPermissions.every(p => permissions.value.includes(p))
+    }
+
     return {
       token,
       user,
       refreshToken,
+      role,
+      permissions,
       isAuthenticated,
       login,
       logout,
+      selectTenant,
       refreshAccessToken,
       fetchCurrentUser,
       register,
+      hasPermission,
+      hasAnyPermission,
+      hasAllPermissions,
     }
   },
   {
     persist: {
       storage: persistedState.localStorage,
-      paths: ['token', 'refreshToken', 'user'],
+      paths: ['token', 'refreshToken', 'user', 'role', 'permissions'],
     },
   },
 )

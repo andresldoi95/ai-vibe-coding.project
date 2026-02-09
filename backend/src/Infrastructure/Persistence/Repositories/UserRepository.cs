@@ -13,8 +13,6 @@ public class UserRepository : Repository<User>, IUserRepository
     public async Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken = default)
     {
         return await _dbSet
-            .Include(u => u.UserTenants)
-                .ThenInclude(ut => ut.Tenant)
             .FirstOrDefaultAsync(u => u.Email == email, cancellationToken);
     }
 

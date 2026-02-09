@@ -10,6 +10,8 @@ public interface IUnitOfWork : IDisposable
     IUserTenantRepository UserTenants { get; }
     IRefreshTokenRepository RefreshTokens { get; }
     IWarehouseRepository Warehouses { get; }
+    IRoleRepository Roles { get; }
+    IPermissionRepository Permissions { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     Task BeginTransactionAsync(CancellationToken cancellationToken = default);

@@ -37,7 +37,11 @@
     "state": "Bundesland / Provinz",
     "postal_code": "Postleitzahl",
     "country": "Land",
-    "audit_info": "Audit-Informationen"
+    "audit_info": "Audit-Informationen",
+    "select_all": "Alles Auswählen",
+    "deselect_all": "Alle Abwählen",
+    "type": "Typ",
+    "basic_info": "Grundlegende Informationen"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -51,6 +55,7 @@
     "stock_movements": "Lagerbewegungen",
     "profile": "Profil",
     "settings": "Einstellungen",
+    "roles": "Rollen und Berechtigungen",
     "logout": "Abmelden"
   },
   "auth": {
@@ -103,9 +108,7 @@
       "successMessage": "Ihr Passwort wurde erfolgreich zurückgesetzt. Sie können sich jetzt mit Ihrem neuen Passwort anmelden.",
       "invalidTokenTitle": "Ungültiger oder abgelaufener Link",
       "invalidTokenMessage": "Dieser Link zum Zurücksetzen ist ungültig oder abgelaufen. Bitte fordern Sie einen neuen an."
-    },
-    "register": {
-      "createAccount": "Konto erstellen"
+
     }
   },
   "dashboard": {
@@ -208,7 +211,40 @@
     "invalidEmail": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
     "minLength": "{field} muss mindestens {min} Zeichen lang sein",
     "passwordComplexity": "Das Passwort muss Groß-, Kleinbuchstaben, Zahlen und Sonderzeichen enthalten",
+    "insufficient_permissions": "Unzureichende Berechtigungen",
+    "contact_admin": "Sie haben keine Berechtigung, diese Aktion auszuführen. Wenden Sie sich an Ihren Administrator.",
     "passwordMismatch": "Die Passwörter stimmen nicht überein"
+  },
+  "roles": {
+    "title": "Rollen und Berechtigungen",
+    "subtitle": "Rollen verwalten und Berechtigungen zuweisen",
+    "role_name": "Rollenname",
+    "role_description": "Rollenbeschreibung",
+    "priority": "Priorität",
+    "user_count": "Benutzer",
+    "permissions": "Berechtigungen",
+    "system_role": "Systemrolle",
+    "custom_role": "Benutzerdefinierte Rolle",
+    "create_role": "Rolle Erstellen",
+    "edit_role": "Rolle Bearbeiten",
+    "delete_role": "Rolle Löschen",
+    "select_permissions": "Berechtigungen Auswählen",
+    "no_roles": "Keine Rollen gefunden",
+    "get_started_roles": "Erstellen Sie Ihre erste benutzerdefinierte Rolle",
+    "priority_hint": "Rollen mit höherer Priorität erscheinen zuerst (Systemrollen: Owner=100, Admin=50, Manager=25, User=10)",
+    "cannot_delete_system": "Systemrollen können nicht gelöscht werden",
+    "cannot_delete_assigned": "Rolle mit {count} zugewiesenen Benutzer(n) kann nicht gelöscht werden",
+    "confirm_delete_role": "Möchten Sie die Rolle '{name}' wirklich löschen?",
+    "warehouses_permissions": "Lager",
+    "products_permissions": "Produkte",
+    "stock_permissions": "Bestand",
+    "tenant_permissions": "Unternehmen",
+    "users_permissions": "Benutzer",
+    "roles_permissions": "Rollen",
+    "read": "Ansehen",
+    "create": "Erstellen",
+    "update": "Bearbeiten",
+    "delete": "Löschen"
   },
   "messages": {
     "success_save": "Erfolgreich gespeichert",
@@ -221,6 +257,8 @@
     "error_update": "Aktualisieren fehlgeschlagen",
     "error_delete": "Löschen fehlgeschlagen",
     "confirm_delete": "Sind Sie sicher, dass Sie dieses Element löschen möchten?",
-    "operation_cancelled": "Operation abgebrochen"
+    "operation_cancelled": "Operation abgebrochen",
+    "no_access": "Kein Zugriff",
+    "no_settings_access": "Sie haben keinen Zugriff auf Einstellungsbereiche. Wenden Sie sich an Ihren Administrator, wenn Sie Zugriff benötigen."
   }
 }

@@ -60,6 +60,12 @@ export default defineNuxtPlugin(() => {
         authStore.logout()
         await navigateTo('/login')
       }
+
+      // Handle authorization/permission errors
+      if (response.status === 403) {
+        const { showPermissionError } = useNotification()
+        showPermissionError()
+      }
     },
   })
 

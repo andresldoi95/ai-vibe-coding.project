@@ -3,54 +3,79 @@ const { t } = useI18n()
 const authStore = useAuthStore()
 const tenantStore = useTenantStore()
 const uiStore = useUiStore()
+const { hasPermission } = usePermissions()
 
-const menuItems = computed(() => [
-  {
-    label: t('nav.dashboard'),
-    icon: 'pi pi-home',
-    command: () => navigateTo('/'),
-  },
-  {
-    label: t('nav.billing'),
-    icon: 'pi pi-dollar',
-    command: () => navigateTo('/billing'),
-    items: [
-      { label: t('nav.invoices'), icon: 'pi pi-file', command: () => navigateTo('/billing/invoices') },
-      {
-        label: t('nav.customers'),
-        icon: 'pi pi-users',
-        command: () => navigateTo('/billing/customers'),
-      },
-      {
-        label: t('nav.payments'),
-        icon: 'pi pi-credit-card',
-        command: () => navigateTo('/billing/payments'),
-      },
-    ],
-  },
-  {
-    label: t('nav.inventory'),
-    icon: 'pi pi-box',
-    command: () => navigateTo('/inventory'),
-    items: [
-      {
-        label: t('nav.products'),
-        icon: 'pi pi-shopping-cart',
-        command: () => navigateTo('/inventory/products'),
-      },
-      {
-        label: t('nav.warehouses'),
-        icon: 'pi pi-building',
-        command: () => navigateTo('/inventory/warehouses'),
-      },
-      {
-        label: t('nav.stock_movements'),
-        icon: 'pi pi-arrows-h',
-        command: () => navigateTo('/inventory/stock-movements'),
-      },
-    ],
-  },
-])
+const menuItems = computed(() => {
+  const items = [
+    {
+      label: t('nav.dashboard'),
+      icon: 'pi pi-home',
+      command: () => navigateTo('/'),
+    },
+    {
+      label: t('nav.billing'),
+      icon: 'pi pi-dollar',
+      command: () => navigateTo('/billing'),
+      items: [
+        { label: t('nav.invoices'), icon: 'pi pi-file', command: () => navigateTo('/billing/invoices') },
+        {
+          label: t('nav.customers'),
+          icon: 'pi pi-users',
+          command: () => navigateTo('/billing/customers'),
+        },
+        {
+          label: t('nav.payments'),
+          icon: 'pi pi-credit-card',
+          command: () => navigateTo('/billing/payments'),
+        },
+      ],
+    },
+    {
+      label: t('nav.inventory'),
+      icon: 'pi pi-box',
+      command: () => navigateTo('/inventory'),
+      items: [
+        {
+          label: t('nav.products'),
+          icon: 'pi pi-shopping-cart',
+          command: () => navigateTo('/inventory/products'),
+        },
+        {
+          label: t('nav.warehouses'),
+          icon: 'pi pi-building',
+          command: () => navigateTo('/inventory/warehouses'),
+        },
+        {
+          label: t('nav.stock_movements'),
+          icon: 'pi pi-arrows-h',
+          command: () => navigateTo('/inventory/stock-movements'),
+        },
+      ],
+    },
+  ]
+
+  // Add Settings menu only if user has roles.read permission
+  const settingsItems = []
+  if (hasPermission('roles.read')) {
+    settingsItems.push({
+      label: t('nav.roles'),
+      icon: 'pi pi-shield',
+      command: () => navigateTo('/settings/roles'),
+    })
+  }
+
+  // Only show Settings menu if there are items
+  if (settingsItems.length > 0) {
+    items.push({
+      label: t('nav.settings'),
+      icon: 'pi pi-cog',
+      command: () => navigateTo('/settings'),
+      items: settingsItems,
+    })
+  }
+
+  return items
+})
 
 const userMenu = ref()
 
@@ -111,7 +136,7 @@ const breadcrumbHome = { icon: 'pi pi-home', to: '/' }
               placeholder="Select Tenant"
               appendTo="body"
               class="w-48"
-              @change="(event: Event) => tenantStore.selectTenant((event.target as HTMLSelectElement).value)"
+              @change="(event: Event) => authStore.selectTenant((event.target as HTMLSelectElement).value)"
             >
               <template #value="{ value }">
                 <div v-if="value" class="flex items-center gap-2">

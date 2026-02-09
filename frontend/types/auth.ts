@@ -7,6 +7,32 @@ export interface User {
   emailConfirmed: boolean
 }
 
+export interface Permission {
+  id: string
+  name: string
+  description: string
+  resource: string
+  action: string
+}
+
+export interface Role {
+  id: string
+  name: string
+  description: string
+  priority: number
+  isSystemRole?: boolean
+  isActive?: boolean
+  userCount?: number
+  permissions?: Permission[]
+}
+
+export interface RoleFormData {
+  name: string
+  description: string
+  priority: number
+  permissionIds: string[]
+}
+
 export interface LoginCredentials {
   email: string
   password: string
@@ -22,6 +48,12 @@ export interface LoginResponse {
     slug: string
     status: string
   }>
+}
+
+export interface SelectTenantResponse {
+  accessToken: string
+  role: Role
+  permissions: string[]
 }
 
 // API wrapper type

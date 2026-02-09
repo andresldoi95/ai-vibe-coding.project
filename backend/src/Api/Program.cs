@@ -1,9 +1,11 @@
 using System.Text;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using SaaS.Api.Authorization;
 using SaaS.Api.Middleware;
 using SaaS.Application.Common.Behaviors;
 using SaaS.Application.Common.Interfaces;
@@ -91,7 +93,34 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    // Define permission-based policies
+    var permissions = new[]
+    {
+        // Warehouses
+        "warehouses.read", "warehouses.create", "warehouses.update", "warehouses.delete",
+        // Products
+        "products.read", "products.create", "products.update", "products.delete",
+        // Stock
+        "stock.read", "stock.create", "stock.update", "stock.delete",
+        // Tenants
+        "tenants.read", "tenants.create", "tenants.update", "tenants.delete",
+        // Users
+        "users.read", "users.create", "users.update", "users.delete", "users.invite", "users.remove",
+        // Roles
+        "roles.read", "roles.manage"
+    };
+
+    foreach (var permission in permissions)
+    {
+        options.AddPolicy(permission, policy =>
+            policy.Requirements.Add(new PermissionRequirement(permission)));
+    }
+});
+
+// Register authorization handler
+builder.Services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();
 
 // Configure CORS
 builder.Services.AddCors(options =>
@@ -122,6 +151,7 @@ builder.Services.AddValidatorsFromAssembly(typeof(SaaS.Application.DTOs.UserDto)
 builder.Services.AddScoped<ITenantContext, TenantContext>();
 builder.Services.AddScoped<IApplicationDbContext>(sp => sp.GetRequiredService<ApplicationDbContext>());
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IUserPermissionService, UserPermissionService>();
 
 // Configure Email Settings
 builder.Services.Configure<SaaS.Application.Common.Models.EmailSettings>(
@@ -138,6 +168,8 @@ builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 builder.Services.AddScoped<IWarehouseRepository, WarehouseRepository>();
 builder.Services.AddScoped<IEmailLogRepository, SaaS.Infrastructure.Persistence.Repositories.EmailLogRepository>();
 builder.Services.AddScoped<IEmailTemplateRepository, SaaS.Infrastructure.Persistence.Repositories.EmailTemplateRepository>();
+builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+builder.Services.AddScoped<IPermissionRepository, PermissionRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 var app = builder.Build();

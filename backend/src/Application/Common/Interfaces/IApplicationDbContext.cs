@@ -1,5 +1,3 @@
-using SaaS.Domain.Entities;
-
 namespace SaaS.Application.Common.Interfaces;
 
 /// <summary>

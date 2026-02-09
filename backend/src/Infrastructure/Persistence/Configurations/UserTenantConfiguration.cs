@@ -22,5 +22,11 @@ public class UserTenantConfiguration : IEntityTypeConfiguration<UserTenant>
         builder.HasOne(ut => ut.Tenant)
             .WithMany(t => t.UserTenants)
             .HasForeignKey(ut => ut.TenantId);
+
+        builder.HasOne(ut => ut.Role)
+            .WithMany(r => r.UserTenants)
+            .HasForeignKey(ut => ut.RoleId)
+            .OnDelete(DeleteBehavior.Restrict)
+            .IsRequired(false); // Nullable during migration
     }
 }

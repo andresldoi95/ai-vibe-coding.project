@@ -39,11 +39,21 @@ export function useNotification() {
     })
   }
 
+  const showPermissionError = () => {
+    toast.add({
+      severity: 'error',
+      summary: 'Insufficient Permissions',
+      detail: 'You do not have permission to perform this action. Contact your administrator.',
+      life: 5000,
+    })
+  }
+
   return {
     toast,
     showSuccess,
     showError,
     showWarning,
     showInfo,
+    showPermissionError,
   }
 }

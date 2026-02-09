@@ -37,7 +37,11 @@
     "state": "État / Province",
     "postal_code": "Code Postal",
     "country": "Pays",
-    "audit_info": "Informations d'Audit"
+    "audit_info": "Informations d'Audit",
+    "select_all": "Tout Sélectionner",
+    "deselect_all": "Tout Désélectionner",
+    "type": "Type",
+    "basic_info": "Informations de Base"
   },
   "nav": {
     "dashboard": "Tableau de bord",
@@ -51,6 +55,7 @@
     "stock_movements": "Mouvements de Stock",
     "profile": "Profil",
     "settings": "Paramètres",
+    "roles": "Rôles et Permissions",
     "logout": "Déconnexion"
   },
   "auth": {
@@ -103,9 +108,7 @@
       "successMessage": "Votre mot de passe a été réinitialisé avec succès. Vous pouvez maintenant vous connecter avec votre nouveau mot de passe.",
       "invalidTokenTitle": "Lien invalide ou expiré",
       "invalidTokenMessage": "Ce lien de réinitialisation est invalide ou a expiré. Veuillez en demander un nouveau."
-    },
-    "register": {
-      "createAccount": "Créer un compte"
+
     }
   },
   "dashboard": {
@@ -208,7 +211,40 @@
     "invalidEmail": "Veuillez entrer une adresse e-mail valide",
     "minLength": "{field} doit contenir au moins {min} caractères",
     "passwordComplexity": "Le mot de passe doit contenir des majuscules, minuscules, chiffres et caractères spéciaux",
+    "insufficient_permissions": "Autorisations insuffisantes",
+    "contact_admin": "Vous n'avez pas la permission d'effectuer cette action. Contactez votre administrateur.",
     "passwordMismatch": "Les mots de passe ne correspondent pas"
+  },
+  "roles": {
+    "title": "Rôles et Permissions",
+    "subtitle": "Gérer les rôles et attribuer des permissions",
+    "role_name": "Nom du Rôle",
+    "role_description": "Description du Rôle",
+    "priority": "Priorité",
+    "user_count": "Utilisateurs",
+    "permissions": "Permissions",
+    "system_role": "Rôle Système",
+    "custom_role": "Rôle Personnalisé",
+    "create_role": "Créer un Rôle",
+    "edit_role": "Modifier le Rôle",
+    "delete_role": "Supprimer le Rôle",
+    "select_permissions": "Sélectionner les Permissions",
+    "no_roles": "Aucun rôle trouvé",
+    "get_started_roles": "Créez votre premier rôle personnalisé",
+    "priority_hint": "Les rôles de priorité supérieure apparaissent en premier (rôles système: Owner=100, Admin=50, Manager=25, User=10)",
+    "cannot_delete_system": "Les rôles système ne peuvent pas être supprimés",
+    "cannot_delete_assigned": "Impossible de supprimer le rôle avec {count} utilisateur(s) assigné(s)",
+    "confirm_delete_role": "Êtes-vous sûr de vouloir supprimer le rôle '{name}'?",
+    "warehouses_permissions": "Entrepôts",
+    "products_permissions": "Produits",
+    "stock_permissions": "Stock",
+    "tenant_permissions": "Entreprises",
+    "users_permissions": "Utilisateurs",
+    "roles_permissions": "Rôles",
+    "read": "Voir",
+    "create": "Créer",
+    "update": "Modifier",
+    "delete": "Supprimer"
   },
   "messages": {
     "success_save": "Enregistré avec succès",
@@ -221,6 +257,8 @@
     "error_update": "Échec de la mise à jour",
     "error_delete": "Échec de la suppression",
     "confirm_delete": "Êtes-vous sûr de vouloir supprimer cet élément?",
-    "operation_cancelled": "Opération annulée"
+    "operation_cancelled": "Opération annulée",
+    "no_access": "Pas d'Accès",
+    "no_settings_access": "Vous n'avez accès à aucune section de paramètres. Contactez votre administrateur si vous avez besoin d'accès."
   }
 }

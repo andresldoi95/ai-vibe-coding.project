@@ -37,7 +37,11 @@
     "state": "Estado / Provincia",
     "postal_code": "Código Postal",
     "country": "País",
-    "audit_info": "Información de Auditoría"
+    "audit_info": "Información de Auditoría",
+    "select_all": "Seleccionar Todo",
+    "deselect_all": "Deseleccionar Todo",
+    "type": "Tipo",
+    "basic_info": "Información Básica"
   },
   "nav": {
     "dashboard": "Panel",
@@ -51,6 +55,7 @@
     "stock_movements": "Movimientos de Stock",
     "profile": "Perfil",
     "settings": "Configuración",
+    "roles": "Roles y Permisos",
     "logout": "Cerrar sesión"
   },
   "auth": {
@@ -103,9 +108,7 @@
       "successMessage": "Tu contraseña ha sido restablecida exitosamente. Ahora puedes iniciar sesión con tu nueva contraseña.",
       "invalidTokenTitle": "Enlace inválido o expirado",
       "invalidTokenMessage": "Este enlace de restablecimiento es inválido o ha expirado. Por favor solicita uno nuevo."
-    },
-    "register": {
-      "createAccount": "Crear una cuenta"
+
     }
   },
   "dashboard": {
@@ -208,7 +211,40 @@
     "invalidEmail": "Por favor ingrese un correo electrónico válido",
     "minLength": "{field} debe tener al menos {min} caracteres",
     "passwordComplexity": "La contraseña debe contener mayúsculas, minúsculas, números y caracteres especiales",
+    "insufficient_permissions": "Permisos insuficientes",
+    "contact_admin": "No tiene permiso para realizar esta acción. Contacte a su administrador.",
     "passwordMismatch": "Las contraseñas no coinciden"
+  },
+  "roles": {
+    "title": "Roles y Permisos",
+    "subtitle": "Gestionar roles y asignar permisos",
+    "role_name": "Nombre del Rol",
+    "role_description": "Descripción del Rol",
+    "priority": "Prioridad",
+    "user_count": "Usuarios",
+    "permissions": "Permisos",
+    "system_role": "Rol del Sistema",
+    "custom_role": "Rol Personalizado",
+    "create_role": "Crear Rol",
+    "edit_role": "Editar Rol",
+    "delete_role": "Eliminar Rol",
+    "select_permissions": "Seleccionar Permisos",
+    "no_roles": "No se encontraron roles",
+    "get_started_roles": "Crea tu primer rol personalizado",
+    "priority_hint": "Los roles de mayor prioridad aparecen primero (roles del sistema: Owner=100, Admin=50, Manager=25, User=10)",
+    "cannot_delete_system": "Los roles del sistema no se pueden eliminar",
+    "cannot_delete_assigned": "No se puede eliminar el rol con {count} usuario(s) asignado(s)",
+    "confirm_delete_role": "¿Está seguro de que desea eliminar el rol '{name}'?",
+    "warehouses_permissions": "Almacenes",
+    "products_permissions": "Productos",
+    "stock_permissions": "Stock",
+    "tenant_permissions": "Empresas",
+    "users_permissions": "Usuarios",
+    "roles_permissions": "Roles",
+    "read": "Ver",
+    "create": "Crear",
+    "update": "Editar",
+    "delete": "Eliminar"
   },
   "messages": {
     "success_save": "Guardado exitosamente",
@@ -221,6 +257,8 @@
     "error_update": "Error al actualizar",
     "error_delete": "Error al eliminar",
     "confirm_delete": "¿Está seguro de que desea eliminar este elemento?",
-    "operation_cancelled": "Operación cancelada"
+    "operation_cancelled": "Operación cancelada",
+    "no_access": "Sin Acceso",
+    "no_settings_access": "No tiene acceso a ninguna sección de configuración. Contacte a su administrador si necesita acceso."
   }
 }

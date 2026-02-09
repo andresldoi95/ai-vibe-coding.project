@@ -70,12 +70,15 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Result<Lo
             await _unitOfWork.Users.AddAsync(user, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
+            // Create default roles for new tenant
+            var ownerRole = await CreateDefaultRolesForTenant(tenant.Id, cancellationToken);
+
             // Create user-tenant relationship with Owner role
             var userTenant = new UserTenant
             {
                 UserId = user.Id,
                 TenantId = tenant.Id,
-                Role = UserRole.Owner,
+                RoleId = ownerRole.Id,
                 IsActive = true
             };
 
@@ -128,5 +131,68 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Result<Lo
             _logger.LogError(ex, "Error registering user {Email}", request.Email);
             return Result<LoginResponseDto>.Failure("Registration failed. Please try again.");
         }
+    }
+
+    /// <summary>
+    /// Creates default roles (Owner, Admin, Manager, User) for a new tenant
+    /// </summary>
+    private async Task<Role> CreateDefaultRolesForTenant(Guid tenantId, CancellationToken cancellationToken)
+    {
+        // Get all permissions
+        var allPermissions = await _unitOfWork.Permissions.GetAllAsync(cancellationToken);
+
+        // Define role configurations
+        var roleConfigs = new[]
+        {
+            new { Name = "Owner", Priority = 100, PermissionFilter = (Func<Permission, bool>)(p => true) }, // All permissions
+            new { Name = "Admin", Priority = 50, PermissionFilter = (Func<Permission, bool>)(p => p.Resource != "tenants") }, // All except tenant management
+            new { Name = "Manager", Priority = 25, PermissionFilter = (Func<Permission, bool>)(p => p.Resource == "warehouses" || p.Resource == "products" || p.Resource == "stock") },
+            new { Name = "User", Priority = 10, PermissionFilter = (Func<Permission, bool>)(p => p.Action == "read" && (p.Resource == "warehouses" || p.Resource == "products" || p.Resource == "stock")) }
+        };
+
+        Role? ownerRole = null;
+
+        foreach (var config in roleConfigs)
+        {
+            var role = new Role
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                Name = config.Name,
+                Description = $"System {config.Name} role with predefined permissions",
+                Priority = config.Priority,
+                IsSystemRole = true,
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
+
+            await _unitOfWork.Roles.AddAsync(role, cancellationToken);
+
+            // Assign permissions
+            var relevantPermissions = allPermissions.Where(config.PermissionFilter).ToList();
+            foreach (var permission in relevantPermissions)
+            {
+                var rolePermission = new RolePermission
+                {
+                    Id = Guid.NewGuid(),
+                    RoleId = role.Id,
+                    PermissionId = permission.Id
+                };
+
+                // Add to role's RolePermissions collection
+                if (role.RolePermissions == null)
+                    role.RolePermissions = new List<RolePermission>();
+
+                role.RolePermissions.Add(rolePermission);
+            }
+
+            if (config.Name == "Owner")
+                ownerRole = role;
+        }
+
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        return ownerRole ?? throw new InvalidOperationException("Owner role was not created");
     }
 }

@@ -83,6 +83,45 @@ public class AuthService : IAuthService
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
+    public string GenerateJwtTokenWithRole(User user, Guid tenantId, Role role, List<string> permissions)
+    {
+        var jwtSettings = _configuration.GetSection("JWT");
+        var secret = jwtSettings["Secret"] ?? throw new InvalidOperationException("JWT Secret not configured");
+        var issuer = jwtSettings["Issuer"] ?? "SaaS.Backend";
+        var audience = jwtSettings["Audience"] ?? "SaaS.Frontend";
+        var expirationMinutes = int.Parse(jwtSettings["ExpirationMinutes"] ?? "15");
+
+        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
+        var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+        var claims = new List<Claim>
+        {
+            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+            new Claim(JwtRegisteredClaimNames.Email, user.Email),
+            new Claim(JwtRegisteredClaimNames.Name, user.Name),
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new Claim("tenant_id", tenantId.ToString()),
+            new Claim("role_id", role.Id.ToString()),
+            new Claim("role_name", role.Name),
+        };
+
+        // Add permissions as individual claims for easy policy-based authorization
+        foreach (var permission in permissions)
+        {
+            claims.Add(new Claim("permission", permission));
+        }
+
+        var token = new JwtSecurityToken(
+            issuer: issuer,
+            audience: audience,
+            claims: claims,
+            expires: DateTime.UtcNow.AddMinutes(expirationMinutes),
+            signingCredentials: credentials
+        );
+
+        return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+
     public RefreshToken GenerateRefreshToken(string ipAddress)
     {
         var randomBytes = new byte[64];

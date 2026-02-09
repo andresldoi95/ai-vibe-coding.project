@@ -16,6 +16,8 @@ public class UnitOfWork : IUnitOfWork
     public IUserTenantRepository UserTenants { get; }
     public IRefreshTokenRepository RefreshTokens { get; }
     public IWarehouseRepository Warehouses { get; }
+    public IRoleRepository Roles { get; }
+    public IPermissionRepository Permissions { get; }
 
     public UnitOfWork(
         ApplicationDbContext context,
@@ -23,7 +25,9 @@ public class UnitOfWork : IUnitOfWork
         ITenantRepository tenantRepository,
         IUserTenantRepository userTenantRepository,
         IRefreshTokenRepository refreshTokenRepository,
-        IWarehouseRepository warehouseRepository)
+        IWarehouseRepository warehouseRepository,
+        IRoleRepository roleRepository,
+        IPermissionRepository permissionRepository)
     {
         _context = context;
         Users = userRepository;
@@ -31,6 +35,8 @@ public class UnitOfWork : IUnitOfWork
         UserTenants = userTenantRepository;
         RefreshTokens = refreshTokenRepository;
         Warehouses = warehouseRepository;
+        Roles = roleRepository;
+        Permissions = permissionRepository;
     }
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

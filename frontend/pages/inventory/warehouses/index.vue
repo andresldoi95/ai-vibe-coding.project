@@ -10,6 +10,7 @@ const { t } = useI18n()
 const uiStore = useUiStore()
 const toast = useNotification()
 const { getAllWarehouses, deleteWarehouse } = useWarehouse()
+const { can } = usePermissions()
 
 const warehouses = ref<Warehouse[]>([])
 const loading = ref(false)
@@ -95,6 +96,7 @@ onMounted(() => {
     >
       <template #actions>
         <Button
+          v-if="can.createWarehouse()"
           :label="t('warehouses.create')"
           icon="pi pi-plus"
           @click="createWarehouse"
@@ -119,7 +121,7 @@ onMounted(() => {
             <EmptyState
               icon="pi pi-building"
               :title="t('common.no_data')"
-              :description="t('warehouses.empty_description')"
+              :description="can.createWarehouse() ? t('warehouses.get_started') : undefined"
               :action-label="t('warehouses.create')"
               action-icon="pi pi-plus"
               @action="createWarehouse"
@@ -150,9 +152,9 @@ onMounted(() => {
           <Column :header="t('common.actions')">
             <template #body="{ data }">
               <DataTableActions
-                :show-view="true"
-                :show-edit="true"
-                :show-delete="true"
+                :show-view="can.viewWarehouses()"
+                :show-edit="can.editWarehouse()"
+                :show-delete="can.deleteWarehouse()"
                 @view="navigateTo(`/inventory/warehouses/${data.id}`)"
                 @edit="navigateTo(`/inventory/warehouses/${data.id}/edit`)"
                 @delete="confirmDelete(data)"

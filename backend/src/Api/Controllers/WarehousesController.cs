@@ -22,6 +22,7 @@ public class WarehousesController : BaseController
     /// Get all warehouses for the current tenant
     /// </summary>
     [HttpGet]
+    [Authorize(Policy = "warehouses.read")]
     public async Task<IActionResult> GetAll()
     {
         var query = new GetAllWarehousesQuery();
@@ -39,6 +40,7 @@ public class WarehousesController : BaseController
     /// Get a warehouse by ID
     /// </summary>
     [HttpGet("{id:guid}")]
+    [Authorize(Policy = "warehouses.read")]
     public async Task<IActionResult> GetById(Guid id)
     {
         var query = new GetWarehouseByIdQuery { Id = id };
@@ -56,6 +58,7 @@ public class WarehousesController : BaseController
     /// Create a new warehouse
     /// </summary>
     [HttpPost]
+    [Authorize(Policy = "warehouses.create")]
     public async Task<IActionResult> Create([FromBody] CreateWarehouseCommand command)
     {
         var result = await _mediator.Send(command);
@@ -75,6 +78,7 @@ public class WarehousesController : BaseController
     /// Update an existing warehouse
     /// </summary>
     [HttpPut("{id:guid}")]
+    [Authorize(Policy = "warehouses.update")]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateWarehouseCommand command)
     {
         if (id != command.Id)
@@ -96,6 +100,7 @@ public class WarehousesController : BaseController
     /// Delete a warehouse (soft delete)
     /// </summary>
     [HttpDelete("{id:guid}")]
+    [Authorize(Policy = "warehouses.delete")]
     public async Task<IActionResult> Delete(Guid id)
     {
         var command = new DeleteWarehouseCommand { Id = id };

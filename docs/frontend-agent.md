@@ -985,7 +985,238 @@ export function useWarehouse() {
 - Export individual methods (not one giant object)
 - Follow naming convention: `getAll{Entity}`, `get{Entity}ById`, `create{Entity}`, `update{Entity}`, `delete{Entity}`
 
-### 6.2. Available Shared Components
+### 6.2. API Usage Guide (CRITICAL - READ BEFORE IMPLEMENTING API CALLS)
+
+This section addresses common API integration mistakes that have caused repeated issues in the project.
+
+#### Core API Infrastructure
+
+**Base URL Configuration** (in `nuxt.config.ts`):
+
+```typescript
+runtimeConfig: {
+  apiBaseUrl: 'http://localhost:5000/api/v1',  // Server-side
+  public: {
+    apiBase: 'http://localhost:5000/api/v1',   // Client-side
+  }
+}
+```
+
+**⚠️ CRITICAL**: The base URL **already includes** `/api/v1`. **DO NOT** add this prefix to your API paths.
+
+#### The `useApi()` Composable
+
+**Location**: `frontend/composables/useApi.ts`
+
+This composable provides access to `apiFetch`, a pre-configured `$fetch` instance with:
+- ✅ Base URL already set to `http://localhost:5000/api/v1`
+- ✅ Automatic JWT authentication headers (`Authorization: Bearer <token>`)
+- ✅ Automatic `X-Tenant-Id` header for multi-tenancy
+- ✅ Error handling (401 → logout, 403 → permission error)
+
+**Correct Usage Pattern**:
+
+```typescript
+export function useYourService() {
+  const { apiFetch } = useApi()
+
+  const getData = async () => {
+    // ✅ CORRECT: Path starts with /resource (no /api/v1)
+    const response = await apiFetch('/your-resource')
+    return response
+  }
+}
+```
+
+#### Common Mistakes & Solutions
+
+##### ❌ MISTAKE 1: Including `/api/v1` in the path
+
+```typescript
+// ❌ WRONG - Results in: http://localhost:5000/api/v1/api/v1/roles
+const response = await apiFetch('/api/v1/roles')
+```
+
+```typescript
+// ✅ CORRECT
+const response = await apiFetch('/roles')
+```
+
+##### ❌ MISTAKE 2: Using `$api` instead of `apiFetch`
+
+```typescript
+// ❌ WRONG - $api doesn't exist as a plugin
+const { $api } = useNuxtApp()
+const response = await $api('/roles')
+```
+
+```typescript
+// ✅ CORRECT - Use useApi() composable
+const { apiFetch } = useApi()
+const response = await apiFetch('/roles')
+```
+
+##### ❌ MISTAKE 3: Direct `$fetch` without headers
+
+```typescript
+// ❌ WRONG - Missing auth and tenant headers
+const response = await $fetch('http://localhost:5000/api/v1/roles')
+```
+
+```typescript
+// ✅ CORRECT - Use useApi() which adds headers automatically
+const { apiFetch } = useApi()
+const response = await apiFetch('/roles')
+```
+
+#### Backend API Requirements
+
+The backend requires the following for **ALL non-auth endpoints**:
+
+1. **Authorization header**: `Authorization: Bearer <JWT_TOKEN>`
+2. **X-Tenant-Id header**: `X-Tenant-Id: <TENANT_UUID>`
+
+Both are automatically added by the API plugin when using `useApi()`.
+
+**Endpoints that DON'T require X-Tenant-Id**:
+- `/auth/login`
+- `/auth/register`
+- `/auth/refresh`
+- `/auth/select-tenant/:id`
+
+#### API Response Structure
+
+All backend API responses follow this structure:
+
+```typescript
+interface ApiResponse<T> {
+  data: T
+  message?: string
+  success: boolean
+}
+```
+
+**Always access the data via `.data` property**:
+
+```typescript
+const response = await apiFetch<ApiResponse<Role[]>>('/roles')
+const roles = response.data  // ✅ Extract the actual data
+```
+
+#### Creating a New Service Composable - Template
+
+```typescript
+import type { YourType, YourFormData } from '~/types/your-module'
+import type { ApiResponse } from '~/types/api'
+
+export function useYourService() {
+  const { apiFetch } = useApi()
+
+  const getAll = async (): Promise<YourType[]> => {
+    // Path: /your-resource (NOT /api/v1/your-resource)
+    const response = await apiFetch<ApiResponse<YourType[]>>('/your-resource')
+    return response.data
+  }
+
+  const getById = async (id: string): Promise<YourType> => {
+    const response = await apiFetch<ApiResponse<YourType>>(`/your-resource/${id}`)
+    return response.data
+  }
+
+  const create = async (data: YourFormData): Promise<YourType> => {
+    const response = await apiFetch<ApiResponse<YourType>>('/your-resource', {
+      method: 'POST',
+      body: data,
+    })
+    return response.data
+  }
+
+  const update = async (id: string, data: YourFormData): Promise<YourType> => {
+    const response = await apiFetch<ApiResponse<YourType>>(`/your-resource/${id}`, {
+      method: 'PUT',
+      body: data,
+    })
+    return response.data
+  }
+
+  const remove = async (id: string): Promise<void> => {
+    await apiFetch(`/your-resource/${id}`, {
+      method: 'DELETE',
+    })
+  }
+
+  return {
+    getAll,
+    getById,
+    create,
+    update,
+    remove,
+  }
+}
+```
+
+#### Real Example: `useRole` Composable
+
+**Location**: `frontend/composables/useRole.ts`
+
+```typescript
+import type { Permission, Role, RoleFormData } from '~/types/auth'
+import type { ApiResponse } from '~/types/api'
+
+export function useRole() {
+  const { apiFetch } = useApi()
+
+  const getAllRoles = async (): Promise<Role[]> => {
+    const response = await apiFetch<ApiResponse<Role[]>>('/roles')
+    return response.data
+  }
+
+  const getAllPermissions = async (): Promise<Permission[]> => {
+    const response = await apiFetch<ApiResponse<Permission[]>>('/permissions')
+    return response.data
+  }
+
+  const createRole = async (data: RoleFormData): Promise<Role> => {
+    const response = await apiFetch<ApiResponse<Role>>('/roles', {
+      method: 'POST',
+      body: data,
+    })
+    return response.data
+  }
+
+  // ... other methods
+}
+```
+
+#### Error Handling
+
+The API plugin automatically handles common errors:
+
+- **401 Unauthorized**: Logs out user and redirects to `/login`
+- **403 Forbidden**: Shows permission error toast
+- **Other errors**: Propagated to the calling code
+
+```typescript
+try {
+  const data = await apiFetch('/your-resource')
+}
+catch (error) {
+  // Handle specific errors
+  console.error('Failed to fetch:', error)
+}
+```
+
+#### Quick Reference - API Usage Checklist
+
+| ✅ DO | ❌ DON'T |
+|-------|----------|
+| `const { apiFetch } = useApi()` | `const { $api } = useNuxtApp()` |
+| `apiFetch('/roles')` | `apiFetch('/api/v1/roles')` |
+| `await apiFetch<ApiResponse<T>>('/endpoint')` | `await $fetch('/endpoint')` |
+| `return response.data` | `return response` |
+| Use `useApi()` for all API calls | Use direct `$fetch` with manual headers |
+
+### 6.3. Available Shared Components
 
 The project includes reusable shared components that should be used instead of recreating similar functionality:
 
@@ -1087,7 +1318,7 @@ Action buttons component for DataTable rows (view, edit, delete).
 
 **Remember**: Always check for existing shared components before creating new ones. Reusing existing components ensures consistency and reduces maintenance.
 
-### 6.3. Available Utilities
+### 6.4. Available Utilities
 
 The project includes utility functions organized in the `utils/` directory:
 

@@ -6,6 +6,7 @@ using SaaS.Application.Features.Auth.Commands.Login;
 using SaaS.Application.Features.Auth.Commands.RefreshToken;
 using SaaS.Application.Features.Auth.Commands.Register;
 using SaaS.Application.Features.Auth.Commands.ResetPassword;
+using SaaS.Application.Features.Auth.Commands.SelectTenant;
 using SaaS.Application.Features.Auth.Queries.GetCurrentUser;
 
 namespace SaaS.Api.Controllers;
@@ -99,6 +100,30 @@ public class AuthController : BaseController
         }
 
         return Ok(new { data = result.Value, success = true });
+    }
+
+    /// <summary>
+    /// Select a tenant and get tenant-scoped JWT with role and permissions
+    /// </summary>
+    [HttpPost("select-tenant/{tenantId}")]
+    [Authorize]
+    public async Task<IActionResult> SelectTenant(Guid tenantId)
+    {
+        var userId = GetUserId();
+        var command = new SelectTenantCommand
+        {
+            UserId = userId,
+            TenantId = tenantId
+        };
+
+        var result = await _mediator.Send(command);
+
+        if (!result.IsSuccess)
+        {
+            return BadRequest(new { message = result.Error });
+        }
+
+        return Ok(new { data = result.Value, message = "Tenant selected successfully", success = true });
     }
 
     /// <summary>
