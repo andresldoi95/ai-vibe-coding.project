@@ -4,6 +4,7 @@ using SaaS.Application.Common.Interfaces;
 using SaaS.Application.Common.Models;
 using SaaS.Application.DTOs;
 using SaaS.Domain.Entities;
+using SaaS.Domain.Enums;
 
 namespace SaaS.Application.Features.Products.Commands.CreateProduct;
 
@@ -83,6 +84,45 @@ public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand,
                 "Product {Code} created successfully for tenant {TenantId}",
                 product.Code,
                 product.TenantId);
+
+            // Create initial stock movement if InitialQuantity and InitialWarehouseId are provided
+            if (request.InitialQuantity.HasValue && request.InitialWarehouseId.HasValue && request.InitialQuantity.Value > 0)
+            {
+                // Validate warehouse exists and belongs to tenant
+                var warehouse = await _unitOfWork.Warehouses.GetByIdAsync(request.InitialWarehouseId.Value, cancellationToken);
+                if (warehouse != null && warehouse.TenantId == _tenantContext.TenantId.Value)
+                {
+                    var initialMovement = new StockMovement
+                    {
+                        TenantId = _tenantContext.TenantId.Value,
+                        MovementType = MovementType.InitialInventory,
+                        ProductId = product.Id,
+                        WarehouseId = request.InitialWarehouseId.Value,
+                        Quantity = request.InitialQuantity.Value,
+                        UnitCost = request.CostPrice > 0 ? request.CostPrice : null,
+                        TotalCost = request.CostPrice > 0 ? request.CostPrice * request.InitialQuantity.Value : null,
+                        Reference = $"Initial inventory for {product.Code}",
+                        Notes = "Automatically created during product creation",
+                        MovementDate = DateTime.UtcNow
+                    };
+
+                    await _unitOfWork.StockMovements.AddAsync(initialMovement, cancellationToken);
+                    await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+                    _logger.LogInformation(
+                        "Initial stock movement created for product {ProductId} in warehouse {WarehouseId} with quantity {Quantity}",
+                        product.Id,
+                        request.InitialWarehouseId.Value,
+                        request.InitialQuantity.Value);
+                }
+                else
+                {
+                    _logger.LogWarning(
+                        "Could not create initial stock movement: Warehouse {WarehouseId} not found or doesn't belong to tenant {TenantId}",
+                        request.InitialWarehouseId.Value,
+                        _tenantContext.TenantId.Value);
+                }
+            }
 
             // Map to DTO
             var productDto = new ProductDto

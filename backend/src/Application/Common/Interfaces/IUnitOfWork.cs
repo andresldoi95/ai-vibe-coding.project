@@ -12,6 +12,7 @@ public interface IUnitOfWork : IDisposable
     IWarehouseRepository Warehouses { get; }
     IProductRepository Products { get; }
     ICustomerRepository Customers { get; }
+    IStockMovementRepository StockMovements { get; }
     IRoleRepository Roles { get; }
     IPermissionRepository Permissions { get; }
 
