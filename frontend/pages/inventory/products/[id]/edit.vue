@@ -75,9 +75,7 @@ const rules = computed(() => ({
     required,
     minValue: minValue(0),
   },
-  currentStockLevel: {
-    minValue: minValue(0),
-  },
+  // currentStockLevel is now read-only (calculated from WarehouseInventory)
   weight: {
     minValue: minValue(0),
   },
@@ -149,7 +147,7 @@ async function handleSubmit() {
       unitPrice: formData.unitPrice!,
       costPrice: formData.costPrice!,
       minimumStockLevel: formData.minimumStockLevel!,
-      currentStockLevel: formData.currentStockLevel || undefined,
+      // currentStockLevel is no longer sent - it's calculated from WarehouseInventory
       weight: formData.weight || undefined,
       dimensions: formData.dimensions || undefined,
       isActive: formData.isActive,
@@ -383,7 +381,7 @@ onMounted(() => {
                   </small>
                 </div>
 
-                <!-- Current Stock Level -->
+                <!-- Current Stock Level (Read-only, calculated from WarehouseInventory) -->
                 <div class="flex flex-col gap-2">
                   <label for="currentStockLevel" class="font-semibold text-slate-700 dark:text-slate-200">
                     {{ t('products.current_stock_level') }}
@@ -392,8 +390,12 @@ onMounted(() => {
                     id="currentStockLevel"
                     v-model="formData.currentStockLevel"
                     :placeholder="t('products.current_stock_level_placeholder')"
-                    :min="0"
+                    :disabled="true"
+                    class="bg-gray-100 dark:bg-gray-700"
                   />
+                  <small class="text-slate-500 dark:text-slate-400">
+                    {{ t('products.current_stock_level_readonly_hint') }}
+                  </small>
                 </div>
               </div>
             </div>
