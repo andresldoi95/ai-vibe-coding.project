@@ -52,3 +52,4 @@ CUSTOMERS_*.txt
 *.sh
 *.ps1
 UpdateCustomerCommand.cs.txt
+CUSTOMERS_IMPLEMENTATION_COMPLETE.md
