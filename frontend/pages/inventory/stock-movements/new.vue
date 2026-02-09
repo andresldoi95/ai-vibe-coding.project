@@ -137,21 +137,17 @@ function handleCancel() {
 }
 
 onMounted(() => {
+  uiStore.setBreadcrumbs([
+    { label: t('nav.inventory'), to: '/inventory' },
+    { label: t('stock_movements.title'), to: '/inventory/stock-movements' },
+    { label: t('stock_movements.create') },
+  ])
   loadData()
 })
 </script>
 
 <template>
   <div class="space-y-6">
-    <!-- Breadcrumb -->
-    <Breadcrumb
-      :home="{ label: t('common.home'), to: '/' }"
-      :model="[
-        { label: t('stock_movements.title'), to: '/inventory/stock-movements' },
-        { label: t('stock_movements.create') },
-      ]"
-    />
-
     <!-- Page Header -->
     <PageHeader
       :title="t('stock_movements.create')"

@@ -107,6 +107,13 @@ async function loadData() {
     formData.reference = movementData.reference || ''
     formData.notes = movementData.notes || ''
     formData.movementDate = movementData.movementDate.split('T')[0]
+
+    // Set breadcrumbs
+    uiStore.setBreadcrumbs([
+      { label: t('nav.inventory'), to: '/inventory' },
+      { label: t('stock_movements.title'), to: '/inventory/stock-movements' },
+      { label: t('stock_movements.edit') },
+    ])
   }
   catch (error) {
     const errMessage = error instanceof Error ? error.message : 'Unknown error'
@@ -166,15 +173,6 @@ onMounted(() => {
 
 <template>
   <div class="space-y-6">
-    <!-- Breadcrumb -->
-    <Breadcrumb
-      :home="{ label: t('common.home'), to: '/' }"
-      :model="[
-        { label: t('stock_movements.title'), to: '/inventory/stock-movements' },
-        { label: t('stock_movements.edit') },
-      ]"
-    />
-
     <!-- Page Header -->
     <PageHeader
       :title="t('stock_movements.edit')"

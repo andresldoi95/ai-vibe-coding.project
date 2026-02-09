@@ -1632,6 +1632,92 @@ The project includes two main layouts:
 
 #### Layout Structure
 
+#### Breadcrumb Navigation
+
+**CRITICAL**: Use `uiStore.setBreadcrumbs()` to set breadcrumbs, NOT the PrimeVue `<Breadcrumb>` component directly in pages.
+
+**❌ INCORRECT Usage (causes breadcrumbs not to work):**
+```vue
+<template>
+  <!-- WRONG: Do not use PrimeVue Breadcrumb component directly in pages -->
+  <Breadcrumb
+    :home="{ label: t('common.home'), to: '/' }"
+    :model="[
+      { label: t('products.title'), to: '/inventory/products' },
+      { label: t('products.create') },
+    ]"
+  />
+</template>
+```
+
+**✅ CORRECT Usage:**
+```vue
+<script setup>
+const { t } = useI18n()
+const uiStore = useUiStore()
+
+onMounted(() => {
+  // Set breadcrumbs in the UI store - layout will display them
+  uiStore.setBreadcrumbs([
+    { label: t('nav.inventory'), to: '/inventory' },
+    { label: t('products.title'), to: '/inventory/products' },
+    { label: t('products.create') },  // Last item has no 'to' (current page)
+  ])
+})
+</script>
+
+<template>
+  <div>
+    <!-- Page Header (no breadcrumb component needed) -->
+    <PageHeader
+      :title="t('products.create')"
+      :description="t('products.create_description')"
+    />
+    
+    <!-- Rest of the page content -->
+  </div>
+</template>
+```
+
+**Breadcrumb Best Practices:**
+- Call `uiStore.setBreadcrumbs()` in `onMounted()` hook
+- Items should be in hierarchical order from root to current page
+- Each item has `label` (required) and optional `to` (link)
+- Last item (current page) should NOT have a `to` property
+- Use i18n for all labels (e.g., `t('nav.inventory')`)
+- The default layout automatically displays breadcrumbs from the store
+
+**Common Breadcrumb Examples:**
+
+Create page:
+```typescript
+uiStore.setBreadcrumbs([
+  { label: t('nav.inventory'), to: '/inventory' },
+  { label: t('products.title'), to: '/inventory/products' },
+  { label: t('products.create') },
+])
+```
+
+View/Detail page with dynamic label:
+```typescript
+uiStore.setBreadcrumbs([
+  { label: t('nav.inventory'), to: '/inventory' },
+  { label: t('products.title'), to: '/inventory/products' },
+  { label: product.value.name },  // Dynamic product name
+])
+```
+
+Edit page:
+```typescript
+uiStore.setBreadcrumbs([
+  { label: t('nav.inventory'), to: '/inventory' },
+  { label: t('products.title'), to: '/inventory/products' },
+  { label: t('products.edit') },
+])
+```
+
+#### Component Structure
+
 - Use PrimeVue Menubar for top navigation
 - Use PrimeVue Sidebar for mobile menu
 - Use PrimeVue Breadcrumb for navigation context

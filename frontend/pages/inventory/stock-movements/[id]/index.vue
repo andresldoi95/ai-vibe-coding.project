@@ -47,6 +47,13 @@ async function loadData() {
         destinationWarehouse.value = results[2]
       }
     }
+
+    // Set breadcrumbs
+    uiStore.setBreadcrumbs([
+      { label: t('nav.inventory'), to: '/inventory' },
+      { label: t('stock_movements.title'), to: '/inventory/stock-movements' },
+      { label: t('stock_movements.view_details') },
+    ])
   }
   catch (error) {
     const errMessage = error instanceof Error ? error.message : 'Unknown error'
@@ -122,15 +129,6 @@ onMounted(() => {
 
 <template>
   <div class="space-y-6">
-    <!-- Breadcrumb -->
-    <Breadcrumb
-      :home="{ label: t('common.home'), to: '/' }"
-      :model="[
-        { label: t('stock_movements.title'), to: '/inventory/stock-movements' },
-        { label: t('stock_movements.view_details') },
-      ]"
-    />
-
     <LoadingState v-if="loading" :message="t('common.loading')" />
 
     <div v-else-if="stockMovement">
