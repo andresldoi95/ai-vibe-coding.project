@@ -12,7 +12,7 @@ using SaaS.Infrastructure.Persistence;
 namespace SaaS.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260209154200_AddCustomerEntity")]
+    [Migration("20260209155424_AddCustomerEntity")]
     partial class AddCustomerEntity
     {
         /// <inheritdoc />
@@ -48,8 +48,8 @@ namespace SaaS.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(100)");
 
                     b.Property<string>("BillingStreet")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)");
 
                     b.Property<string>("ContactPerson")
                         .HasMaxLength(256)
@@ -107,8 +107,8 @@ namespace SaaS.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(100)");
 
                     b.Property<string>("ShippingStreet")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)");
 
                     b.Property<string>("TaxId")
                         .HasMaxLength(50)

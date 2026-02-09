@@ -16,7 +16,7 @@ public class CreateCustomerCommandValidator : AbstractValidator<CreateCustomerCo
             .MaximumLength(256).WithMessage("Email cannot exceed 256 characters");
 
         RuleFor(x => x.Phone)
-            .MaximumLength(20).WithMessage("Phone cannot exceed 20 characters")
+            .MaximumLength(50).WithMessage("Phone cannot exceed 50 characters")
             .When(x => !string.IsNullOrEmpty(x.Phone));
 
         RuleFor(x => x.TaxId)

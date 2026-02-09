@@ -35,7 +35,7 @@ public class CustomerConfiguration : IEntityTypeConfiguration<Customer>
 
         // Billing Address
         builder.Property(c => c.BillingStreet)
-            .HasMaxLength(256);
+            .HasMaxLength(512);
 
         builder.Property(c => c.BillingCity)
             .HasMaxLength(100);
@@ -51,7 +51,7 @@ public class CustomerConfiguration : IEntityTypeConfiguration<Customer>
 
         // Shipping Address
         builder.Property(c => c.ShippingStreet)
-            .HasMaxLength(256);
+            .HasMaxLength(512);
 
         builder.Property(c => c.ShippingCity)
             .HasMaxLength(100);
