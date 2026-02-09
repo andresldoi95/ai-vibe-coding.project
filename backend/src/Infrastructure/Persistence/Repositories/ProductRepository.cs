@@ -35,6 +35,17 @@ public class ProductRepository : Repository<Product>, IProductRepository
         // Apply filters if provided
         if (filters != null)
         {
+            // SearchTerm searches across multiple fields
+            if (!string.IsNullOrWhiteSpace(filters.SearchTerm))
+            {
+                var searchTerm = filters.SearchTerm.ToLower();
+                query = query.Where(p => 
+                    p.Name.ToLower().Contains(searchTerm) || 
+                    p.Code.ToLower().Contains(searchTerm) ||
+                    p.SKU.ToLower().Contains(searchTerm) ||
+                    (p.Brand != null && p.Brand.ToLower().Contains(searchTerm)));
+            }
+
             if (!string.IsNullOrWhiteSpace(filters.Name))
             {
                 query = query.Where(p => p.Name.Contains(filters.Name));
@@ -75,7 +86,9 @@ public class ProductRepository : Repository<Product>, IProductRepository
                 query = query.Where(p => p.UnitPrice <= filters.MaxPrice.Value);
             }
 
-            if (filters.LowStockOnly.HasValue && filters.LowStockOnly.Value)
+            // Support both LowStock and LowStockOnly
+            var lowStockFilter = filters.LowStock ?? filters.LowStockOnly;
+            if (lowStockFilter.HasValue && lowStockFilter.Value)
             {
                 query = query.Where(p => p.CurrentStockLevel.HasValue && 
                                        p.CurrentStockLevel.Value <= p.MinimumStockLevel);

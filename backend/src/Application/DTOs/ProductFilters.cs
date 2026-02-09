@@ -6,6 +6,11 @@ namespace SaaS.Application.DTOs;
 public class ProductFilters
 {
     /// <summary>
+    /// Search term to filter across name, code, SKU, and brand
+    /// </summary>
+    public string? SearchTerm { get; set; }
+
+    /// <summary>
     /// Filter by product name (contains search)
     /// </summary>
     public string? Name { get; set; }
@@ -47,6 +52,11 @@ public class ProductFilters
 
     /// <summary>
     /// Filter products with low stock (current stock <= minimum stock level)
+    /// </summary>
+    public bool? LowStock { get; set; }
+
+    /// <summary>
+    /// Alias for LowStock for backward compatibility
     /// </summary>
     public bool? LowStockOnly { get; set; }
 }
