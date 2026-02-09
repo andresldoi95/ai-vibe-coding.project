@@ -67,7 +67,7 @@ const rules = computed(() => ({
     maxLength: maxLength(200),
   },
   billingStreet: {
-    maxLength: maxLength(500),
+    maxLength: maxLength(512),
   },
   billingCity: {
     maxLength: maxLength(100),
@@ -82,7 +82,7 @@ const rules = computed(() => ({
     maxLength: maxLength(100),
   },
   shippingStreet: {
-    maxLength: maxLength(500),
+    maxLength: maxLength(512),
   },
   shippingCity: {
     maxLength: maxLength(100),
