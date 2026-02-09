@@ -257,7 +257,7 @@
     "empty_description": "Créez votre premier client pour commencer à suivre la facturation",
     "name": "Nom du Client",
     "name_placeholder": "Société Acme",
-    "email_placeholder": "contact@acme.fr",
+    "email_placeholder": "contact{'@'}acme.fr",
     "phone_placeholder": "+33 (5) 55 12 34 56",
     "tax_id": "Numéro TVA",
     "tax_id_placeholder": "FR12345678901",

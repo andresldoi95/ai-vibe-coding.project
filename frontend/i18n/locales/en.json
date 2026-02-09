@@ -256,7 +256,7 @@
     "empty_description": "Create your first customer to start tracking billing",
     "name": "Customer Name",
     "name_placeholder": "Acme Corporation",
-    "email_placeholder": "contact@acme.com",
+    "email_placeholder": "contact{'@'}acme.com",
     "phone_placeholder": "+1 (555) 123-4567",
     "tax_id": "Tax ID",
     "tax_id_placeholder": "123-45-6789",

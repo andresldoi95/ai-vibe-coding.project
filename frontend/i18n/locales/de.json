@@ -257,7 +257,7 @@
     "empty_description": "Erstellen Sie Ihren ersten Kunden, um mit der Rechnungsverfolgung zu beginnen",
     "name": "Kundenname",
     "name_placeholder": "Acme GmbH",
-    "email_placeholder": "kontakt@acme.de",
+    "email_placeholder": "kontakt{'@'}acme.de",
     "phone_placeholder": "+49 (555) 123-4567",
     "tax_id": "Steuernummer",
     "tax_id_placeholder": "DE123456789",
