@@ -213,7 +213,7 @@ onMounted(() => {
 
                 <div>
                   <label class="text-sm font-medium text-slate-600 dark:text-slate-400">
-                    Profit Margin
+                    {{ t('products.profit_margin') }}
                   </label>
                   <p class="text-slate-900 dark:text-white">
                     {{ formatCurrency(product.unitPrice - product.costPrice) }}
@@ -251,7 +251,7 @@ onMounted(() => {
                   >
                     {{ product.currentStockLevel ?? '—' }}
                     <span v-if="product.currentStockLevel !== undefined && product.currentStockLevel < product.minimumStockLevel" class="text-sm">
-                      (Low Stock)
+                      ({{ t('products.low_stock_indicator') }})
                     </span>
                   </p>
                 </div>

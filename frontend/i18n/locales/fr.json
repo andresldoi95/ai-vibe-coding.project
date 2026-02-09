@@ -242,7 +242,9 @@
     "stock_level": "Niveau de Stock",
     "pricing": "Tarification",
     "classification": "Classification",
-    "physical_properties": "Propriétés Physiques"
+    "physical_properties": "Propriétés Physiques",
+    "profit_margin": "Marge Bénéficiaire",
+    "low_stock_indicator": "Stock Faible"
   },
   "validation": {
     "required": "Ce champ est obligatoire",

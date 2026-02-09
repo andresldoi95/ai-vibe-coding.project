@@ -242,7 +242,9 @@
     "stock_level": "Bestandsniveau",
     "pricing": "Preisgestaltung",
     "classification": "Klassifizierung",
-    "physical_properties": "Physikalische Eigenschaften"
+    "physical_properties": "Physikalische Eigenschaften",
+    "profit_margin": "Gewinnspanne",
+    "low_stock_indicator": "Niedriger Bestand"
   },
   "validation": {
     "required": "Dieses Feld ist erforderlich",
