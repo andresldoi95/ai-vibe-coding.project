@@ -8,8 +8,27 @@ const useApi = vi.fn(() => ({
   apiFetch: mockApiFetch,
 }))
 
-// Make it available globally
-globalThis.useApi = useApi
+// Mock stores
+const mockAuthStore = {
+  token: 'mock-token-123',
+}
 
-// Export for test files that need to manipulate the mock
-export { mockApiFetch, useApi }
+const mockTenantStore = {
+  currentTenantId: 'tenant-123',
+}
+
+// Mock runtime config
+const mockRuntimeConfig = {
+  public: {
+    apiBase: 'http://localhost:3001',
+  },
+}
+
+// Make them available globally
+globalThis.useApi = useApi
+globalThis.useRuntimeConfig = vi.fn(() => mockRuntimeConfig)
+globalThis.useAuthStore = vi.fn(() => mockAuthStore)
+globalThis.useTenantStore = vi.fn(() => mockTenantStore)
+
+// Export for test files that need to manipulate the mocks
+export { mockApiFetch, mockAuthStore, mockRuntimeConfig, mockTenantStore, useApi }
