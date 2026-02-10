@@ -25,8 +25,13 @@ interface ApiResponse<T> {
   success: boolean
 }
 
+interface ExportWarehouseStockSummaryFilters {
+  format?: 'csv' | 'excel'
+}
+
 export function useWarehouse() {
   const { apiFetch } = useApi()
+  const config = useRuntimeConfig()
 
   async function getAllWarehouses(): Promise<Warehouse[]> {
     const response = await apiFetch<ApiResponse<Warehouse[]>>('/warehouses', {
@@ -64,11 +69,59 @@ export function useWarehouse() {
     })
   }
 
+  async function exportWarehouseStockSummary(filters: ExportWarehouseStockSummaryFilters = {}): Promise<void> {
+    const authStore = useAuthStore()
+    const tenantStore = useTenantStore()
+    
+    if (!tenantStore.currentTenantId) {
+      throw new Error('No tenant selected')
+    }
+
+    if (!authStore.token) {
+      throw new Error('Not authenticated')
+    }
+
+    const params = new URLSearchParams()
+    if (filters.format) params.append('format', filters.format)
+
+    const queryString = params.toString()
+    const url = `${config.public.apiBase}/warehouses/export/stock-summary${queryString ? `?${queryString}` : ''}`
+
+    const response = await fetch(url, {
+      headers: {
+        'Authorization': `Bearer ${authStore.token}`,
+        'X-Tenant-Id': tenantStore.currentTenantId,
+      },
+    })
+
+    if (!response.ok) {
+      throw new Error('Export failed')
+    }
+
+    // Get filename from Content-Disposition header or use default
+    const contentDisposition = response.headers.get('Content-Disposition')
+    const filenameMatch = contentDisposition?.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/)
+    const fileExtension = filters.format === 'excel' ? 'xlsx' : filters.format || 'xlsx'
+    const filename = filenameMatch?.[1]?.replace(/['"]/g, '') || `warehouse-stock-summary-${new Date().toISOString().split('T')[0]}.${fileExtension}`
+
+    // Download file
+    const blob = await response.blob()
+    const downloadUrl = window.URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = downloadUrl
+    a.download = filename
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    window.URL.revokeObjectURL(downloadUrl)
+  }
+
   return {
     getAllWarehouses,
     getWarehouseById,
     createWarehouse,
     updateWarehouse,
     deleteWarehouse,
+    exportWarehouseStockSummary,
   }
 }

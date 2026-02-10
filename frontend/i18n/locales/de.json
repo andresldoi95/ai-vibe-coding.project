@@ -108,7 +108,6 @@
       "successMessage": "Ihr Passwort wurde erfolgreich zurückgesetzt. Sie können sich jetzt mit Ihrem neuen Passwort anmelden.",
       "invalidTokenTitle": "Ungültiger oder abgelaufener Link",
       "invalidTokenMessage": "Dieser Link zum Zurücksetzen ist ungültig oder abgelaufen. Bitte fordern Sie einen neuen an."
-
     }
   },
   "dashboard": {
@@ -191,7 +190,16 @@
     "confirm_delete": "Möchten Sie das Lager {name} wirklich löschen?",
     "deleted_successfully": "Lager erfolgreich gelöscht",
     "created_successfully": "Lager erfolgreich erstellt",
-    "updated_successfully": "Lager erfolgreich aktualisiert"
+    "updated_successfully": "Lager erfolgreich aktualisiert",
+    "export": "Exportieren",
+    "export_stock_summary": "Bestandsübersicht Exportieren",
+    "export_dialog_title": "Lager-Bestandsübersicht Exportieren",
+    "export_format": "Exportformat",
+    "export_excel": "Excel (.xlsx)",
+    "export_csv": "CSV (.csv)",
+    "exporting": "Exportieren...",
+    "export_success": "Bestandsübersicht erfolgreich exportiert",
+    "export_error": "Fehler beim Exportieren"
   },
   "products": {
     "title": "Produkte",
@@ -349,7 +357,23 @@
     "delete_title": "Bestandsbewegung Löschen",
     "delete_confirm": "Möchten Sie diese Bestandsbewegung wirklich löschen?",
     "view_details": "Details Anzeigen",
-    "movement_info": "Bewegungsinformationen"
+    "movement_info": "Bewegungsinformationen",
+    "export": "Exportieren",
+    "export_data": "Daten Exportieren",
+    "export_dialog_title": "Bestandsbewegungen Exportieren",
+    "export_format": "Exportformat",
+    "export_excel": "Excel (.xlsx)",
+    "export_csv": "CSV (.csv)",
+    "export_filters": "Exportfilter",
+    "filter_by_brand": "Nach Marke Filtern",
+    "filter_by_category": "Nach Kategorie Filtern",
+    "filter_by_warehouse": "Nach Lager Filtern",
+    "filter_by_date_range": "Nach Datumsbereich Filtern",
+    "from_date": "Von Datum",
+    "to_date": "Bis Datum",
+    "exporting": "Exportieren...",
+    "export_success": "Export erfolgreich abgeschlossen",
+    "export_error": "Fehler beim Exportieren"
   },
   "validation": {
     "required": "Dieses Feld ist erforderlich",
