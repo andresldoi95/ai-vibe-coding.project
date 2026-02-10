@@ -74,7 +74,7 @@ function openExportDialog() {
 async function handleExport({ format, filters }: { format: string; filters: Record<string, any> }) {
   exporting.value = true
   try {
-    const exportParams: any = { format }
+    const exportParams: Record<string, any> = { format }
     if (filters.brand) exportParams.brand = filters.brand
     if (filters.category) exportParams.category = filters.category
     if (filters.warehouseId) exportParams.warehouseId = filters.warehouseId
