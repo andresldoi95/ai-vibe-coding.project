@@ -7,78 +7,44 @@ definePageMeta({
 })
 
 const { can } = usePermissions()
-const { showSuccess, showError } = useNotification()
 const { t } = useI18n()
+
+// Load roles function
+async function loadRoles() {
+  const roleService = useRole()
+  return await roleService.getAllRoles()
+}
+
+// Delete role function
+async function deleteRoleById(id: string) {
+  const roleService = useRole()
+  await roleService.deleteRole(id)
+}
+
+// ✅ Using useCrudPage composable
+const {
+  items: roles,
+  loading: rolesLoading,
+  deleteDialog: deleteDialogVisible,
+  selectedItem: roleToDelete,
+  handleView: viewRole,
+  handleEdit: editRole,
+  confirmDelete,
+  handleDelete: deleteRole,
+} = useCrudPage({
+  resourceName: 'roles',
+  parentRoute: 'settings',
+  basePath: '/settings/roles',
+  loadItems: loadRoles,
+  deleteItem: deleteRoleById,
+  getItemName: (role) => role.name,
+})
 
 // Breadcrumbs
 const breadcrumbs = [
   { label: t('nav.settings'), url: '/settings' },
   { label: t('roles.title'), url: '/settings/roles' },
 ]
-
-// State
-const roles = ref<Role[]>([])
-const rolesLoading = ref(false)
-const deleteDialogVisible = ref(false)
-const roleToDelete = ref<Role | null>(null)
-const deleteLoading = ref(false)
-
-// Fetch roles
-async function fetchRoles() {
-  rolesLoading.value = true
-  try {
-    const roleService = useRole()
-    roles.value = await roleService.getAllRoles()
-  }
-  catch {
-    showError(t('messages.error_load'))
-  }
-  finally {
-    rolesLoading.value = false
-  }
-}
-
-// View role
-function viewRole(id: string) {
-  navigateTo(`/settings/roles/${id}`)
-}
-
-// Edit role
-function editRole(id: string) {
-  navigateTo(`/settings/roles/${id}/edit`)
-}
-
-// Confirm delete
-function confirmDelete(role: Role) {
-  roleToDelete.value = role
-  deleteDialogVisible.value = true
-}
-
-// Delete role
-async function deleteRole() {
-  if (!roleToDelete.value)
-    return
-
-  deleteLoading.value = true
-  try {
-    const roleService = useRole()
-    await roleService.deleteRole(roleToDelete.value.id)
-    showSuccess(t('messages.success_delete'))
-    deleteDialogVisible.value = false
-    await fetchRoles()
-  }
-  catch {
-    showError(t('messages.error_delete'))
-  }
-  finally {
-    deleteLoading.value = false
-  }
-}
-
-// Load roles on mount
-onMounted(() => {
-  fetchRoles()
-})
 </script>
 
 <template>
@@ -99,115 +65,124 @@ onMounted(() => {
       </template>
     </PageHeader>
 
-    <!-- Loading State -->
-    <LoadingState v-if="rolesLoading" />
-
-    <!-- Empty State -->
-    <EmptyState
-      v-else-if="!roles.length"
-      :title="$t('roles.no_roles')"
-      :description="$t('roles.get_started_roles')"
-      icon="pi pi-shield"
-    >
-      <Button
-        v-if="can.manageRoles()"
-        :label="$t('roles.create_role')"
-        icon="pi pi-plus"
-        @click="navigateTo('/settings/roles/create')"
-      />
-    </EmptyState>
-
-    <!-- Data Table -->
-    <Card v-else>
+    <!-- Roles Table -->
+    <Card>
       <template #content>
+        <LoadingState v-if="rolesLoading" :message="$t('common.loading')" />
+
         <DataTable
+          v-else
           :value="roles"
+          paginator
           :rows="10"
-          :paginator="roles.length > 10"
-          :loading="rolesLoading"
+          :rows-per-page-options="[10, 25, 50]"
           striped-rows
           responsive-layout="scroll"
         >
-          <Column field="name" :header="$t('roles.role_name')" sortable>
+          <template #empty>
+            <EmptyState
+              icon="pi pi-shield"
+              :title="$t('common.no_data')"
+              :description="$t('roles.empty_description')"
+              :action-label="$t('roles.create_role')"
+              action-icon="pi pi-plus"
+              @action="navigateTo('/settings/roles/create')"
+            />
+          </template>
+
+          <Column
+            field="name"
+            :header="$t('roles.name')"
+            sortable
+          >
             <template #body="{ data }">
               <div class="flex items-center gap-2">
-                <span class="font-medium">{{ data.name }}</span>
-                <Tag v-if="data.isSystemRole" severity="info" :value="$t('roles.system_role')" />
+                <i class="pi pi-shield text-teal-600" />
+                <span class="font-semibold">{{ data.name }}</span>
               </div>
             </template>
           </Column>
 
-          <Column field="description" :header="$t('common.description')" />
-
-          <Column field="priority" :header="$t('roles.priority')" sortable>
+          <Column
+            field="description"
+            :header="$t('roles.description')"
+          >
             <template #body="{ data }">
-              <span class="font-mono">{{ data.priority }}</span>
+              <span class="text-slate-600 dark:text-slate-400">
+                {{ data.description || '—' }}
+              </span>
             </template>
           </Column>
 
-          <Column field="userCount" :header="$t('roles.user_count')" sortable>
+          <Column
+            field="permissionsCount"
+            :header="$t('roles.permissions')"
+            sortable
+          >
             <template #body="{ data }">
-              <span class="font-medium">{{ data.userCount }}</span>
-            </template>
-          </Column>
-
-          <Column field="permissions" :header="$t('roles.permissions')">
-            <template #body="{ data }">
-              <span class="text-gray-600">{{ data.permissions?.length || 0 }} permissions</span>
-            </template>
-          </Column>
-
-          <Column :header="$t('common.actions')" style="width: 12rem">
-            <template #body="{ data }">
-              <DataTableActions
-                :show-view="can.viewRoles()"
-                :show-edit="can.manageRoles() && !data.isSystemRole"
-                :show-delete="can.manageRoles() && !data.isSystemRole"
-                @view="viewRole(data.id)"
-                @edit="editRole(data.id)"
-                @delete="confirmDelete(data)"
+              <Badge
+                :value="data.permissions?.length || 0"
+                severity="info"
               />
+            </template>
+          </Column>
+
+          <Column
+            field="usersCount"
+            :header="$t('roles.users')"
+            sortable
+          >
+            <template #body="{ data }">
+              <Badge
+                :value="data.usersCount || 0"
+                severity="secondary"
+              />
+            </template>
+          </Column>
+
+          <Column :header="$t('common.actions')">
+            <template #body="{ data }">
+              <div class="flex gap-2">
+                <Button
+                  icon="pi pi-eye"
+                  text
+                  rounded
+                  severity="info"
+                  :aria-label="$t('common.view')"
+                  @click="viewRole(data.id)"
+                />
+                <Button
+                  v-if="can.manageRoles()"
+                  icon="pi pi-pencil"
+                  text
+                  rounded
+                  severity="warning"
+                  :aria-label="$t('common.edit')"
+                  @click="editRole(data.id)"
+                />
+                <Button
+                  v-if="can.manageRoles() && !data.isSystem"
+                  icon="pi pi-trash"
+                  text
+                  rounded
+                  severity="danger"
+                  :aria-label="$t('common.delete')"
+                  @click="confirmDelete(data)"
+                />
+              </div>
             </template>
           </Column>
         </DataTable>
       </template>
     </Card>
 
-    <!-- Delete Confirm Dialog -->
-    <Dialog
+    <!-- ✅ Using DeleteConfirmDialog component -->
+    <DeleteConfirmDialog
       v-model:visible="deleteDialogVisible"
-      :header="$t('roles.delete_role')"
-      :modal="true"
-      :style="{ width: '450px' }"
-    >
-      <div class="space-y-4">
-        <p class="text-gray-700">
-          {{ $t('roles.confirm_delete_role', { name: roleToDelete?.name }) }}
-        </p>
-        <Message
-          v-if="roleToDelete?.userCount && roleToDelete.userCount > 0"
-          severity="warn"
-          :closable="false"
-        >
-          {{ $t('roles.cannot_delete_assigned', { count: roleToDelete.userCount }) }}
-        </Message>
-      </div>
-      <template #footer>
-        <Button
-          :label="$t('common.cancel')"
-          icon="pi pi-times"
-          text
-          @click="deleteDialogVisible = false"
-        />
-        <Button
-          :label="$t('common.delete')"
-          icon="pi pi-trash"
-          severity="danger"
-          :loading="deleteLoading"
-          :disabled="roleToDelete?.userCount && roleToDelete.userCount > 0"
-          @click="deleteRole"
-        />
-      </template>
-    </Dialog>
+      :item-name="roleToDelete?.name"
+      :title="$t('roles.delete_title')"
+      :message="$t('roles.delete_confirm')"
+      @confirm="deleteRole"
+    />
   </div>
 </template>
