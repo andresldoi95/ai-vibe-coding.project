@@ -54,14 +54,17 @@ const exportDialog = ref(false)
 const exporting = ref(false)
 
 const exportFilters = [
-  { name: 'brand', label: t('stock_movements.filter_by_brand'), type: 'text' as const },
-  { name: 'category', label: t('stock_movements.filter_by_category'), type: 'text' as const },
+  { name: 'brand', label: t('stock_movements.filter_by_brand'), type: 'text' as const, placeholder: 'e.g., Nike, Adidas' },
+  { name: 'category', label: t('stock_movements.filter_by_category'), type: 'text' as const, placeholder: 'e.g., Electronics, Clothing' },
   { 
     name: 'warehouseId', 
     label: t('stock_movements.filter_by_warehouse'), 
     type: 'select' as const,
-    options: computed(() => warehouses.value.map(w => ({ label: w.name, value: w.id })))
+    options: computed(() => warehouses.value.map(w => ({ label: w.name, value: w.id }))),
+    placeholder: t('common.select')
   },
+  { name: 'fromDate', label: t('stock_movements.from_date'), type: 'date' as const },
+  { name: 'toDate', label: t('stock_movements.to_date'), type: 'date' as const },
 ]
 
 function openExportDialog() {
@@ -273,6 +276,7 @@ function formatCurrency(value?: number): string {
     <ExportDialog
       v-model:visible="exportDialog"
       :title="t('stock_movements.export_dialog_title')"
+      :description="t('stock_movements.export_data')"
       :filters="exportFilters"
       :loading="exporting"
       @export="handleExport"
