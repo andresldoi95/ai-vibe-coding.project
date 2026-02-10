@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { mockApiFetch, mockAuthStore, mockRuntimeConfig, mockTenantStore } from '../setup'
+import { mockApiFetch, mockAuthStore, mockTenantStore } from '../setup'
 import { useStockMovement } from '~/composables/useStockMovement'
 import { MovementType, type StockMovement } from '~/types/inventory'
 
