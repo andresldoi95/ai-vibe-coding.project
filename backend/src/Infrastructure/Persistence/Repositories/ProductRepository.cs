@@ -86,13 +86,8 @@ public class ProductRepository : Repository<Product>, IProductRepository
                 query = query.Where(p => p.UnitPrice <= filters.MaxPrice.Value);
             }
 
-            // Support both LowStock and LowStockOnly
-            var lowStockFilter = filters.LowStock ?? filters.LowStockOnly;
-            if (lowStockFilter.HasValue && lowStockFilter.Value)
-            {
-                query = query.Where(p => p.CurrentStockLevel.HasValue && 
-                                       p.CurrentStockLevel.Value <= p.MinimumStockLevel);
-            }
+            // NOTE: LowStock filter removed - it relied on deprecated Product.CurrentStockLevel
+            // Low stock filtering should be done at the application layer using WarehouseInventory data
         }
 
         return await query

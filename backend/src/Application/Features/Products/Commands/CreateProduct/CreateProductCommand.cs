@@ -25,11 +25,6 @@ public record CreateProductCommand : IRequest<Result<ProductDto>>
 
     // Inventory
     public int MinimumStockLevel { get; init; }
-    
-    // DEPRECATED: Use InitialQuantity and InitialWarehouseId instead
-    // This field is kept for backward compatibility but should not be used
-    [Obsolete("Use InitialQuantity and InitialWarehouseId to set initial stock")]
-    public int? CurrentStockLevel { get; init; }
 
     // Optional: Initial Inventory (Recommended approach)
     public int? InitialQuantity { get; init; }

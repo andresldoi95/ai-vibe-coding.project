@@ -40,14 +40,6 @@ public class CreateProductCommandValidator : AbstractValidator<CreateProductComm
         RuleFor(x => x.MinimumStockLevel)
             .GreaterThanOrEqualTo(0).WithMessage("Minimum stock level must be zero or greater");
 
-        // NOTE: CurrentStockLevel is deprecated. Use InitialQuantity + InitialWarehouseId instead
-        // Validation kept for backward compatibility
-#pragma warning disable CS0618 // Type or member is obsolete
-        RuleFor(x => x.CurrentStockLevel)
-            .GreaterThanOrEqualTo(0).WithMessage("Current stock level must be zero or greater")
-            .When(x => x.CurrentStockLevel.HasValue);
-#pragma warning restore CS0618 // Type or member is obsolete
-
         // Validate InitialQuantity (recommended approach for setting initial stock)
         RuleFor(x => x.InitialQuantity)
             .GreaterThan(0).WithMessage("Initial quantity must be greater than 0")
