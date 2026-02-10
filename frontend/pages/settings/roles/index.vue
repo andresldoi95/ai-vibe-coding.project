@@ -126,13 +126,13 @@ const breadcrumbs = [
           </Column>
 
           <Column
-            field="usersCount"
-            :header="$t('roles.users')"
+            field="userCount"
+            :header="$t('roles.user_count')"
             sortable
           >
             <template #body="{ data }">
               <Badge
-                :value="data.usersCount || 0"
+                :value="data.userCount || 0"
                 severity="secondary"
               />
             </template>

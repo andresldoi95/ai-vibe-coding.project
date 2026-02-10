@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SaaS.Infrastructure.Persistence;
 using SaaS.Domain.Entities;
+using SaaS.Domain.Enums;
 using BCrypt.Net;
 
 namespace SaaS.Api.Controllers;
@@ -29,7 +30,7 @@ public class SeedController : ControllerBase
     }
 
     /// <summary>
-    /// Seeds demo company with users and sample data
+    /// Seeds multiple demo companies with shared users and comprehensive sample data
     /// POST /api/seed/demo
     /// </summary>
     [HttpPost("demo")]
@@ -44,34 +45,30 @@ public class SeedController : ControllerBase
                 return BadRequest(new { message = "Demo seeding only available in Development environment" });
             }
 
-            _logger.LogInformation("Starting demo data seeding...");
+            _logger.LogInformation("Starting multi-tenant demo data seeding...");
 
-            // Check if demo company already exists
-            var existingTenant = await _context.Tenants
-                .FirstOrDefaultAsync(t => t.Slug == "demo-company");
+            // Check if any demo companies already exist
+            var existingTenants = await _context.Tenants
+                .Where(t => t.Slug == "demo-company" || t.Slug == "tech-startup" || t.Slug == "manufacturing-corp")
+                .AnyAsync();
 
-            if (existingTenant != null)
+            if (existingTenants)
             {
-                return BadRequest(new { message = "Demo company already exists. Reset database first." });
+                return BadRequest(new { message = "Demo companies already exist. Reset database first." });
             }
 
             var now = DateTime.UtcNow;
-            var demoTenantId = Guid.NewGuid();
 
-            // 1. Create Demo Tenant
-            var demoTenant = new Tenant
-            {
-                Id = demoTenantId,
-                Name = "Demo Company",
-                Slug = "demo-company",
-                Status = Domain.Enums.TenantStatus.Active,
-                CreatedAt = now,
-                UpdatedAt = now,
-                IsDeleted = false
-            };
-            await _context.Tenants.AddAsync(demoTenant);
+            // 1. Create Demo Tenants
+            var demoCompany = CreateTenant("Demo Company", "demo-company", now);
+            var techStartup = CreateTenant("Tech Startup Inc", "tech-startup", now);
+            var manufacturingCorp = CreateTenant("Manufacturing Corp", "manufacturing-corp", now);
 
-            // 2. Create Demo Users
+            await _context.Tenants.AddRangeAsync(demoCompany, techStartup, manufacturingCorp);
+
+            await _context.Tenants.AddRangeAsync(demoCompany, techStartup, manufacturingCorp);
+
+            // 2. Create Demo Users (shared across all tenants)
             var passwordHash = BCrypt.Net.BCrypt.HashPassword("password");
 
             var ownerUser = new User
@@ -127,514 +124,112 @@ public class SeedController : ControllerBase
             };
 
             await _context.Users.AddRangeAsync(ownerUser, adminUser, managerUser, regularUser);
-            await _context.SaveChangesAsync(); // Save users first
+            await _context.SaveChangesAsync(); // Save tenants and users first
 
-            // 3. Get or Create Roles for the demo tenant
-            var ownerRole = await _context.Roles
-                .FirstOrDefaultAsync(r => r.TenantId == demoTenantId && r.Name == "Owner");
-            var adminRole = await _context.Roles
-                .FirstOrDefaultAsync(r => r.TenantId == demoTenantId && r.Name == "Admin");
-            var managerRole = await _context.Roles
-                .FirstOrDefaultAsync(r => r.TenantId == demoTenantId && r.Name == "Manager");
-            var userRole = await _context.Roles
-                .FirstOrDefaultAsync(r => r.TenantId == demoTenantId && r.Name == "User");
+            // 3. Create Roles and Permissions for all tenants
+            var tenants = new[] { demoCompany, techStartup, manufacturingCorp };
+            var rolesByTenant = new Dictionary<Guid, Dictionary<string, Role>>();
 
-            // Create roles if they don't exist (migration should create them, but this is a fallback)
-            if (ownerRole == null)
+            foreach (var tenant in tenants)
             {
-                ownerRole = new Role
-                {
-                    Id = Guid.NewGuid(),
-                    TenantId = demoTenantId,
-                    Name = "Owner",
-                    Description = "Full system access",
-                    Priority = 100,
-                    IsSystemRole = true,
-                    IsActive = true,
-                    CreatedAt = now,
-                    UpdatedAt = now
-                };
-                await _context.Roles.AddAsync(ownerRole);
-            }
-            if (adminRole == null)
-            {
-                adminRole = new Role
-                {
-                    Id = Guid.NewGuid(),
-                    TenantId = demoTenantId,
-                    Name = "Admin",
-                    Description = "Administrative access",
-                    Priority = 50,
-                    IsSystemRole = true,
-                    IsActive = true,
-                    CreatedAt = now,
-                    UpdatedAt = now
-                };
-                await _context.Roles.AddAsync(adminRole);
-            }
-            if (managerRole == null)
-            {
-                managerRole = new Role
-                {
-                    Id = Guid.NewGuid(),
-                    TenantId = demoTenantId,
-                    Name = "Manager",
-                    Description = "Management access",
-                    Priority = 25,
-                    IsSystemRole = true,
-                    IsActive = true,
-                    CreatedAt = now,
-                    UpdatedAt = now
-                };
-                await _context.Roles.AddAsync(managerRole);
-            }
-            if (userRole == null)
-            {
-                userRole = new Role
-                {
-                    Id = Guid.NewGuid(),
-                    TenantId = demoTenantId,
-                    Name = "User",
-                    Description = "Standard user access",
-                    Priority = 10,
-                    IsSystemRole = true,
-                    IsActive = true,
-                    CreatedAt = now,
-                    UpdatedAt = now
-                };
-                await _context.Roles.AddAsync(userRole);
+                var roles = await CreateRolesForTenant(tenant.Id, now);
+                rolesByTenant[tenant.Id] = roles;
             }
 
-            await _context.SaveChangesAsync(); // Save roles
+            await _context.SaveChangesAsync(); // Save all roles
 
-            // 3.5. Assign Permissions to Roles
-            var allPermissions = await _context.Permissions.ToListAsync();
-
-            // Owner: All permissions
-            var ownerPermissions = allPermissions.Select(p => new RolePermission
-            {
-                Id = Guid.NewGuid(),
-                RoleId = ownerRole.Id,
-                PermissionId = p.Id
-            }).ToList();
-            await _context.RolePermissions.AddRangeAsync(ownerPermissions);
-
-            // Admin: All permissions except tenant management
-            var adminPermissions = allPermissions
-                .Where(p => p.Resource != "tenants")
-                .Select(p => new RolePermission
-                {
-                    Id = Guid.NewGuid(),
-                    RoleId = adminRole.Id,
-                    PermissionId = p.Id
-                }).ToList();
-            await _context.RolePermissions.AddRangeAsync(adminPermissions);
-
-            // Manager: Warehouses, Products, Customers, Stock (all actions)
-            var managerPermissions = allPermissions
-                .Where(p => p.Resource == "warehouses" || p.Resource == "products" || p.Resource == "customers" || p.Resource == "stock" || p.Resource == "roles")
-                .Select(p => new RolePermission
-                {
-                    Id = Guid.NewGuid(),
-                    RoleId = managerRole.Id,
-                    PermissionId = p.Id
-                }).ToList();
-            await _context.RolePermissions.AddRangeAsync(managerPermissions);
-
-            // User: Warehouses, Products, Customers, Stock (read-only)
-            var userPermissions = allPermissions
-                .Where(p => p.Action == "read" && (p.Resource == "warehouses" || p.Resource == "products" || p.Resource == "customers" || p.Resource == "stock"))
-                .Select(p => new RolePermission
-                {
-                    Id = Guid.NewGuid(),
-                    RoleId = userRole.Id,
-                    PermissionId = p.Id
-                }).ToList();
-            await _context.RolePermissions.AddRangeAsync(userPermissions);
-
-            await _context.SaveChangesAsync(); // Save permissions
-
-            // 4. Create UserTenant associations
+            // 4. Create UserTenant associations with varying roles across companies
             var userTenants = new List<UserTenant>
             {
-                new UserTenant
-                {
-                    Id = Guid.NewGuid(),
-                    UserId = ownerUser.Id,
-                    TenantId = demoTenantId,
-                    RoleId = ownerRole.Id,
-                    IsActive = true,
-                    JoinedAt = now
-                },
-                new UserTenant
-                {
-                    Id = Guid.NewGuid(),
-                    UserId = adminUser.Id,
-                    TenantId = demoTenantId,
-                    RoleId = adminRole.Id,
-                    IsActive = true,
-                    JoinedAt = now
-                },
-                new UserTenant
-                {
-                    Id = Guid.NewGuid(),
-                    UserId = managerUser.Id,
-                    TenantId = demoTenantId,
-                    RoleId = managerRole.Id,
-                    IsActive = true,
-                    JoinedAt = now
-                },
-                new UserTenant
-                {
-                    Id = Guid.NewGuid(),
-                    UserId = regularUser.Id,
-                    TenantId = demoTenantId,
-                    RoleId = userRole.Id,
-                    IsActive = true,
-                    JoinedAt = now
-                }
+                // owner@demo.com: Owner in Demo, Admin in Tech, Manager in Manufacturing
+                new UserTenant { Id = Guid.NewGuid(), UserId = ownerUser.Id, TenantId = demoCompany.Id,
+                    RoleId = rolesByTenant[demoCompany.Id]["Owner"].Id, IsActive = true, JoinedAt = now },
+                new UserTenant { Id = Guid.NewGuid(), UserId = ownerUser.Id, TenantId = techStartup.Id,
+                    RoleId = rolesByTenant[techStartup.Id]["Admin"].Id, IsActive = true, JoinedAt = now },
+                new UserTenant { Id = Guid.NewGuid(), UserId = ownerUser.Id, TenantId = manufacturingCorp.Id,
+                    RoleId = rolesByTenant[manufacturingCorp.Id]["Manager"].Id, IsActive = true, JoinedAt = now },
+
+                // admin@demo.com: Admin in Demo, Manager in Tech, User in Manufacturing
+                new UserTenant { Id = Guid.NewGuid(), UserId = adminUser.Id, TenantId = demoCompany.Id,
+                    RoleId = rolesByTenant[demoCompany.Id]["Admin"].Id, IsActive = true, JoinedAt = now },
+                new UserTenant { Id = Guid.NewGuid(), UserId = adminUser.Id, TenantId = techStartup.Id,
+                    RoleId = rolesByTenant[techStartup.Id]["Manager"].Id, IsActive = true, JoinedAt = now },
+                new UserTenant { Id = Guid.NewGuid(), UserId = adminUser.Id, TenantId = manufacturingCorp.Id,
+                    RoleId = rolesByTenant[manufacturingCorp.Id]["User"].Id, IsActive = true, JoinedAt = now },
+
+                // manager@demo.com: Manager in Demo, User in Tech, Owner in Manufacturing
+                new UserTenant { Id = Guid.NewGuid(), UserId = managerUser.Id, TenantId = demoCompany.Id,
+                    RoleId = rolesByTenant[demoCompany.Id]["Manager"].Id, IsActive = true, JoinedAt = now },
+                new UserTenant { Id = Guid.NewGuid(), UserId = managerUser.Id, TenantId = techStartup.Id,
+                    RoleId = rolesByTenant[techStartup.Id]["User"].Id, IsActive = true, JoinedAt = now },
+                new UserTenant { Id = Guid.NewGuid(), UserId = managerUser.Id, TenantId = manufacturingCorp.Id,
+                    RoleId = rolesByTenant[manufacturingCorp.Id]["Owner"].Id, IsActive = true, JoinedAt = now },
+
+                // user@demo.com: User in Demo, Owner in Tech, Admin in Manufacturing
+                new UserTenant { Id = Guid.NewGuid(), UserId = regularUser.Id, TenantId = demoCompany.Id,
+                    RoleId = rolesByTenant[demoCompany.Id]["User"].Id, IsActive = true, JoinedAt = now },
+                new UserTenant { Id = Guid.NewGuid(), UserId = regularUser.Id, TenantId = techStartup.Id,
+                    RoleId = rolesByTenant[techStartup.Id]["Owner"].Id, IsActive = true, JoinedAt = now },
+                new UserTenant { Id = Guid.NewGuid(), UserId = regularUser.Id, TenantId = manufacturingCorp.Id,
+                    RoleId = rolesByTenant[manufacturingCorp.Id]["Admin"].Id, IsActive = true, JoinedAt = now }
             };
 
             await _context.UserTenants.AddRangeAsync(userTenants);
-
-            // 5. Create Sample Warehouses
-            var warehouses = new List<Warehouse>
-            {
-                new Warehouse
-                {
-                    Id = Guid.NewGuid(),
-                    TenantId = demoTenantId,
-                    Name = "Main Warehouse",
-                    Code = "WH-MAIN",
-                    Description = "Primary distribution center",
-                    StreetAddress = "123 Industrial Blvd",
-                    City = "New York",
-                    State = "NY",
-                    PostalCode = "10001",
-                    Country = "United States",
-                    Phone = "+1 (555) 100-1000",
-                    Email = "warehouse-main@demo.com",
-                    SquareFootage = 50000,
-                    Capacity = 10000,
-                    IsActive = true,
-                    CreatedAt = now,
-                    UpdatedAt = now,
-                    IsDeleted = false
-                },
-                new Warehouse
-                {
-                    Id = Guid.NewGuid(),
-                    TenantId = demoTenantId,
-                    Name = "West Coast Hub",
-                    Code = "WH-WEST",
-                    Description = "Western regional warehouse",
-                    StreetAddress = "456 Commerce Way",
-                    City = "Los Angeles",
-                    State = "CA",
-                    PostalCode = "90001",
-                    Country = "United States",
-                    Phone = "+1 (555) 200-2000",
-                    Email = "warehouse-west@demo.com",
-                    SquareFootage = 35000,
-                    Capacity = 7000,
-                    IsActive = true,
-                    CreatedAt = now,
-                    UpdatedAt = now,
-                    IsDeleted = false
-                },
-                new Warehouse
-                {
-                    Id = Guid.NewGuid(),
-                    TenantId = demoTenantId,
-                    Name = "East Coast Depot",
-                    Code = "WH-EAST",
-                    Description = "Eastern regional storage facility",
-                    StreetAddress = "789 Logistics Lane",
-                    City = "Boston",
-                    State = "MA",
-                    PostalCode = "02101",
-                    Country = "United States",
-                    Phone = "+1 (555) 300-3000",
-                    Email = "warehouse-east@demo.com",
-                    SquareFootage = 40000,
-                    Capacity = 8500,
-                    IsActive = true,
-                    CreatedAt = now,
-                    UpdatedAt = now,
-                    IsDeleted = false
-                }
-            };
-
-            await _context.Warehouses.AddRangeAsync(warehouses);
-
-            // 6. Create Sample Products
-            var products = new List<Product>
-            {
-                new Product
-                {
-                    Id = Guid.NewGuid(),
-                    TenantId = demoTenantId,
-                    Name = "Laptop - Dell XPS 15",
-                    Code = "LAPTOP-DELL-XPS15",
-                    SKU = "DELL-XPS-15-001",
-                    Description = "High-performance laptop with 15.6\" display, Intel i7, 16GB RAM, 512GB SSD",
-                    Category = "Electronics",
-                    Brand = "Dell",
-                    UnitPrice = 1499.99m,
-                    CostPrice = 1200.00m,
-                    MinimumStockLevel = 10,
-                    Weight = 4.5m,
-                    Dimensions = "14.0 x 9.3 x 0.7 inches",
-                    IsActive = true,
-                    CreatedAt = now,
-                    UpdatedAt = now,
-                    IsDeleted = false
-                },
-                new Product
-                {
-                    Id = Guid.NewGuid(),
-                    TenantId = demoTenantId,
-                    Name = "Wireless Mouse - Logitech MX Master 3",
-                    Code = "MOUSE-LOG-MX3",
-                    SKU = "LOG-MX-MASTER3-BLK",
-                    Description = "Ergonomic wireless mouse with precision scrolling and customizable buttons",
-                    Category = "Accessories",
-                    Brand = "Logitech",
-                    UnitPrice = 99.99m,
-                    CostPrice = 65.00m,
-                    MinimumStockLevel = 50,
-                    Weight = 0.31m,
-                    Dimensions = "4.9 x 3.3 x 2.0 inches",
-                    IsActive = true,
-                    CreatedAt = now,
-                    UpdatedAt = now,
-                    IsDeleted = false
-                },
-                new Product
-                {
-                    Id = Guid.NewGuid(),
-                    TenantId = demoTenantId,
-                    Name = "Monitor - LG 27\" 4K UHD",
-                    Code = "MON-LG-27-4K",
-                    SKU = "LG-27UK850-W",
-                    Description = "27-inch 4K UHD IPS monitor with HDR support and USB-C connectivity",
-                    Category = "Electronics",
-                    Brand = "LG",
-                    UnitPrice = 449.99m,
-                    CostPrice = 350.00m,
-                    MinimumStockLevel = 15,
-                    Weight = 13.2m,
-                    Dimensions = "24.1 x 18.5 x 7.9 inches",
-                    IsActive = true,
-                    CreatedAt = now,
-                    UpdatedAt = now,
-                    IsDeleted = false
-                },
-                new Product
-                {
-                    Id = Guid.NewGuid(),
-                    TenantId = demoTenantId,
-                    Name = "Keyboard - Mechanical RGB",
-                    Code = "KEY-MECH-RGB-001",
-                    SKU = "CORSAIR-K95-RGB",
-                    Description = "Mechanical gaming keyboard with RGB backlighting and programmable macro keys",
-                    Category = "Accessories",
-                    Brand = "Corsair",
-                    UnitPrice = 179.99m,
-                    CostPrice = 120.00m,
-                    MinimumStockLevel = 20,
-                    Weight = 2.7m,
-                    Dimensions = "17.4 x 6.5 x 1.5 inches",
-                    IsActive = true,
-                    CreatedAt = now,
-                    UpdatedAt = now,
-                    IsDeleted = false
-                },
-                new Product
-                {
-                    Id = Guid.NewGuid(),
-                    TenantId = demoTenantId,
-                    Name = "USB-C Hub - Anker 7-in-1",
-                    Code = "HUB-ANKER-7IN1",
-                    SKU = "ANKER-A8346",
-                    Description = "7-in-1 USB-C hub with HDMI, ethernet, USB 3.0, and SD card reader",
-                    Category = "Accessories",
-                    Brand = "Anker",
-                    UnitPrice = 49.99m,
-                    CostPrice = 30.00m,
-                    MinimumStockLevel = 30,
-                    Weight = 0.22m,
-                    Dimensions = "4.5 x 2.0 x 0.6 inches",
-                    IsActive = true,
-                    CreatedAt = now,
-                    UpdatedAt = now,
-                    IsDeleted = false
-                }
-            };
-
-            await _context.Products.AddRangeAsync(products);
-
-            // 7. Create Sample Customers
-            var customers = new List<Customer>
-            {
-                new Customer
-                {
-                    Id = Guid.NewGuid(),
-                    TenantId = demoTenantId,
-                    Name = "Acme Corporation",
-                    Email = "contact@acmecorp.example.com",
-                    Phone = "+1 (555) 123-4567",
-                    TaxId = "TAX-ACME-001",
-                    ContactPerson = "John Smith",
-                    BillingStreet = "123 Business Ave",
-                    BillingCity = "New York",
-                    BillingState = "NY",
-                    BillingPostalCode = "10001",
-                    BillingCountry = "United States",
-                    ShippingStreet = "123 Business Ave",
-                    ShippingCity = "New York",
-                    ShippingState = "NY",
-                    ShippingPostalCode = "10001",
-                    ShippingCountry = "United States",
-                    Website = "https://acmecorp.example.com",
-                    Notes = "Major client - priority shipping",
-                    IsActive = true,
-                    CreatedAt = now,
-                    UpdatedAt = now,
-                    IsDeleted = false
-                },
-                new Customer
-                {
-                    Id = Guid.NewGuid(),
-                    TenantId = demoTenantId,
-                    Name = "Tech Solutions Inc",
-                    Email = "sales@techsolutions.example.com",
-                    Phone = "+1 (555) 234-5678",
-                    TaxId = "TAX-TECH-002",
-                    ContactPerson = "Sarah Johnson",
-                    BillingStreet = "456 Innovation Dr",
-                    BillingCity = "San Francisco",
-                    BillingState = "CA",
-                    BillingPostalCode = "94105",
-                    BillingCountry = "United States",
-                    ShippingStreet = "456 Innovation Dr",
-                    ShippingCity = "San Francisco",
-                    ShippingState = "CA",
-                    ShippingPostalCode = "94105",
-                    ShippingCountry = "United States",
-                    Website = "https://techsolutions.example.com",
-                    Notes = "Net 30 payment terms",
-                    IsActive = true,
-                    CreatedAt = now,
-                    UpdatedAt = now,
-                    IsDeleted = false
-                },
-                new Customer
-                {
-                    Id = Guid.NewGuid(),
-                    TenantId = demoTenantId,
-                    Name = "Global Enterprises LLC",
-                    Email = "procurement@globalent.example.com",
-                    Phone = "+1 (555) 345-6789",
-                    TaxId = "TAX-GLOBAL-003",
-                    ContactPerson = "Michael Chen",
-                    BillingStreet = "789 Commerce Blvd",
-                    BillingCity = "Chicago",
-                    BillingState = "IL",
-                    BillingPostalCode = "60601",
-                    BillingCountry = "United States",
-                    ShippingStreet = "321 Distribution Way",
-                    ShippingCity = "Chicago",
-                    ShippingState = "IL",
-                    ShippingPostalCode = "60602",
-                    ShippingCountry = "United States",
-                    Website = "https://globalenterprises.example.com",
-                    Notes = "Requires detailed invoicing",
-                    IsActive = true,
-                    CreatedAt = now,
-                    UpdatedAt = now,
-                    IsDeleted = false
-                },
-                new Customer
-                {
-                    Id = Guid.NewGuid(),
-                    TenantId = demoTenantId,
-                    Name = "Retail Partners Co",
-                    Email = "orders@retailpartners.example.com",
-                    Phone = "+1 (555) 456-7890",
-                    TaxId = "TAX-RETAIL-004",
-                    ContactPerson = "Emily Rodriguez",
-                    BillingStreet = "555 Retail Plaza",
-                    BillingCity = "Miami",
-                    BillingState = "FL",
-                    BillingPostalCode = "33101",
-                    BillingCountry = "United States",
-                    ShippingStreet = "555 Retail Plaza",
-                    ShippingCity = "Miami",
-                    ShippingState = "FL",
-                    ShippingPostalCode = "33101",
-                    ShippingCountry = "United States",
-                    Website = "https://retailpartners.example.com",
-                    Notes = "Bulk orders - discount applied",
-                    IsActive = true,
-                    CreatedAt = now,
-                    UpdatedAt = now,
-                    IsDeleted = false
-                },
-                new Customer
-                {
-                    Id = Guid.NewGuid(),
-                    TenantId = demoTenantId,
-                    Name = "Startup Innovations",
-                    Email = "hello@startupinnovations.example.com",
-                    Phone = "+1 (555) 567-8901",
-                    TaxId = "TAX-STARTUP-005",
-                    ContactPerson = "David Park",
-                    BillingStreet = "100 Startup Lane",
-                    BillingCity = "Austin",
-                    BillingState = "TX",
-                    BillingPostalCode = "78701",
-                    BillingCountry = "United States",
-                    ShippingStreet = "100 Startup Lane",
-                    ShippingCity = "Austin",
-                    ShippingState = "TX",
-                    ShippingPostalCode = "78701",
-                    ShippingCountry = "United States",
-                    Website = "https://startupinnovations.example.com",
-                    Notes = "Growing account - good potential",
-                    IsActive = true,
-                    CreatedAt = now,
-                    UpdatedAt = now,
-                    IsDeleted = false
-                }
-            };
-
-            await _context.Customers.AddRangeAsync(customers);
-
-            // Save all changes
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation("Demo data seeded successfully");
+            // 5. Create data for each tenant
+            var summaries = new List<object>();
+
+            foreach (var tenant in tenants)
+            {
+                _logger.LogInformation($"Seeding data for tenant: {tenant.Name}");
+
+                var warehouses = CreateWarehousesForTenant(tenant.Id, tenant.Slug, now);
+                await _context.Warehouses.AddRangeAsync(warehouses);
+                await _context.SaveChangesAsync();
+
+                var products = CreateProductsForTenant(tenant.Id, tenant.Slug, now);
+                await _context.Products.AddRangeAsync(products);
+                await _context.SaveChangesAsync();
+
+                var customers = CreateCustomersForTenant(tenant.Id, tenant.Slug, now);
+                await _context.Customers.AddRangeAsync(customers);
+                await _context.SaveChangesAsync();
+
+                var stockMovements = CreateStockMovementsForTenant(tenant.Id, products, warehouses, now);
+                await _context.StockMovements.AddRangeAsync(stockMovements);
+                await _context.SaveChangesAsync();
+
+                var inventoryLevels = CalculateWarehouseInventory(tenant.Id, products, warehouses, stockMovements, now);
+                await _context.WarehouseInventory.AddRangeAsync(inventoryLevels);
+                await _context.SaveChangesAsync();
+
+                summaries.Add(new
+                {
+                    tenant = new { id = tenant.Id, name = tenant.Name, slug = tenant.Slug },
+                    warehouses = warehouses.Count,
+                    products = products.Count,
+                    customers = customers.Count,
+                    stockMovements = stockMovements.Count,
+                    inventoryRecords = inventoryLevels.Count
+                });
+            }
+
+            _logger.LogInformation("Multi-tenant demo data seeded successfully");
 
             return Ok(new
             {
                 success = true,
-                message = "Demo data seeded successfully",
-                data = new
+                message = "Multi-tenant demo data seeded successfully",
+                tenants = summaries,
+                users = new[]
                 {
-                    tenant = new { id = demoTenant.Id, name = demoTenant.Name, slug = demoTenant.Slug },
-                    users = new[]
-                    {
-                        new { email = "owner@demo.com", role = "Owner" },
-                        new { email = "admin@demo.com", role = "Admin" },
-                        new { email = "manager@demo.com", role = "Manager" },
-                        new { email = "user@demo.com", role = "User" }
-                    },
-                    warehouses = warehouses.Count,
-                    products = products.Count,
-                    customers = customers.Count,
-                    note = "All users have password: 'password'"
-                }
+                    new { email = "owner@demo.com", password = "password", companies = "Demo(Owner), Tech(Admin), Manufacturing(Manager)" },
+                    new { email = "admin@demo.com", password = "password", companies = "Demo(Admin), Tech(Manager), Manufacturing(User)" },
+                    new { email = "manager@demo.com", password = "password", companies = "Demo(Manager), Tech(User), Manufacturing(Owner)" },
+                    new { email = "user@demo.com", password = "password", companies = "Demo(User), Tech(Owner), Manufacturing(Admin)" }
+                },
+                note = "All users are shared across all companies with varying role assignments"
             });
         }
         catch (Exception ex)
@@ -643,4 +238,668 @@ public class SeedController : ControllerBase
             return StatusCode(500, new { success = false, message = "Error seeding demo data", error = ex.Message });
         }
     }
+
+    #region Helper Methods
+
+    private Tenant CreateTenant(string name, string slug, DateTime now)
+    {
+        return new Tenant
+        {
+            Id = Guid.NewGuid(),
+            Name = name,
+            Slug = slug,
+            Status = TenantStatus.Active,
+            CreatedAt = now,
+            UpdatedAt = now,
+            IsDeleted = false
+        };
+    }
+
+    private async Task<Dictionary<string, Role>> CreateRolesForTenant(Guid tenantId, DateTime now)
+    {
+        var allPermissions = await _context.Permissions.ToListAsync();
+
+        var ownerRole = new Role
+        {
+            Id = Guid.NewGuid(),
+            TenantId = tenantId,
+            Name = "Owner",
+            Description = "Full system access",
+            Priority = 100,
+            IsSystemRole = true,
+            IsActive = true,
+            CreatedAt = now,
+            UpdatedAt = now
+        };
+
+        var adminRole = new Role
+        {
+            Id = Guid.NewGuid(),
+            TenantId = tenantId,
+            Name = "Admin",
+            Description = "Administrative access",
+            Priority = 50,
+            IsSystemRole = true,
+            IsActive = true,
+            CreatedAt = now,
+            UpdatedAt = now
+        };
+
+        var managerRole = new Role
+        {
+            Id = Guid.NewGuid(),
+            TenantId = tenantId,
+            Name = "Manager",
+            Description = "Management access",
+            Priority = 25,
+            IsSystemRole = true,
+            IsActive = true,
+            CreatedAt = now,
+            UpdatedAt = now
+        };
+
+        var userRole = new Role
+        {
+            Id = Guid.NewGuid(),
+            TenantId = tenantId,
+            Name = "User",
+            Description = "Standard user access",
+            Priority = 10,
+            IsSystemRole = true,
+            IsActive = true,
+            CreatedAt = now,
+            UpdatedAt = now
+        };
+
+        await _context.Roles.AddRangeAsync(ownerRole, adminRole, managerRole, userRole);
+
+        // Owner: All permissions
+        var ownerPermissions = allPermissions.Select(p => new RolePermission
+        {
+            Id = Guid.NewGuid(),
+            RoleId = ownerRole.Id,
+            PermissionId = p.Id
+        }).ToList();
+        await _context.RolePermissions.AddRangeAsync(ownerPermissions);
+
+        // Admin: All permissions except tenant deletion
+        var adminPermissions = allPermissions
+            .Where(p => !(p.Resource == "tenants" && p.Action == "delete"))
+            .Select(p => new RolePermission
+            {
+                Id = Guid.NewGuid(),
+                RoleId = adminRole.Id,
+                PermissionId = p.Id
+            }).ToList();
+        await _context.RolePermissions.AddRangeAsync(adminPermissions);
+
+        // Manager: Full access to warehouses, products, customers, stock
+        var managerPermissions = allPermissions
+            .Where(p => new[] { "warehouses", "products", "customers", "stock" }.Contains(p.Resource))
+            .Select(p => new RolePermission
+            {
+                Id = Guid.NewGuid(),
+                RoleId = managerRole.Id,
+                PermissionId = p.Id
+            }).ToList();
+        await _context.RolePermissions.AddRangeAsync(managerPermissions);
+
+        // User: Read-only access
+        var userPermissions = allPermissions
+            .Where(p => p.Action == "read")
+            .Select(p => new RolePermission
+            {
+                Id = Guid.NewGuid(),
+                RoleId = userRole.Id,
+                PermissionId = p.Id
+            }).ToList();
+        await _context.RolePermissions.AddRangeAsync(userPermissions);
+
+        return new Dictionary<string, Role>
+        {
+            { "Owner", ownerRole },
+            { "Admin", adminRole },
+            { "Manager", managerRole },
+            { "User", userRole }
+        };
+    }
+
+    private List<Warehouse> CreateWarehousesForTenant(Guid tenantId, string slug, DateTime now)
+    {
+        var prefix = slug.ToUpper().Replace("-", "").Substring(0, Math.Min(4, slug.Length));
+
+        var locations = slug switch
+        {
+            "demo-company" => new[]
+            {
+                ("Main Warehouse", "MAIN", "123 Industrial Blvd", "New York", "NY", "10001", "+1 (555) 100-1000"),
+                ("West Coast Hub", "WEST", "456 Commerce Way", "Los Angeles", "CA", "90001", "+1 (555) 200-2000"),
+                ("East Coast Depot", "EAST", "789 Logistics Lane", "Boston", "MA", "02101", "+1 (555) 300-3000")
+            },
+            "tech-startup" => new[]
+            {
+                ("San Francisco HQ", "SF", "100 Tech Plaza", "San Francisco", "CA", "94105", "+1 (555) 400-4000"),
+                ("Seattle Distribution", "SEA", "200 Innovation Way", "Seattle", "WA", "98101", "+1 (555) 500-5000"),
+                ("Austin Fulfillment", "AUS", "300 Startup Ave", "Austin", "TX", "78701", "+1 (555) 600-6000")
+            },
+            "manufacturing-corp" => new[]
+            {
+                ("Chicago Plant", "CHI", "400 Factory Road", "Chicago", "IL", "60601", "+1 (555) 700-7000"),
+                ("Detroit Assembly", "DET", "500 Manufacturing Dr", "Detroit", "MI", "48201", "+1 (555) 800-8000"),
+                ("Houston Storage", "HOU", "600 Industrial Pkwy", "Houston", "TX", "77001", "+1 (555) 900-9000")
+            },
+            _ => throw new ArgumentException($"Unknown tenant slug: {slug}")
+        };
+
+        var warehouses = new List<Warehouse>();
+        for (int i = 0; i < locations.Length; i++)
+        {
+            var loc = locations[i];
+            warehouses.Add(new Warehouse
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                Name = loc.Item1,
+                Code = $"WH-{prefix}-{loc.Item2}",
+                Description = $"{loc.Item1} for {slug}",
+                StreetAddress = loc.Item3,
+                City = loc.Item4,
+                State = loc.Item5,
+                PostalCode = loc.Item6,
+                Country = "United States",
+                Phone = loc.Item7,
+                Email = $"warehouse-{loc.Item2.ToLower()}@{slug}.com",
+                SquareFootage = 50000 - (i * 5000),
+                Capacity = 10000 - (i * 1000),
+                IsActive = true,
+                CreatedAt = now,
+                UpdatedAt = now,
+                IsDeleted = false
+            });
+        }
+
+        return warehouses;
+    }
+
+    private List<Product> CreateProductsForTenant(Guid tenantId, string slug, DateTime now)
+    {
+        var prefix = slug.ToUpper().Replace("-", "");
+
+        return new List<Product>
+        {
+            new Product
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                Name = "Laptop - Dell XPS 15",
+                Code = $"PROD-{prefix}-001",
+                SKU = $"{prefix}-LAPTOP-001",
+                Description = "High-performance laptop with 15.6\" display, Intel i7, 16GB RAM, 512GB SSD",
+                Category = "Electronics",
+                Brand = "Dell",
+                UnitPrice = 1499.99m,
+                CostPrice = 1200.00m,
+                MinimumStockLevel = 10,
+                Weight = 4.5m,
+                Dimensions = "14.0 x 9.3 x 0.7 inches",
+                IsActive = true,
+                CreatedAt = now,
+                UpdatedAt = now,
+                IsDeleted = false
+            },
+            new Product
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                Name = "Wireless Mouse - Logitech MX Master 3",
+                Code = $"PROD-{prefix}-002",
+                SKU = $"{prefix}-MOUSE-001",
+                Description = "Ergonomic wireless mouse with precision scrolling and customizable buttons",
+                Category = "Accessories",
+                Brand = "Logitech",
+                UnitPrice = 99.99m,
+                CostPrice = 65.00m,
+                MinimumStockLevel = 50,
+                Weight = 0.31m,
+                Dimensions = "4.9 x 3.3 x 2.0 inches",
+                IsActive = true,
+                CreatedAt = now,
+                UpdatedAt = now,
+                IsDeleted = false
+            },
+            new Product
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                Name = "Monitor - LG 27\" 4K UHD",
+                Code = $"PROD-{prefix}-003",
+                SKU = $"{prefix}-MONITOR-001",
+                Description = "27-inch 4K UHD IPS monitor with HDR support and USB-C connectivity",
+                Category = "Electronics",
+                Brand = "LG",
+                UnitPrice = 449.99m,
+                CostPrice = 350.00m,
+                MinimumStockLevel = 15,
+                Weight = 13.2m,
+                Dimensions = "24.1 x 18.5 x 7.9 inches",
+                IsActive = true,
+                CreatedAt = now,
+                UpdatedAt = now,
+                IsDeleted = false
+            },
+            new Product
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                Name = "Keyboard - Mechanical RGB",
+                Code = $"PROD-{prefix}-004",
+                SKU = $"{prefix}-KEYBOARD-001",
+                Description = "Mechanical gaming keyboard with RGB backlighting and programmable macro keys",
+                Category = "Accessories",
+                Brand = "Corsair",
+                UnitPrice = 179.99m,
+                CostPrice = 120.00m,
+                MinimumStockLevel = 20,
+                Weight = 2.7m,
+                Dimensions = "17.4 x 6.5 x 1.5 inches",
+                IsActive = true,
+                CreatedAt = now,
+                UpdatedAt = now,
+                IsDeleted = false
+            },
+            new Product
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                Name = "USB-C Hub - Anker 7-in-1",
+                Code = $"PROD-{prefix}-005",
+                SKU = $"{prefix}-HUB-001",
+                Description = "7-in-1 USB-C hub with HDMI, ethernet, USB 3.0, and SD card reader",
+                Category = "Accessories",
+                Brand = "Anker",
+                UnitPrice = 49.99m,
+                CostPrice = 30.00m,
+                MinimumStockLevel = 30,
+                Weight = 0.22m,
+                Dimensions = "4.5 x 2.0 x 0.6 inches",
+                IsActive = true,
+                CreatedAt = now,
+                UpdatedAt = now,
+                IsDeleted = false
+            }
+        };
+    }
+
+    private List<Customer> CreateCustomersForTenant(Guid tenantId, string slug, DateTime now)
+    {
+        var customerSuffix = slug switch
+        {
+            "demo-company" => "NYC",
+            "tech-startup" => "SF",
+            "manufacturing-corp" => "CHI",
+            _ => ""
+        };
+
+        return new List<Customer>
+        {
+            new Customer
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                Name = $"Acme Corporation {customerSuffix}",
+                Email = $"contact@acme-{slug}.example.com",
+                Phone = "+1 (555) 123-4567",
+                TaxId = $"TAX-ACME-{tenantId.ToString().Substring(0, 8)}",
+                ContactPerson = "John Smith",
+                BillingStreet = "123 Business Ave",
+                BillingCity = "New York",
+                BillingState = "NY",
+                BillingPostalCode = "10001",
+                BillingCountry = "United States",
+                ShippingStreet = "123 Business Ave",
+                ShippingCity = "New York",
+                ShippingState = "NY",
+                ShippingPostalCode = "10001",
+                ShippingCountry = "United States",
+                Website = $"https://acme-{slug}.example.com",
+                Notes = "Major client - priority shipping",
+                IsActive = true,
+                CreatedAt = now,
+                UpdatedAt = now,
+                IsDeleted = false
+            },
+            new Customer
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                Name = $"Tech Solutions Inc {customerSuffix}",
+                Email = $"sales@techsolutions-{slug}.example.com",
+                Phone = "+1 (555) 234-5678",
+                TaxId = $"TAX-TECH-{tenantId.ToString().Substring(0, 8)}",
+                ContactPerson = "Sarah Johnson",
+                BillingStreet = "456 Innovation Dr",
+                BillingCity = "San Francisco",
+                BillingState = "CA",
+                BillingPostalCode = "94105",
+                BillingCountry = "United States",
+                ShippingStreet = "456 Innovation Dr",
+                ShippingCity = "San Francisco",
+                ShippingState = "CA",
+                ShippingPostalCode = "94105",
+                ShippingCountry = "United States",
+                Website = $"https://techsolutions-{slug}.example.com",
+                Notes = "Net 30 payment terms",
+                IsActive = true,
+                CreatedAt = now,
+                UpdatedAt = now,
+                IsDeleted = false
+            },
+            new Customer
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                Name = $"Global Enterprises LLC {customerSuffix}",
+                Email = $"procurement@globalent-{slug}.example.com",
+                Phone = "+1 (555) 345-6789",
+                TaxId = $"TAX-GLOBAL-{tenantId.ToString().Substring(0, 8)}",
+                ContactPerson = "Michael Chen",
+                BillingStreet = "789 Commerce Blvd",
+                BillingCity = "Chicago",
+                BillingState = "IL",
+                BillingPostalCode = "60601",
+                BillingCountry = "United States",
+                ShippingStreet = "321 Distribution Way",
+                ShippingCity = "Chicago",
+                ShippingState = "IL",
+                ShippingPostalCode = "60602",
+                ShippingCountry = "United States",
+                Website = $"https://globalent-{slug}.example.com",
+                Notes = "Requires detailed invoicing",
+                IsActive = true,
+                CreatedAt = now,
+                UpdatedAt = now,
+                IsDeleted = false
+            },
+            new Customer
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                Name = $"Retail Partners Co {customerSuffix}",
+                Email = $"orders@retailpartners-{slug}.example.com",
+                Phone = "+1 (555) 456-7890",
+                TaxId = $"TAX-RETAIL-{tenantId.ToString().Substring(0, 8)}",
+                ContactPerson = "Emily Rodriguez",
+                BillingStreet = "555 Retail Plaza",
+                BillingCity = "Miami",
+                BillingState = "FL",
+                BillingPostalCode = "33101",
+                BillingCountry = "United States",
+                ShippingStreet = "555 Retail Plaza",
+                ShippingCity = "Miami",
+                ShippingState = "FL",
+                ShippingPostalCode = "33101",
+                ShippingCountry = "United States",
+                Website = $"https://retailpartners-{slug}.example.com",
+                Notes = "Bulk orders - discount applied",
+                IsActive = true,
+                CreatedAt = now,
+                UpdatedAt = now,
+                IsDeleted = false
+            },
+            new Customer
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                Name = $"Startup Innovations {customerSuffix}",
+                Email = $"hello@startupinnovations-{slug}.example.com",
+                Phone = "+1 (555) 567-8901",
+                TaxId = $"TAX-STARTUP-{tenantId.ToString().Substring(0, 8)}",
+                ContactPerson = "David Park",
+                BillingStreet = "100 Startup Lane",
+                BillingCity = "Austin",
+                BillingState = "TX",
+                BillingPostalCode = "78701",
+                BillingCountry = "United States",
+                ShippingStreet = "100 Startup Lane",
+                ShippingCity = "Austin",
+                ShippingState = "TX",
+                ShippingPostalCode = "78701",
+                ShippingCountry = "United States",
+                Website = $"https://startupinnovations-{slug}.example.com",
+                Notes = "Growing account - good potential",
+                IsActive = true,
+                CreatedAt = now,
+                UpdatedAt = now,
+                IsDeleted = false
+            }
+        };
+    }
+
+    private List<StockMovement> CreateStockMovementsForTenant(
+        Guid tenantId,
+        List<Product> products,
+        List<Warehouse> warehouses,
+        DateTime now)
+    {
+        var movements = new List<StockMovement>();
+        var random = new Random(tenantId.GetHashCode()); // Deterministic randomness per tenant
+
+        // Initial Inventory (90 days ago) - Set starting stock in first warehouse
+        foreach (var product in products)
+        {
+            movements.Add(new StockMovement
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                ProductId = product.Id,
+                WarehouseId = warehouses[0].Id,
+                MovementType = MovementType.InitialInventory,
+                Quantity = random.Next(50, 200),
+                UnitCost = product.CostPrice,
+                TotalCost = product.CostPrice * random.Next(50, 200),
+                Reference = $"INIT-{product.Code}",
+                Notes = "Initial inventory setup",
+                MovementDate = now.AddDays(-90),
+                CreatedAt = now.AddDays(-90),
+                UpdatedAt = now.AddDays(-90),
+                IsDeleted = false
+            });
+        }
+
+        // Purchases (30-60 days ago) - Incoming stock to various warehouses
+        for (int i = 0; i < 8; i++)
+        {
+            var product = products[random.Next(products.Count)];
+            var warehouse = warehouses[random.Next(warehouses.Count)];
+            var quantity = random.Next(20, 100);
+
+            movements.Add(new StockMovement
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                ProductId = product.Id,
+                WarehouseId = warehouse.Id,
+                MovementType = MovementType.Purchase,
+                Quantity = quantity,
+                UnitCost = product.CostPrice,
+                TotalCost = product.CostPrice * quantity,
+                Reference = $"PO-{random.Next(1000, 9999)}",
+                Notes = $"Purchase order received",
+                MovementDate = now.AddDays(-random.Next(30, 60)),
+                CreatedAt = now.AddDays(-random.Next(30, 60)),
+                UpdatedAt = now.AddDays(-random.Next(30, 60)),
+                IsDeleted = false
+            });
+        }
+
+        // Sales (last 30 days) - Outgoing stock
+        for (int i = 0; i < 12; i++)
+        {
+            var product = products[random.Next(products.Count)];
+            var warehouse = warehouses[random.Next(warehouses.Count)];
+            var quantity = -random.Next(5, 25); // Negative for outgoing
+
+            movements.Add(new StockMovement
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                ProductId = product.Id,
+                WarehouseId = warehouse.Id,
+                MovementType = MovementType.Sale,
+                Quantity = quantity,
+                Reference = $"INV-{random.Next(1000, 9999)}",
+                Notes = $"Customer order fulfillment",
+                MovementDate = now.AddDays(-random.Next(1, 30)),
+                CreatedAt = now.AddDays(-random.Next(1, 30)),
+                UpdatedAt = now.AddDays(-random.Next(1, 30)),
+                IsDeleted = false
+            });
+        }
+
+        // Transfers (last 45 days) - Between warehouses
+        if (warehouses.Count >= 2)
+        {
+            for (int i = 0; i < 5; i++)
+            {
+                var product = products[random.Next(products.Count)];
+                var sourceWarehouse = warehouses[random.Next(warehouses.Count)];
+                var destWarehouse = warehouses.First(w => w.Id != sourceWarehouse.Id);
+                var quantity = random.Next(10, 30);
+
+                // Outgoing from source
+                movements.Add(new StockMovement
+                {
+                    Id = Guid.NewGuid(),
+                    TenantId = tenantId,
+                    ProductId = product.Id,
+                    WarehouseId = sourceWarehouse.Id,
+                    DestinationWarehouseId = destWarehouse.Id,
+                    MovementType = MovementType.Transfer,
+                    Quantity = -quantity,
+                    Reference = $"TRF-{random.Next(1000, 9999)}",
+                    Notes = $"Transfer to {destWarehouse.Name}",
+                    MovementDate = now.AddDays(-random.Next(1, 45)),
+                    CreatedAt = now.AddDays(-random.Next(1, 45)),
+                    UpdatedAt = now.AddDays(-random.Next(1, 45)),
+                    IsDeleted = false
+                });
+
+                // Incoming to destination
+                movements.Add(new StockMovement
+                {
+                    Id = Guid.NewGuid(),
+                    TenantId = tenantId,
+                    ProductId = product.Id,
+                    WarehouseId = destWarehouse.Id,
+                    DestinationWarehouseId = sourceWarehouse.Id,
+                    MovementType = MovementType.Transfer,
+                    Quantity = quantity,
+                    Reference = $"TRF-{random.Next(1000, 9999)}",
+                    Notes = $"Transfer from {sourceWarehouse.Name}",
+                    MovementDate = now.AddDays(-random.Next(1, 45)),
+                    CreatedAt = now.AddDays(-random.Next(1, 45)),
+                    UpdatedAt = now.AddDays(-random.Next(1, 45)),
+                    IsDeleted = false
+                });
+            }
+        }
+
+        // Adjustments (last 15 days) - Stock corrections
+        for (int i = 0; i < 3; i++)
+        {
+            var product = products[random.Next(products.Count)];
+            var warehouse = warehouses[random.Next(warehouses.Count)];
+            var quantity = random.Next(-10, 10); // Can be positive or negative
+
+            movements.Add(new StockMovement
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                ProductId = product.Id,
+                WarehouseId = warehouse.Id,
+                MovementType = MovementType.Adjustment,
+                Quantity = quantity,
+                Reference = $"ADJ-{random.Next(1000, 9999)}",
+                Notes = quantity > 0 ? "Stock found during audit" : "Damaged items removed",
+                MovementDate = now.AddDays(-random.Next(1, 15)),
+                CreatedAt = now.AddDays(-random.Next(1, 15)),
+                UpdatedAt = now.AddDays(-random.Next(1, 15)),
+                IsDeleted = false
+            });
+        }
+
+        // Returns (last 20 days) - Customer returns
+        for (int i = 0; i < 2; i++)
+        {
+            var product = products[random.Next(products.Count)];
+            var warehouse = warehouses[random.Next(warehouses.Count)];
+            var quantity = random.Next(1, 5);
+
+            movements.Add(new StockMovement
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                ProductId = product.Id,
+                WarehouseId = warehouse.Id,
+                MovementType = MovementType.Return,
+                Quantity = quantity,
+                Reference = $"RET-{random.Next(1000, 9999)}",
+                Notes = "Customer return - item defective",
+                MovementDate = now.AddDays(-random.Next(1, 20)),
+                CreatedAt = now.AddDays(-random.Next(1, 20)),
+                UpdatedAt = now.AddDays(-random.Next(1, 20)),
+                IsDeleted = false
+            });
+        }
+
+        return movements;
+    }
+
+    private List<WarehouseInventory> CalculateWarehouseInventory(
+        Guid tenantId,
+        List<Product> products,
+        List<Warehouse> warehouses,
+        List<StockMovement> movements,
+        DateTime now)
+    {
+        var inventoryLevels = new List<WarehouseInventory>();
+
+        foreach (var product in products)
+        {
+            foreach (var warehouse in warehouses)
+            {
+                var productMovements = movements
+                    .Where(m => m.ProductId == product.Id && m.WarehouseId == warehouse.Id)
+                    .ToList();
+
+                if (productMovements.Any())
+                {
+                    var totalQuantity = productMovements.Sum(m => m.Quantity);
+                    var lastMovement = productMovements.OrderByDescending(m => m.MovementDate).First();
+
+                    // Only create inventory record if there's stock
+                    if (totalQuantity > 0)
+                    {
+                        inventoryLevels.Add(new WarehouseInventory
+                        {
+                            Id = Guid.NewGuid(),
+                            TenantId = tenantId,
+                            ProductId = product.Id,
+                            WarehouseId = warehouse.Id,
+                            Quantity = totalQuantity,
+                            ReservedQuantity = 0, // No reservations yet
+                            LastMovementDate = lastMovement.MovementDate,
+                            CreatedAt = now,
+                            UpdatedAt = now,
+                            IsDeleted = false
+                        });
+                    }
+                }
+            }
+        }
+
+        return inventoryLevels;
+    }
+
+    #endregion
 }

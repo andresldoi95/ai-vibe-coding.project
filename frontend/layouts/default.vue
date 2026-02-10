@@ -4,6 +4,26 @@ const authStore = useAuthStore()
 const tenantStore = useTenantStore()
 const uiStore = useUiStore()
 const { hasPermission } = usePermissions()
+const { showSuccess, showError } = useNotification()
+
+// Handle tenant selection
+async function handleTenantChange(event: { value: string | null }) {
+  const tenantId = event.value
+  if (tenantId && tenantId !== tenantStore.currentTenantId) {
+    try {
+      await authStore.selectTenant(tenantId)
+      showSuccess('Company switched successfully')
+
+      // Reload page to ensure all data is fetched with new tenant context
+      window.location.reload()
+    }
+    catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to switch company'
+      console.error('Failed to switch company:', error)
+      showError(errorMessage)
+    }
+  }
+}
 
 const menuItems = computed(() => {
   const items = [
@@ -129,14 +149,14 @@ const breadcrumbHome = { icon: 'pi pi-home', to: '/' }
             <!-- Tenant Selector -->
             <Dropdown
               v-if="tenantStore.availableTenants.length > 0"
-              v-model="tenantStore.currentTenantId"
+              :modelValue="tenantStore.currentTenantId"
               :options="tenantStore.availableTenants"
               optionLabel="name"
               optionValue="id"
-              placeholder="Select Tenant"
+              placeholder="Select Company"
               appendTo="body"
               class="w-48"
-              @change="(event: Event) => authStore.selectTenant((event.target as HTMLSelectElement).value)"
+              @change="handleTenantChange"
             >
               <template #value="{ value }">
                 <div v-if="value" class="flex items-center gap-2">
