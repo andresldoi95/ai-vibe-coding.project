@@ -45,5 +45,8 @@ globalThis.useAuthStore = vi.fn(() => mockAuthStore)
 globalThis.useTenantStore = vi.fn(() => mockTenantStore)
 globalThis.useI18n = useI18n
 
+// Make Vue's ref available globally (auto-imported in Nuxt)
+globalThis.ref = ref
+
 // Export for test files that need to manipulate the mocks
 export { mockApiFetch, mockAuthStore, mockLocale, mockRuntimeConfig, mockTenantStore, useApi, useI18n, useNuxtApp }
