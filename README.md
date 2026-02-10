@@ -13,7 +13,13 @@ A modern, multi-tenant SaaS application for billing and inventory management bui
 
 ```
 ai-vibe-coding.project/
-├── docs/                           # Agent documentation
+├── .github/
+│   └── agents/                    # GitHub Copilot agent definitions
+│       ├── Backend Agent.agent.md
+│       ├── Frontend Agent.agent.md
+│       ├── Auth Agent.agent.md
+│       └── ...
+├── docs/                           # Agent documentation & references
 │   ├── backend-agent.md
 │   ├── frontend-agent.md
 │   └── project-architecture-agent.md
@@ -34,7 +40,9 @@ ai-vibe-coding.project/
 ├── backend/                        # .NET 8 backend (to be created)
 ├── docker-compose.yml              # Development environment
 ├── docker-compose.prod.yml         # Production environment
-└── AGENTS.md                       # Agent system documentation
+├── AGENTS.md                       # Agent catalog & documentation
+├── AGENT_QUICK_START.md            # Quick start guide for agents
+└── AGENT_MIGRATION_SUMMARY.md      # Agent optimization details
 ```
 
 ## 🚀 Quick Start
@@ -162,13 +170,18 @@ docker-compose -f docker-compose.prod.yml down
 
 ### Agent System
 
-This project uses specialized AI agents for development:
+This project uses specialized AI agents optimized for GitHub Copilot:
 
-- **Project Architecture Agent** - System design and architecture
-- **Backend Agent** - .NET 8 backend development
-- **Frontend Agent** - Nuxt 3 frontend development
+- **🏛️ Project Architecture Agent** - System design and architecture
+- **⚙️ Backend Agent** - .NET 8 backend development with CQRS
+- **🎨 Frontend Agent** - Nuxt 3 frontend with PrimeVue
+- **🧪 Backend Unit Testing Agent** - xUnit testing with FluentAssertions
+- **🎯 UX Agent** - Design patterns and user experience
+- **🔒 Auth Agent** - Authentication, authorization, and RBAC
+- **📧 Email Agent** - Email service with MailKit and Mailpit
 
-See [AGENTS.md](AGENTS.md) for details.
+**Quick Start**: See [AGENT_QUICK_START.md](AGENT_QUICK_START.md)  
+**Full Details**: See [AGENTS.md](AGENTS.md)
 
 ### Component Documentation
 
