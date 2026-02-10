@@ -7,18 +7,11 @@ definePageMeta({
 })
 
 const { t } = useI18n()
-const uiStore = useUiStore()
-const toast = useNotification()
 const { getAllCustomers, deleteCustomer } = useCustomer()
 const { can } = usePermissions()
 
-const customers = ref<Customer[]>([])
-const loading = ref(false)
-const deleteDialog = ref(false)
-const selectedCustomer = ref<Customer | null>(null)
+// Filter state - customers page has custom filters
 const showFilters = ref(true)
-
-// Filter state
 const filters = reactive<CustomerFilters>({
   searchTerm: '',
   name: '',
@@ -30,6 +23,44 @@ const filters = reactive<CustomerFilters>({
   isActive: undefined,
 })
 
+// Custom load function that handles filters
+async function loadCustomersWithFilters() {
+  const activeFilters: CustomerFilters = {}
+  if (filters.searchTerm) activeFilters.searchTerm = filters.searchTerm
+  if (filters.name) activeFilters.name = filters.name
+  if (filters.email) activeFilters.email = filters.email
+  if (filters.phone) activeFilters.phone = filters.phone
+  if (filters.taxId) activeFilters.taxId = filters.taxId
+  if (filters.city) activeFilters.city = filters.city
+  if (filters.country) activeFilters.country = filters.country
+  if (filters.isActive !== undefined) activeFilters.isActive = filters.isActive
+
+  return await getAllCustomers(activeFilters)
+}
+
+// ✅ Using useCrudPage composable
+const {
+  items: customers,
+  loading,
+  deleteDialog,
+  selectedItem: selectedCustomer,
+  loadData,
+  handleCreate,
+  handleView,
+  handleEdit,
+  confirmDelete,
+  handleDelete,
+} = useCrudPage({
+  resourceName: 'customers',
+  parentRoute: 'billing',
+  basePath: '/billing/customers',
+  loadItems: loadCustomersWithFilters,
+  deleteItem: deleteCustomer,
+})
+
+// ✅ Using useStatus composable
+const { getStatusLabel, getStatusSeverity } = useStatus()
+
 // Debounce search term
 const searchDebounce = ref<NodeJS.Timeout>()
 
@@ -37,45 +68,12 @@ watch(() => filters.searchTerm, () => {
   if (searchDebounce.value)
     clearTimeout(searchDebounce.value)
   searchDebounce.value = setTimeout(() => {
-    loadCustomers()
+    loadData()
   }, 300)
 })
 
-async function loadCustomers() {
-  loading.value = true
-  try {
-    // Build filter object, excluding empty values
-    const activeFilters: CustomerFilters = {}
-    if (filters.searchTerm)
-      activeFilters.searchTerm = filters.searchTerm
-    if (filters.name)
-      activeFilters.name = filters.name
-    if (filters.email)
-      activeFilters.email = filters.email
-    if (filters.phone)
-      activeFilters.phone = filters.phone
-    if (filters.taxId)
-      activeFilters.taxId = filters.taxId
-    if (filters.city)
-      activeFilters.city = filters.city
-    if (filters.country)
-      activeFilters.country = filters.country
-    if (filters.isActive !== undefined)
-      activeFilters.isActive = filters.isActive
-
-    customers.value = await getAllCustomers(activeFilters)
-  }
-  catch (error) {
-    const errMessage = error instanceof Error ? error.message : 'Unknown error'
-    toast.showError(t('messages.error_load'), errMessage)
-  }
-  finally {
-    loading.value = false
-  }
-}
-
 function applyFilters() {
-  loadCustomers()
+  loadData()
 }
 
 function resetFilters() {
@@ -87,78 +85,26 @@ function resetFilters() {
   filters.city = ''
   filters.country = ''
   filters.isActive = undefined
-  loadCustomers()
-}
-
-function createCustomer() {
-  navigateTo('/billing/customers/new')
-}
-
-function confirmDelete(customer: Customer) {
-  selectedCustomer.value = customer
-  deleteDialog.value = true
-}
-
-async function handleDelete() {
-  if (!selectedCustomer.value)
-    return
-
-  try {
-    await deleteCustomer(selectedCustomer.value.id)
-    toast.showSuccess(t('messages.success_delete'), t('customers.deleted_successfully'))
-    await loadCustomers()
-  }
-  catch (error) {
-    const errMessage = error instanceof Error ? error.message : 'Unknown error'
-    toast.showError(t('messages.error_delete'), errMessage)
-  }
-  finally {
-    deleteDialog.value = false
-    selectedCustomer.value = null
-  }
-}
-
-function getStatusLabel(isActive: boolean): string {
-  return isActive ? t('common.active') : t('common.inactive')
-}
-
-function getStatusSeverity(isActive: boolean): 'success' | 'danger' {
-  return isActive ? 'success' : 'danger'
+  loadData()
 }
 
 function getActiveFilterCount(): number {
   let count = 0
-  if (filters.searchTerm)
-    count++
-  if (filters.name)
-    count++
-  if (filters.email)
-    count++
-  if (filters.phone)
-    count++
-  if (filters.taxId)
-    count++
-  if (filters.city)
-    count++
-  if (filters.country)
-    count++
-  if (filters.isActive !== undefined)
-    count++
+  if (filters.searchTerm) count++
+  if (filters.name) count++
+  if (filters.email) count++
+  if (filters.phone) count++
+  if (filters.taxId) count++
+  if (filters.city) count++
+  if (filters.country) count++
+  if (filters.isActive !== undefined) count++
   return count
 }
-
-onMounted(() => {
-  uiStore.setBreadcrumbs([
-    { label: t('nav.billing'), to: '/billing' },
-    { label: t('customers.title') },
-  ])
-  loadCustomers()
-})
 </script>
 
 <template>
   <div>
-    <!-- Page Header Component - Following UX spacing guidelines -->
+    <!-- Page Header Component -->
     <PageHeader
       :title="t('customers.title')"
       :description="t('customers.description')"
@@ -168,7 +114,7 @@ onMounted(() => {
           v-if="can.createCustomer()"
           :label="t('customers.create')"
           icon="pi pi-plus"
-          @click="createCustomer"
+          @click="handleCreate"
         />
       </template>
     </PageHeader>
@@ -272,6 +218,20 @@ onMounted(() => {
               />
             </div>
 
+            <!-- Country -->
+            <div class="flex flex-col gap-2">
+              <label for="country" class="font-semibold text-slate-700 dark:text-slate-200">
+                {{ t('common.country') }}
+              </label>
+              <InputText
+                id="country"
+                v-model="filters.country"
+                :placeholder="t('common.country')"
+              />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
             <!-- Status -->
             <div class="flex flex-col gap-2">
               <label for="status" class="font-semibold text-slate-700 dark:text-slate-200">
@@ -310,7 +270,7 @@ onMounted(() => {
       </template>
     </Card>
 
-    <!-- Data Table Card - Using standard card padding (p-6) -->
+    <!-- Data Table Card -->
     <Card>
       <template #content>
         <LoadingState v-if="loading" :message="t('common.loading')" />
@@ -330,25 +290,18 @@ onMounted(() => {
               :description="can.createCustomer() ? t('customers.empty_description') : undefined"
               :action-label="t('customers.create')"
               action-icon="pi pi-plus"
-              @action="createCustomer"
+              @action="handleCreate"
             />
           </template>
 
           <Column field="name" :header="t('customers.name')" sortable />
           <Column field="email" :header="t('common.email')" sortable />
-          <Column field="phone" :header="t('common.phone')" sortable>
+          <Column field="phone" :header="t('common.phone')" sortable />
+          <Column field="taxId" :header="t('customers.tax_id')" sortable />
+
+          <Column field="location" :header="t('customers.location')" sortable>
             <template #body="{ data }">
-              {{ data.phone || '—' }}
-            </template>
-          </Column>
-          <Column field="taxId" :header="t('customers.tax_id')" sortable>
-            <template #body="{ data }">
-              {{ data.taxId || '—' }}
-            </template>
-          </Column>
-          <Column field="contactPerson" :header="t('customers.contact_person')" sortable>
-            <template #body="{ data }">
-              {{ data.contactPerson || '—' }}
+              {{ data.city }}, {{ data.country }}
             </template>
           </Column>
 
@@ -367,8 +320,8 @@ onMounted(() => {
                 :show-view="can.viewCustomers()"
                 :show-edit="can.editCustomer()"
                 :show-delete="can.deleteCustomer()"
-                @view="navigateTo(`/billing/customers/${data.id}`)"
-                @edit="navigateTo(`/billing/customers/${data.id}/edit`)"
+                @view="handleView(data)"
+                @edit="handleEdit(data)"
                 @delete="confirmDelete(data)"
               />
             </template>
@@ -377,33 +330,11 @@ onMounted(() => {
       </template>
     </Card>
 
-    <!-- Delete Confirmation Dialog -->
-    <Dialog
+    <!-- ✅ Using DeleteConfirmDialog component -->
+    <DeleteConfirmDialog
       v-model:visible="deleteDialog"
-      :header="t('common.confirm')"
-      :modal="true"
-      :style="{ width: '450px' }"
-    >
-      <div class="flex items-center gap-4">
-        <i class="pi pi-exclamation-triangle text-3xl text-orange-500" />
-        <span v-if="selectedCustomer">
-          {{ t('customers.confirm_delete', { name: selectedCustomer.name }) }}
-        </span>
-      </div>
-      <template #footer>
-        <Button
-          :label="t('common.cancel')"
-          icon="pi pi-times"
-          text
-          @click="deleteDialog = false"
-        />
-        <Button
-          :label="t('common.delete')"
-          icon="pi pi-trash"
-          severity="danger"
-          @click="handleDelete"
-        />
-      </template>
-    </Dialog>
+      :item-name="selectedCustomer?.name"
+      @confirm="handleDelete"
+    />
   </div>
 </template>
