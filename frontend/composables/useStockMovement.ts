@@ -108,7 +108,8 @@ export function useStockMovement() {
     // Get filename from Content-Disposition header or use default
     const contentDisposition = response.headers.get('Content-Disposition')
     const filenameMatch = contentDisposition?.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/)
-    const filename = filenameMatch?.[1]?.replace(/['"]/g, '') || `stock-movements-${new Date().toISOString().split('T')[0]}.${filters.format || 'xlsx'}`
+    const fileExtension = filters.format === 'excel' ? 'xlsx' : filters.format || 'xlsx'
+    const filename = filenameMatch?.[1]?.replace(/['"]/g, '') || `stock-movements-${new Date().toISOString().split('T')[0]}.${fileExtension}`
 
     // Download file
     const blob = await response.blob()
