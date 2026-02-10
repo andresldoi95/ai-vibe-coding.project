@@ -2,6 +2,7 @@
 import { useVuelidate } from '@vuelidate/core'
 import { maxLength, minValue, required } from '@vuelidate/validators'
 import { MovementType, MovementTypeLabels } from '~/types/inventory'
+import type { Product, Warehouse } from '~/types/inventory'
 
 definePageMeta({
   middleware: ['auth', 'tenant'],
@@ -18,8 +19,8 @@ const { getAllWarehouses } = useWarehouse()
 
 const loading = ref(false)
 const loadingData = ref(false)
-const products = ref<any[]>([])
-const warehouses = ref<any[]>([])
+const products = ref<Product[]>([])
+const warehouses = ref<Warehouse[]>([])
 
 const formData = reactive({
   productId: '',
