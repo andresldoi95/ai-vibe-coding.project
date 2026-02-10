@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Customer, CustomerFilters } from '~/types/billing'
+import type { CustomerFilters } from '~/types/billing'
 
 definePageMeta({
   middleware: ['auth', 'tenant'],
@@ -26,14 +26,22 @@ const filters = reactive<CustomerFilters>({
 // Custom load function that handles filters
 async function loadCustomersWithFilters() {
   const activeFilters: CustomerFilters = {}
-  if (filters.searchTerm) activeFilters.searchTerm = filters.searchTerm
-  if (filters.name) activeFilters.name = filters.name
-  if (filters.email) activeFilters.email = filters.email
-  if (filters.phone) activeFilters.phone = filters.phone
-  if (filters.taxId) activeFilters.taxId = filters.taxId
-  if (filters.city) activeFilters.city = filters.city
-  if (filters.country) activeFilters.country = filters.country
-  if (filters.isActive !== undefined) activeFilters.isActive = filters.isActive
+  if (filters.searchTerm)
+    activeFilters.searchTerm = filters.searchTerm
+  if (filters.name)
+    activeFilters.name = filters.name
+  if (filters.email)
+    activeFilters.email = filters.email
+  if (filters.phone)
+    activeFilters.phone = filters.phone
+  if (filters.taxId)
+    activeFilters.taxId = filters.taxId
+  if (filters.city)
+    activeFilters.city = filters.city
+  if (filters.country)
+    activeFilters.country = filters.country
+  if (filters.isActive !== undefined)
+    activeFilters.isActive = filters.isActive
 
   return await getAllCustomers(activeFilters)
 }
@@ -90,14 +98,22 @@ function resetFilters() {
 
 function getActiveFilterCount(): number {
   let count = 0
-  if (filters.searchTerm) count++
-  if (filters.name) count++
-  if (filters.email) count++
-  if (filters.phone) count++
-  if (filters.taxId) count++
-  if (filters.city) count++
-  if (filters.country) count++
-  if (filters.isActive !== undefined) count++
+  if (filters.searchTerm)
+    count++
+  if (filters.name)
+    count++
+  if (filters.email)
+    count++
+  if (filters.phone)
+    count++
+  if (filters.taxId)
+    count++
+  if (filters.city)
+    count++
+  if (filters.country)
+    count++
+  if (filters.isActive !== undefined)
+    count++
   return count
 }
 </script>

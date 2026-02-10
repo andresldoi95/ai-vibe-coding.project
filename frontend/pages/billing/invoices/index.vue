@@ -15,7 +15,7 @@ const { formatCurrency, formatDate } = useFormatters()
 async function loadInvoices() {
   // This will work once backend is ready
   // return await apiFetch<Invoice[]>('/billing/invoices')
-  
+
   // Mock data for now
   toast.showInfo(t('messages.error_load'), 'Backend not connected')
   return []
@@ -41,7 +41,7 @@ const {
   parentRoute: 'billing',
   basePath: '/billing/invoices',
   loadItems: loadInvoices,
-  deleteItem: (id) => deleteInvoice(id),
+  deleteItem: id => deleteInvoice(id),
 })
 
 const selectedInvoices = ref<Invoice[]>([])

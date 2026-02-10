@@ -10,8 +10,6 @@ definePageMeta({
   layout: 'default',
 })
 
-const { t } = useI18n()
-
 const analysis = computed(() => analyzeCodePatterns())
 const reportText = ref('')
 const showReport = ref(false)
@@ -56,7 +54,7 @@ function getImpactColor(impact: string) {
           </h2>
         </div>
       </template>
-      
+
       <template #content>
         <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
           <!-- Total Patterns -->

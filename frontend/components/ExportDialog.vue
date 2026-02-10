@@ -8,8 +8,8 @@ interface ExportFilter {
   name: string
   label: string
   type: 'text' | 'select' | 'date' | 'daterange'
-  value?: any
-  options?: Array<{ label: string; value: any }>
+  value?: unknown
+  options?: Array<{ label: string, value: unknown }>
   placeholder?: string
 }
 
@@ -17,14 +17,14 @@ interface Props {
   visible: boolean
   title?: string
   description?: string
-  formats?: Array<{ label: string; value: string }>
+  formats?: Array<{ label: string, value: string }>
   filters?: ExportFilter[]
   loading?: boolean
 }
 
 interface Emits {
   (e: 'update:visible', value: boolean): void
-  (e: 'export', data: { format: string; filters: Record<string, any> }): void
+  (e: 'export', data: { format: string, filters: Record<string, unknown> }): void
   (e: 'cancel'): void
 }
 
@@ -45,11 +45,11 @@ const { t } = useI18n()
 
 const dialogVisible = computed({
   get: () => props.visible,
-  set: (value) => emit('update:visible', value),
+  set: value => emit('update:visible', value),
 })
 
 const selectedFormat = ref(props.formats[0]?.value || 'excel')
-const filterValues = reactive<Record<string, any>>({})
+const filterValues = reactive<Record<string, unknown>>({})
 
 // Initialize filter values
 watch(() => props.filters, (newFilters) => {
@@ -88,7 +88,7 @@ function handleCancel() {
       <p v-if="dialogDescription" class="text-sm text-gray-600 dark:text-gray-400">
         {{ dialogDescription }}
       </p>
-      
+
       <!-- Format Selection -->
       <div>
         <label class="block text-sm font-medium mb-2">{{ t('common.export_format') }}</label>
@@ -111,10 +111,12 @@ function handleCancel() {
       <!-- Filters -->
       <template v-if="filters.length > 0">
         <Divider />
-        
+
         <div>
-          <h4 class="text-sm font-medium mb-3">{{ t('common.filters') }}</h4>
-          
+          <h4 class="text-sm font-medium mb-3">
+            {{ t('common.filters') }}
+          </h4>
+
           <div class="space-y-3">
             <div v-for="filter in filters" :key="filter.name">
               <!-- Text Filter -->

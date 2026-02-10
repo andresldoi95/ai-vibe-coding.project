@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import type { Role } from '~/types/auth'
-
 definePageMeta({
   middleware: ['auth', 'tenant'],
   layout: 'default',
@@ -37,7 +35,7 @@ const {
   basePath: '/settings/roles',
   loadItems: loadRoles,
   deleteItem: deleteRoleById,
-  getItemName: (role) => role.name,
+  getItemName: role => role.name,
 })
 
 // Breadcrumbs

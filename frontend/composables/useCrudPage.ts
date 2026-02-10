@@ -10,27 +10,27 @@ export interface CrudPageOptions<T> {
    * Resource name for breadcrumbs and i18n (e.g., 'warehouses', 'products')
    */
   resourceName: string
-  
+
   /**
    * Parent route for breadcrumbs (e.g., 'inventory', 'billing')
    */
   parentRoute?: string
-  
+
   /**
    * Base path for navigation (e.g., '/inventory/warehouses')
    */
   basePath: string
-  
+
   /**
    * Function to load all items
    */
   loadItems: () => Promise<T[]>
-  
+
   /**
    * Function to delete an item
    */
   deleteItem: (id: string) => Promise<void>
-  
+
   /**
    * Function to get item display name for delete confirmation
    */
@@ -51,19 +51,19 @@ export interface CrudPageState<T> {
   getItemId: (item: T) => string
 }
 
-export function useCrudPage<T extends { id: string; name?: string }>(
+export function useCrudPage<T extends { id: string, name?: string }>(
   options: CrudPageOptions<T>,
 ): CrudPageState<T> {
   const { t } = useI18n()
   const uiStore = useUiStore()
   const toast = useNotification()
-  
+
   // State
   const items = ref<T[]>([]) as Ref<T[]>
   const loading = ref(false)
   const deleteDialog = ref(false)
   const selectedItem = ref<T | null>(null) as Ref<T | null>
-  
+
   // Setup breadcrumbs
   const breadcrumbs = []
   if (options.parentRoute) {
@@ -75,7 +75,7 @@ export function useCrudPage<T extends { id: string; name?: string }>(
   breadcrumbs.push({
     label: t(`${options.resourceName}.title`),
   })
-  
+
   // Load data with error handling
   async function loadData() {
     loading.value = true
@@ -90,41 +90,42 @@ export function useCrudPage<T extends { id: string; name?: string }>(
       loading.value = false
     }
   }
-  
+
   // Navigation functions
   function handleCreate() {
     navigateTo(`${options.basePath}/new`)
   }
-  
+
   function handleView(item: T) {
     navigateTo(`${options.basePath}/${item.id}`)
   }
-  
+
   function handleEdit(item: T) {
     navigateTo(`${options.basePath}/${item.id}/edit`)
   }
-  
+
   // Delete functions
   function confirmDelete(item: T) {
     selectedItem.value = item
     deleteDialog.value = true
   }
-  
+
   async function handleDelete() {
-    if (!selectedItem.value) return
-    
+    if (!selectedItem.value)
+      return
+
     try {
       await options.deleteItem(selectedItem.value.id)
-      
+
       const itemName = options.getItemName
         ? options.getItemName(selectedItem.value)
         : selectedItem.value.name || selectedItem.value.id
-      
+
       toast.showSuccess(
         t('messages.success_delete'),
         t(`${options.resourceName}.deleted_successfully`, { name: itemName }),
       )
-      
+
       await loadData()
     }
     catch (error) {
@@ -136,17 +137,17 @@ export function useCrudPage<T extends { id: string; name?: string }>(
       selectedItem.value = null
     }
   }
-  
+
   function getItemId(item: T): string {
     return item.id
   }
-  
+
   // Initialize
   onMounted(() => {
     uiStore.setBreadcrumbs(breadcrumbs)
     loadData()
   })
-  
+
   return {
     items,
     loading,

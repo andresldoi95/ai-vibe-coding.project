@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import type { Warehouse } from '~/types/inventory'
-
 definePageMeta({
   middleware: ['auth', 'tenant'],
   layout: 'default',

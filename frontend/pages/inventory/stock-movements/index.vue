@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Product, StockMovement, Warehouse } from '~/types/inventory'
+import type { Product, Warehouse } from '~/types/inventory'
 import { MovementType, MovementTypeLabels } from '~/types/inventory'
 
 definePageMeta({
@@ -34,8 +34,8 @@ const {
   items: stockMovements,
   loading,
   deleteDialog,
-  selectedItem: selectedMovement,
-  loadData,
+  selectedItem: _selectedMovement,
+  loadData: _loadData,
   handleCreate,
   handleView,
   handleEdit,
@@ -53,34 +53,45 @@ const {
 const exportDialog = ref(false)
 const exporting = ref(false)
 
-const exportFilters = [
+const exportFilters = computed(() => [
   { name: 'brand', label: t('stock_movements.filter_by_brand'), type: 'text' as const, placeholder: 'e.g., Nike, Adidas' },
   { name: 'category', label: t('stock_movements.filter_by_category'), type: 'text' as const, placeholder: 'e.g., Electronics, Clothing' },
-  { 
-    name: 'warehouseId', 
-    label: t('stock_movements.filter_by_warehouse'), 
+  {
+    name: 'warehouseId',
+    label: t('stock_movements.filter_by_warehouse'),
     type: 'select' as const,
-    options: computed(() => warehouses.value.map(w => ({ label: w.name, value: w.id }))),
-    placeholder: t('common.select')
+    options: warehouses.value.map(w => ({ label: w.name, value: w.id })),
+    placeholder: t('common.select'),
   },
   { name: 'fromDate', label: t('stock_movements.from_date'), type: 'date' as const },
   { name: 'toDate', label: t('stock_movements.to_date'), type: 'date' as const },
-]
+])
 
 function openExportDialog() {
   exportDialog.value = true
 }
 
-async function handleExport({ format, filters }: { format: string; filters: Record<string, any> }) {
+async function handleExport({ format, filters }: { format: string, filters: Record<string, unknown> }) {
   exporting.value = true
   try {
-    const exportParams: Record<string, any> = { format }
-    if (filters.brand) exportParams.brand = filters.brand
-    if (filters.category) exportParams.category = filters.category
-    if (filters.warehouseId) exportParams.warehouseId = filters.warehouseId
-    if (filters.fromDate) exportParams.fromDate = filters.fromDate
-    if (filters.toDate) exportParams.toDate = filters.toDate
-    
+    const exportParams: Record<string, unknown> = { format }
+    if (filters.brand)
+      exportParams.brand = filters.brand
+    if (filters.category)
+      exportParams.category = filters.category
+    if (filters.warehouseId)
+      exportParams.warehouseId = filters.warehouseId
+    if (filters.fromDate) {
+      exportParams.fromDate = filters.fromDate instanceof Date
+        ? filters.fromDate.toISOString().split('T')[0]
+        : filters.fromDate
+    }
+    if (filters.toDate) {
+      exportParams.toDate = filters.toDate instanceof Date
+        ? filters.toDate.toISOString().split('T')[0]
+        : filters.toDate
+    }
+
     await exportStockMovements(exportParams)
     const toast = useNotification()
     toast.showSuccess(t('stock_movements.export_success'))

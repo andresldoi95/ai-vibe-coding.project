@@ -140,26 +140,27 @@ export function analyzeCodePatterns(): CodeAnalysisReport {
  */
 export function generateAnalysisReport(): string {
   const analysis = analyzeCodePatterns()
-  
+
   let report = '# Code Repetition Analysis Report\n\n'
   report += `**Total Patterns Detected:** ${analysis.totalPatterns}\n`
   report += `**High Impact Patterns:** ${analysis.highImpactPatterns}\n`
   report += `**Estimated Lines to Reduce:** ~${analysis.estimatedLinesToReduce} lines\n\n`
   report += '---\n\n'
-  
+
   report += '## Patterns by Impact\n\n'
-  
+
   const byImpact = {
     high: analysis.patterns.filter(p => p.impact === 'high'),
     medium: analysis.patterns.filter(p => p.impact === 'medium'),
     low: analysis.patterns.filter(p => p.impact === 'low'),
   }
-  
+
   for (const [impact, patterns] of Object.entries(byImpact)) {
-    if (patterns.length === 0) continue
-    
+    if (patterns.length === 0)
+      continue
+
     report += `### ${impact.toUpperCase()} Impact (${patterns.length} patterns)\n\n`
-    
+
     patterns.forEach((pattern, index) => {
       report += `#### ${index + 1}. ${pattern.name}\n\n`
       report += `**Description:** ${pattern.description}\n\n`
@@ -172,7 +173,7 @@ export function generateAnalysisReport(): string {
       report += '\n'
     })
   }
-  
+
   return report
 }
 
@@ -181,13 +182,14 @@ export function generateAnalysisReport(): string {
  */
 export function printAnalysisSummary(): void {
   const analysis = analyzeCodePatterns()
-  
+
+  /* eslint-disable no-console */
   console.group('🔍 Code Repetition Analysis')
   console.log(`📊 Total Patterns: ${analysis.totalPatterns}`)
   console.log(`⚠️  High Impact: ${analysis.highImpactPatterns}`)
   console.log(`📉 Potential Reduction: ~${analysis.estimatedLinesToReduce} lines`)
   console.groupEnd()
-  
+
   console.group('🎯 Top 3 High-Impact Patterns')
   analysis.patterns
     .filter(p => p.impact === 'high')
@@ -197,4 +199,5 @@ export function printAnalysisSummary(): void {
       console.log(`   Solution: ${pattern.solution}`)
     })
   console.groupEnd()
+  /* eslint-enable no-console */
 }

@@ -35,12 +35,13 @@ const { t } = useI18n()
 
 const dialogVisible = computed({
   get: () => props.visible,
-  set: (value) => emit('update:visible', value),
+  set: value => emit('update:visible', value),
 })
 
 const dialogTitle = computed(() => props.title || t('common.confirm'))
 const dialogMessage = computed(() => {
-  if (props.message) return props.message
+  if (props.message)
+    return props.message
   if (props.itemName) {
     return t('common.confirm_delete_item', { name: props.itemName })
   }
@@ -70,7 +71,7 @@ function handleCancel() {
       <i class="pi pi-exclamation-triangle text-3xl text-orange-500" />
       <span>{{ dialogMessage }}</span>
     </div>
-    
+
     <template #footer>
       <Button
         :label="cancelButtonLabel"
