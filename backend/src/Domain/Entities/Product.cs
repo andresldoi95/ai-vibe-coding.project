@@ -23,6 +23,14 @@ public class Product : TenantEntity
 
     // Inventory
     public int MinimumStockLevel { get; set; }
+    
+    /// <summary>
+    /// DEPRECATED: This field is no longer used. Stock levels are calculated from WarehouseInventory.
+    /// Use InitialQuantity/InitialWarehouseId when creating products to set initial stock.
+    /// Use StockMovement to change inventory levels.
+    /// This field is kept for backward compatibility with existing database schema.
+    /// </summary>
+    [Obsolete("Use WarehouseInventory for stock tracking. This field is deprecated and should not be updated.")]
     public int? CurrentStockLevel { get; set; }
 
     // Physical Properties

@@ -43,9 +43,8 @@ public class UpdateProductCommandValidator : AbstractValidator<UpdateProductComm
         RuleFor(x => x.MinimumStockLevel)
             .GreaterThanOrEqualTo(0).WithMessage("Minimum stock level must be zero or greater");
 
-        RuleFor(x => x.CurrentStockLevel)
-            .GreaterThanOrEqualTo(0).WithMessage("Current stock level must be zero or greater")
-            .When(x => x.CurrentStockLevel.HasValue);
+        // NOTE: CurrentStockLevel is not validated here as it's calculated from WarehouseInventory
+        // and cannot be directly updated
 
         RuleFor(x => x.Weight)
             .GreaterThan(0).WithMessage("Weight must be greater than 0")

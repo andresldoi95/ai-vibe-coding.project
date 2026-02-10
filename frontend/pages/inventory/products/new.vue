@@ -12,8 +12,10 @@ const uiStore = useUiStore()
 const toast = useNotification()
 const router = useRouter()
 const { createProduct } = useProduct()
+const { getAllWarehouses } = useWarehouse()
 
 const loading = ref(false)
+const warehouses = ref<Array<{ id: string, name: string }>>([])
 
 const formData = reactive({
   name: '',
@@ -25,7 +27,8 @@ const formData = reactive({
   unitPrice: null as number | null,
   costPrice: null as number | null,
   minimumStockLevel: null as number | null,
-  currentStockLevel: null as number | null,
+  initialQuantity: null as number | null,
+  initialWarehouseId: null as string | null,
   weight: null as number | null,
   dimensions: '',
   isActive: true,
@@ -71,8 +74,15 @@ const rules = computed(() => ({
     required,
     minValue: minValue(0),
   },
-  currentStockLevel: {
-    minValue: minValue(0),
+  initialQuantity: {
+    minValue: minValue(1),
+  },
+  initialWarehouseId: {
+    // Required if initialQuantity is provided
+    required: helpers.withMessage(
+      t('validation.initial_warehouse_required'),
+      (value: any) => !formData.initialQuantity || !!value
+    ),
   },
   weight: {
     minValue: minValue(0),
@@ -83,6 +93,17 @@ const rules = computed(() => ({
 }))
 
 const v$ = useVuelidate(rules, formData)
+
+// Load warehouses on mount
+onMounted(async () => {
+  try {
+    const warehouseList = await getAllWarehouses()
+    warehouses.value = warehouseList.map(w => ({ id: w.id, name: w.name }))
+  }
+  catch (error) {
+    console.error('Error loading warehouses:', error)
+  }
+})
 
 async function handleSubmit() {
   const isValid = await v$.value.$validate()
@@ -103,7 +124,8 @@ async function handleSubmit() {
       unitPrice: formData.unitPrice!,
       costPrice: formData.costPrice!,
       minimumStockLevel: formData.minimumStockLevel!,
-      currentStockLevel: formData.currentStockLevel || undefined,
+      initialQuantity: formData.initialQuantity || undefined,
+      initialWarehouseId: formData.initialWarehouseId || undefined,
       weight: formData.weight || undefined,
       dimensions: formData.dimensions || undefined,
       isActive: formData.isActive,
@@ -338,17 +360,49 @@ onMounted(() => {
                 </small>
               </div>
 
-              <!-- Current Stock Level -->
+              <!-- Initial Quantity (Optional) -->
               <div class="flex flex-col gap-2">
-                <label for="currentStockLevel" class="font-semibold text-slate-700 dark:text-slate-200">
-                  {{ t('products.current_stock_level') }}
+                <label for="initialQuantity" class="font-semibold text-slate-700 dark:text-slate-200">
+                  {{ t('products.initial_quantity') }}
                 </label>
                 <InputNumber
-                  id="currentStockLevel"
-                  v-model="formData.currentStockLevel"
-                  :placeholder="t('products.current_stock_level_placeholder')"
-                  :min="0"
+                  id="initialQuantity"
+                  v-model="formData.initialQuantity"
+                  :invalid="v$.initialQuantity.$error"
+                  :placeholder="t('products.initial_quantity_placeholder')"
+                  :min="1"
+                  @blur="v$.initialQuantity.$touch()"
                 />
+                <small v-if="v$.initialQuantity.$error" class="text-red-600 dark:text-red-400">
+                  {{ v$.initialQuantity.$errors[0].$message }}
+                </small>
+                <small class="text-slate-500 dark:text-slate-400">
+                  {{ t('products.initial_quantity_hint') }}
+                </small>
+              </div>
+
+              <!-- Initial Warehouse (Required if initial quantity is set) -->
+              <div class="flex flex-col gap-2">
+                <label for="initialWarehouseId" class="font-semibold text-slate-700 dark:text-slate-200">
+                  {{ t('products.initial_warehouse') }}
+                  <span v-if="formData.initialQuantity" class="text-red-600">*</span>
+                </label>
+                <Dropdown
+                  id="initialWarehouseId"
+                  v-model="formData.initialWarehouseId"
+                  :options="warehouses"
+                  option-label="name"
+                  option-value="id"
+                  :invalid="v$.initialWarehouseId.$error"
+                  :placeholder="t('products.initial_warehouse_placeholder')"
+                  @blur="v$.initialWarehouseId.$touch()"
+                />
+                <small v-if="v$.initialWarehouseId.$error" class="text-red-600 dark:text-red-400">
+                  {{ v$.initialWarehouseId.$errors[0].$message }}
+                </small>
+                <small v-if="formData.initialQuantity" class="text-slate-500 dark:text-slate-400">
+                  {{ t('products.initial_warehouse_hint') }}
+                </small>
               </div>
             </div>
           </div>

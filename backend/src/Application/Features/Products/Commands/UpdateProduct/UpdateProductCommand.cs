@@ -27,7 +27,8 @@ public record UpdateProductCommand : IRequest<Result<ProductDto>>
 
     // Inventory
     public int MinimumStockLevel { get; init; }
-    public int? CurrentStockLevel { get; init; }
+    // NOTE: CurrentStockLevel is calculated from WarehouseInventory and cannot be directly updated
+    // Use StockMovement to change inventory levels
 
     // Physical Properties
     public decimal? Weight { get; init; }

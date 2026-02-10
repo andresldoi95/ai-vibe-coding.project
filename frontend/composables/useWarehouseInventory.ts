@@ -1,13 +1,13 @@
 import type { InventoryLevel } from '~/types/inventory'
 
 export function useWarehouseInventory() {
-  const { $apiClient } = useNuxtApp()
+  const { $apiFetch } = useNuxtApp()
 
   /**
    * Get inventory for a specific product across all warehouses
    */
   const getProductInventory = async (productId: string): Promise<InventoryLevel[]> => {
-    const response = await $apiClient<{ data: InventoryLevel[] }>(`/products/${productId}/inventory`)
+    const response = await $apiFetch<{ data: InventoryLevel[] }>(`/products/${productId}/inventory`)
     return response.data
   }
 

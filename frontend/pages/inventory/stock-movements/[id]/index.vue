@@ -8,6 +8,7 @@ definePageMeta({
 })
 
 const { t } = useI18n()
+const uiStore = useUiStore()
 const toast = useNotification()
 const route = useRoute()
 const router = useRouter()
@@ -28,18 +29,18 @@ async function loadData() {
   try {
     const id = route.params.id as string
     stockMovement.value = await getStockMovementById(id)
-    
+
     // Load related data
     if (stockMovement.value) {
       const promises = [
         getProductById(stockMovement.value.productId),
         getWarehouseById(stockMovement.value.warehouseId),
       ]
-      
+
       if (stockMovement.value.destinationWarehouseId) {
         promises.push(getWarehouseById(stockMovement.value.destinationWarehouseId))
       }
-      
+
       const results = await Promise.all(promises)
       product.value = results[0]
       warehouse.value = results[1]
@@ -118,7 +119,8 @@ function formatDate(dateString: string): string {
 }
 
 function formatCurrency(value?: number): string {
-  if (!value) return '—'
+  if (!value)
+    return '—'
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value)
 }
 
