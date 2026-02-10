@@ -63,12 +63,39 @@ The project uses [@antfu/eslint-config](https://github.com/antfu/eslint-config) 
 - ✅ `function handler(_event: Event) { ... }`
 - Remove completely unused variables
 
-**7. No `any` Type**
+**7. No `any` Type** ⚠️ CRITICAL RULE
 
-- Never use `any` type in TypeScript
-- Use proper type definitions or `unknown` if type is truly unknown
-- ❌ `catch (error: any) { error.message }`
-- ✅ `catch (error) { const errMessage = error instanceof Error ? error.message : 'Unknown error' }`
+- **NEVER** use `any` type in TypeScript - this is strictly forbidden
+- Use proper type definitions from `/types` directory
+- Use `unknown` if type is truly unknown (rare cases only)
+- Always import domain types (Product, Warehouse, etc.)
+
+Examples:
+```typescript
+// ❌ WRONG - Using 'any'
+const products = ref<any[]>([])
+const warehouse = ref<any | null>(null)
+function handleData(data: any) { }
+
+// ✅ CORRECT - Using proper types
+import type { Product, Warehouse } from '~/types/inventory'
+
+const products = ref<Product[]>([])
+const warehouse = ref<Warehouse | null>(null)
+function handleData(data: Product) { }
+
+// ✅ For error handling (let TypeScript infer)
+catch (error) {
+  const errMessage = error instanceof Error ? error.message : 'Unknown error'
+}
+
+// ✅ When type is genuinely unknown (rare)
+function processUnknown(data: unknown) {
+  if (typeof data === 'string') {
+    // Type guard
+  }
+}
+```
 
 **8. Object Shorthand**
 
@@ -99,8 +126,20 @@ The project uses [@antfu/eslint-config](https://github.com/antfu/eslint-config) 
 
 **12. Imports**
 
-- Sort and organize imports
+- Sort and organize imports alphabetically
 - Remove unused imports automatically
+- Sort members within type imports alphabetically
+- Group imports: external packages → internal modules → types
+
+Examples:
+```typescript
+// ✅ CORRECT - Alphabetically sorted type imports
+import type { Product, StockMovement, Warehouse } from '~/types/inventory'
+import { MovementType, MovementTypeLabels } from '~/types/inventory'
+
+// ❌ WRONG - Not alphabetically sorted
+import type { StockMovement, Product, Warehouse } from '~/types/inventory'
+```
 
 #### Running ESLint
 
@@ -636,12 +675,69 @@ Before creating any component, verify:
 
 #### Type Safety Standards
 
-- Enable strict mode in tsconfig
-- Define interfaces for all API responses
-- Create type definitions for domain models
-- Use typed composables
-- Define component props with TypeScript
-- Avoid `any` type - use `unknown` when needed
+**CRITICAL**: The following type safety rules are MANDATORY and must be followed in ALL code:
+
+1. **NEVER use `any` type** - This is strictly forbidden
+   - ❌ `const products = ref<any[]>([])`
+   - ✅ `const products = ref<Product[]>([])`
+   - ❌ `const warehouse = ref<any | null>(null)`
+   - ✅ `const warehouse = ref<Warehouse | null>(null)`
+   - If truly needed for edge cases, use `unknown` and add type guards
+
+2. **Always use explicit types from domain models**
+   - Import types from `/types` directory
+   - Use proper interfaces for entities (Product, Warehouse, StockMovement, etc.)
+   - Define types for all reactive refs and computed properties
+
+3. **Enable strict mode in tsconfig**
+   - Strict null checks enabled
+   - No implicit any
+   - Strict function types
+
+4. **Define interfaces for all API responses**
+   - Use generics for reusable API types
+   - Type all API composable return values
+
+5. **Create type definitions for domain models**
+   - One type file per domain (billing.ts, inventory.ts, etc.)
+   - Export all interfaces and enums
+
+6. **Use typed composables**
+   - All composable functions must have explicit return types
+   - Use generics where appropriate
+
+7. **Define component props with TypeScript**
+   - Never use runtime props without types
+   - Use `defineProps<Props>()` with interface
+
+8. **Import and sort types alphabetically**
+   - ✅ `import type { Product, StockMovement, Warehouse } from '~/types/inventory'`
+   - Keep type imports separate from value imports when needed
+
+#### Common Type Violations to Avoid
+
+**Stock Movements Example** (Real violations found and fixed):
+
+```typescript
+// ❌ WRONG - Using 'any' type
+const products = ref<any[]>([])
+const warehouses = ref<any[]>([])
+const product = ref<any | null>(null)
+
+// ✅ CORRECT - Using proper types
+import type { Product, Warehouse } from '~/types/inventory'
+
+const products = ref<Product[]>([])
+const warehouses = ref<Warehouse[]>([])
+const product = ref<Product | null>(null)
+```
+
+**Always verify your code passes linting**:
+```bash
+npm run lint        # Check for issues
+npm run lint:fix    # Auto-fix formatting
+npm run typecheck   # Verify TypeScript types
+```
 
 #### Type Organization
 
@@ -1449,15 +1545,15 @@ const { can } = usePermissions()
   <Button v-if="can.createProduct()" />
   <Button v-if="can.editProduct()" />
   <Button v-if="can.deleteProduct()" />
-  
+
   <Button v-if="can.createStock()" />
   <Button v-if="can.editStock()" />
   <Button v-if="can.deleteStock()" />
-  
+
   <Button v-if="can.createWarehouse()" />
   <Button v-if="can.editWarehouse()" />
   <Button v-if="can.deleteWarehouse()" />
-  
+
   <Button v-if="can.createCustomer()" />
   <Button v-if="can.editCustomer()" />
   <Button v-if="can.deleteCustomer()" />
@@ -1673,7 +1769,7 @@ onMounted(() => {
       :title="t('products.create')"
       :description="t('products.create_description')"
     />
-    
+
     <!-- Rest of the page content -->
   </div>
 </template>

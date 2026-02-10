@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { StockMovement } from '~/types/inventory'
+import type { Product, StockMovement, Warehouse } from '~/types/inventory'
 import { MovementType, MovementTypeLabels } from '~/types/inventory'
 
 definePageMeta({
@@ -20,8 +20,8 @@ const deleteDialog = ref(false)
 const selectedMovement = ref<StockMovement | null>(null)
 
 // For displaying product and warehouse names
-const products = ref<any[]>([])
-const warehouses = ref<any[]>([])
+const products = ref<Product[]>([])
+const warehouses = ref<Warehouse[]>([])
 
 async function loadData() {
   loading.value = true
@@ -116,7 +116,8 @@ function formatDate(dateString: string): string {
 }
 
 function formatCurrency(value?: number): string {
-  if (!value) return '—'
+  if (!value)
+    return '—'
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value)
 }
 

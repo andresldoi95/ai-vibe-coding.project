@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { StockMovement } from '~/types/inventory'
+import type { Product, StockMovement, Warehouse } from '~/types/inventory'
 import { MovementType, MovementTypeLabels } from '~/types/inventory'
 
 definePageMeta({
@@ -18,9 +18,9 @@ const { getProductById } = useProduct()
 const { getWarehouseById } = useWarehouse()
 
 const stockMovement = ref<StockMovement | null>(null)
-const product = ref<any | null>(null)
-const warehouse = ref<any | null>(null)
-const destinationWarehouse = ref<any | null>(null)
+const product = ref<Product | null>(null)
+const warehouse = ref<Warehouse | null>(null)
+const destinationWarehouse = ref<Warehouse | null>(null)
 const loading = ref(false)
 const deleteDialog = ref(false)
 

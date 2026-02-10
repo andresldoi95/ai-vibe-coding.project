@@ -1,4 +1,4 @@
-import type { StockMovement, MovementType } from '~/types/inventory'
+import type { MovementType, StockMovement } from '~/types/inventory'
 
 interface CreateStockMovementData {
   productId: string
