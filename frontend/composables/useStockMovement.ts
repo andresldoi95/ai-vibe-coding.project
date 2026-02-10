@@ -34,6 +34,8 @@ interface ExportStockMovementsFilters {
 export function useStockMovement() {
   const { apiFetch } = useApi()
   const config = useRuntimeConfig()
+  const authStore = useAuthStore()
+  const tenantStore = useTenantStore()
 
   async function getAllStockMovements(): Promise<StockMovement[]> {
     const response = await apiFetch<ApiResponse<StockMovement[]>>('/stock-movements', {
@@ -72,9 +74,6 @@ export function useStockMovement() {
   }
 
   async function exportStockMovements(filters: ExportStockMovementsFilters = {}): Promise<void> {
-    const authStore = useAuthStore()
-    const tenantStore = useTenantStore()
-    
     if (!tenantStore.currentTenantId) {
       throw new Error('No tenant selected')
     }
@@ -84,12 +83,18 @@ export function useStockMovement() {
     }
 
     const params = new URLSearchParams()
-    if (filters.format) params.append('format', filters.format)
-    if (filters.brand) params.append('brand', filters.brand)
-    if (filters.category) params.append('category', filters.category)
-    if (filters.warehouseId) params.append('warehouseId', filters.warehouseId)
-    if (filters.fromDate) params.append('fromDate', filters.fromDate)
-    if (filters.toDate) params.append('toDate', filters.toDate)
+    if (filters.format)
+      params.append('format', filters.format)
+    if (filters.brand)
+      params.append('brand', filters.brand)
+    if (filters.category)
+      params.append('category', filters.category)
+    if (filters.warehouseId)
+      params.append('warehouseId', filters.warehouseId)
+    if (filters.fromDate)
+      params.append('fromDate', filters.fromDate)
+    if (filters.toDate)
+      params.append('toDate', filters.toDate)
 
     const queryString = params.toString()
     const url = `${config.public.apiBase}/stock-movements/export${queryString ? `?${queryString}` : ''}`

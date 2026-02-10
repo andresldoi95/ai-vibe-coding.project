@@ -32,6 +32,8 @@ interface ExportWarehouseStockSummaryFilters {
 export function useWarehouse() {
   const { apiFetch } = useApi()
   const config = useRuntimeConfig()
+  const authStore = useAuthStore()
+  const tenantStore = useTenantStore()
 
   async function getAllWarehouses(): Promise<Warehouse[]> {
     const response = await apiFetch<ApiResponse<Warehouse[]>>('/warehouses', {
@@ -70,9 +72,6 @@ export function useWarehouse() {
   }
 
   async function exportWarehouseStockSummary(filters: ExportWarehouseStockSummaryFilters = {}): Promise<void> {
-    const authStore = useAuthStore()
-    const tenantStore = useTenantStore()
-    
     if (!tenantStore.currentTenantId) {
       throw new Error('No tenant selected')
     }
@@ -82,7 +81,8 @@ export function useWarehouse() {
     }
 
     const params = new URLSearchParams()
-    if (filters.format) params.append('format', filters.format)
+    if (filters.format)
+      params.append('format', filters.format)
 
     const queryString = params.toString()
     const url = `${config.public.apiBase}/warehouses/export/stock-summary${queryString ? `?${queryString}` : ''}`

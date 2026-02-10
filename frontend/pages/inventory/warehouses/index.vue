@@ -1,104 +1,60 @@
 <script setup lang="ts">
-import type { Warehouse } from '~/types/inventory'
-
 definePageMeta({
   middleware: ['auth', 'tenant'],
   layout: 'default',
 })
 
 const { t } = useI18n()
-const uiStore = useUiStore()
-const toast = useNotification()
 const { getAllWarehouses, deleteWarehouse, exportWarehouseStockSummary } = useWarehouse()
 const { can } = usePermissions()
 
-const warehouses = ref<Warehouse[]>([])
-const loading = ref(false)
-const deleteDialog = ref(false)
+// ✅ Using useCrudPage composable - eliminates ~40 lines of boilerplate
+const {
+  items: warehouses,
+  loading,
+  deleteDialog,
+  selectedItem: selectedWarehouse,
+  handleCreate,
+  handleView,
+  handleEdit,
+  confirmDelete,
+  handleDelete,
+} = useCrudPage({
+  resourceName: 'warehouses',
+  parentRoute: 'inventory',
+  basePath: '/inventory/warehouses',
+  loadItems: getAllWarehouses,
+  deleteItem: deleteWarehouse,
+})
+
+// ✅ Using useStatus composable - eliminates ~9 lines
+const { getStatusLabel, getStatusSeverity } = useStatus()
+
+// Export functionality
 const exportDialog = ref(false)
 const exporting = ref(false)
-const selectedWarehouse = ref<Warehouse | null>(null)
-
-// Export format
-const exportFormat = ref<'csv' | 'excel'>('excel')
-
-async function loadWarehouses() {
-  loading.value = true
-  try {
-    warehouses.value = await getAllWarehouses()
-  }
-  catch (error) {
-    const errMessage = error instanceof Error ? error.message : 'Unknown error'
-    toast.showError(t('messages.error_load'), errMessage)
-  }
-  finally {
-    loading.value = false
-  }
-}
-
-function createWarehouse() {
-  navigateTo('/inventory/warehouses/new')
-}
-
-function confirmDelete(warehouse: Warehouse) {
-  selectedWarehouse.value = warehouse
-  deleteDialog.value = true
-}
-
-async function handleDelete() {
-  if (!selectedWarehouse.value)
-    return
-
-  try {
-    await deleteWarehouse(selectedWarehouse.value.id)
-    toast.showSuccess(t('messages.success_delete'), t('warehouses.deleted_successfully'))
-    await loadWarehouses()
-  }
-  catch (error) {
-    const errMessage = error instanceof Error ? error.message : 'Unknown error'
-    toast.showError(t('messages.error_delete'), errMessage)
-  }
-  finally {
-    deleteDialog.value = false
-    selectedWarehouse.value = null
-  }
-}
-
-function getStatusLabel(isActive: boolean): string {
-  return isActive ? t('common.active') : t('common.inactive')
-}
-
-function getStatusSeverity(isActive: boolean): 'success' | 'danger' {
-  return isActive ? 'success' : 'danger'
-}
 
 function openExportDialog() {
   exportDialog.value = true
 }
 
-async function handleExport() {
+async function handleExport({ format }: { format: string }) {
   exporting.value = true
   try {
-    await exportWarehouseStockSummary({ format: exportFormat.value })
+    await exportWarehouseStockSummary({ format })
+    const toast = useNotification()
     toast.showSuccess(t('warehouses.export_success'))
     exportDialog.value = false
   }
   catch (error) {
     const errMessage = error instanceof Error ? error.message : 'Unknown error'
+    const toast = useNotification()
     toast.showError(t('warehouses.export_error'), errMessage)
   }
   finally {
     exporting.value = false
   }
 }
-
-onMounted(() => {
-  uiStore.setBreadcrumbs([
-    { label: t('nav.inventory'), to: '/inventory' },
-    { label: t('warehouses.title') },
-  ])
-  loadWarehouses()
-})
 </script>
 
 <template>
@@ -120,7 +76,7 @@ onMounted(() => {
           v-if="can.createWarehouse()"
           :label="t('warehouses.create')"
           icon="pi pi-plus"
-          @click="createWarehouse"
+          @click="handleCreate"
         />
       </template>
     </PageHeader>
@@ -145,7 +101,7 @@ onMounted(() => {
               :description="can.createWarehouse() ? t('warehouses.get_started') : undefined"
               :action-label="t('warehouses.create')"
               action-icon="pi pi-plus"
-              @action="createWarehouse"
+              @action="handleCreate"
             />
           </template>
 
@@ -176,8 +132,8 @@ onMounted(() => {
                 :show-view="can.viewWarehouses()"
                 :show-edit="can.editWarehouse()"
                 :show-delete="can.deleteWarehouse()"
-                @view="navigateTo(`/inventory/warehouses/${data.id}`)"
-                @edit="navigateTo(`/inventory/warehouses/${data.id}/edit`)"
+                @view="handleView(data)"
+                @edit="handleEdit(data)"
                 @delete="confirmDelete(data)"
               />
             </template>
@@ -186,78 +142,20 @@ onMounted(() => {
       </template>
     </Card>
 
-    <!-- Delete Confirmation Dialog -->
-    <Dialog
+    <!-- ✅ Using DeleteConfirmDialog component - eliminates ~25 lines -->
+    <DeleteConfirmDialog
       v-model:visible="deleteDialog"
-      :header="t('common.confirm')"
-      :modal="true"
-      :style="{ width: '450px' }"
-    >
-      <div class="flex items-center gap-4">
-        <i class="pi pi-exclamation-triangle text-3xl text-orange-500" />
-        <span v-if="selectedWarehouse">
-          {{ t('warehouses.confirm_delete', { name: selectedWarehouse.name }) }}
-        </span>
-      </div>
-      <template #footer>
-        <Button
-          :label="t('common.cancel')"
-          icon="pi pi-times"
-          text
-          @click="deleteDialog = false"
-        />
-        <Button
-          :label="t('common.delete')"
-          icon="pi pi-trash"
-          severity="danger"
-          @click="handleDelete"
-        />
-      </template>
-    </Dialog>
+      :item-name="selectedWarehouse?.name"
+      @confirm="handleDelete"
+    />
 
-    <!-- Export Dialog -->
-    <Dialog
+    <!-- ✅ Using ExportDialog component - eliminates ~35 lines -->
+    <ExportDialog
       v-model:visible="exportDialog"
-      :header="t('warehouses.export_dialog_title')"
-      :modal="true"
-      :style="{ width: '450px' }"
-    >
-      <div class="space-y-4">
-        <p class="text-sm text-gray-600 dark:text-gray-400">
-          Export current stock levels for all warehouses and products.
-        </p>
-        
-        <!-- Export Format -->
-        <div>
-          <label class="block text-sm font-medium mb-2">{{ t('warehouses.export_format') }}</label>
-          <div class="flex gap-4">
-            <div class="flex items-center">
-              <RadioButton v-model="exportFormat" input-id="wh-format-excel" value="excel" />
-              <label for="wh-format-excel" class="ml-2">{{ t('warehouses.export_excel') }}</label>
-            </div>
-            <div class="flex items-center">
-              <RadioButton v-model="exportFormat" input-id="wh-format-csv" value="csv" />
-              <label for="wh-format-csv" class="ml-2">{{ t('warehouses.export_csv') }}</label>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <template #footer>
-        <Button
-          :label="t('common.cancel')"
-          severity="secondary"
-          outlined
-          :disabled="exporting"
-          @click="exportDialog = false"
-        />
-        <Button
-          :label="exporting ? t('warehouses.exporting') : t('warehouses.export')"
-          icon="pi pi-download"
-          :loading="exporting"
-          @click="handleExport"
-        />
-      </template>
-    </Dialog>
+      :title="t('warehouses.export_dialog_title')"
+      :description="t('warehouses.export_description')"
+      :loading="exporting"
+      @export="handleExport"
+    />
   </div>
 </template>

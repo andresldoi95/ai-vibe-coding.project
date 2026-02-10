@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Product, ProductFilters } from '~/types/inventory'
+import type { ProductFilters } from '~/types/inventory'
 
 definePageMeta({
   middleware: ['auth', 'tenant'],
@@ -7,18 +7,11 @@ definePageMeta({
 })
 
 const { t } = useI18n()
-const uiStore = useUiStore()
-const toast = useNotification()
 const { getAllProducts, deleteProduct } = useProduct()
 const { can } = usePermissions()
 
-const products = ref<Product[]>([])
-const loading = ref(false)
-const deleteDialog = ref(false)
-const selectedProduct = ref<Product | null>(null)
+// Filter state - products page has custom filters, so we keep this custom
 const showFilters = ref(true)
-
-// Filter state
 const filters = reactive<ProductFilters>({
   searchTerm: '',
   category: '',
@@ -29,6 +22,51 @@ const filters = reactive<ProductFilters>({
   lowStock: false,
 })
 
+// Custom load function that handles filters
+async function loadProductsWithFilters() {
+  // Build filter object, excluding empty values
+  const activeFilters: ProductFilters = {}
+  if (filters.searchTerm)
+    activeFilters.searchTerm = filters.searchTerm
+  if (filters.category)
+    activeFilters.category = filters.category
+  if (filters.brand)
+    activeFilters.brand = filters.brand
+  if (filters.isActive !== undefined)
+    activeFilters.isActive = filters.isActive
+  if (filters.minPrice !== undefined)
+    activeFilters.minPrice = filters.minPrice
+  if (filters.maxPrice !== undefined)
+    activeFilters.maxPrice = filters.maxPrice
+  if (filters.lowStock)
+    activeFilters.lowStock = filters.lowStock
+
+  return await getAllProducts(activeFilters)
+}
+
+// ✅ Using useCrudPage composable with custom load function
+const {
+  items: products,
+  loading,
+  deleteDialog,
+  selectedItem: selectedProduct,
+  loadData,
+  handleCreate,
+  handleView,
+  handleEdit,
+  confirmDelete,
+  handleDelete,
+} = useCrudPage({
+  resourceName: 'products',
+  parentRoute: 'inventory',
+  basePath: '/inventory/products',
+  loadItems: loadProductsWithFilters,
+  deleteItem: deleteProduct,
+})
+
+// ✅ Using useStatus composable
+const { getStatusLabel, getStatusSeverity } = useStatus()
+
 // Debounce search term
 const searchDebounce = ref<NodeJS.Timeout>()
 
@@ -36,43 +74,12 @@ watch(() => filters.searchTerm, () => {
   if (searchDebounce.value)
     clearTimeout(searchDebounce.value)
   searchDebounce.value = setTimeout(() => {
-    loadProducts()
+    loadData()
   }, 300)
 })
 
-async function loadProducts() {
-  loading.value = true
-  try {
-    // Build filter object, excluding empty values
-    const activeFilters: ProductFilters = {}
-    if (filters.searchTerm)
-      activeFilters.searchTerm = filters.searchTerm
-    if (filters.category)
-      activeFilters.category = filters.category
-    if (filters.brand)
-      activeFilters.brand = filters.brand
-    if (filters.isActive !== undefined)
-      activeFilters.isActive = filters.isActive
-    if (filters.minPrice !== undefined)
-      activeFilters.minPrice = filters.minPrice
-    if (filters.maxPrice !== undefined)
-      activeFilters.maxPrice = filters.maxPrice
-    if (filters.lowStock)
-      activeFilters.lowStock = filters.lowStock
-
-    products.value = await getAllProducts(activeFilters)
-  }
-  catch (error) {
-    const errMessage = error instanceof Error ? error.message : 'Unknown error'
-    toast.showError(t('messages.error_load'), errMessage)
-  }
-  finally {
-    loading.value = false
-  }
-}
-
 function applyFilters() {
-  loadProducts()
+  loadData()
 }
 
 function resetFilters() {
@@ -83,35 +90,7 @@ function resetFilters() {
   filters.minPrice = undefined
   filters.maxPrice = undefined
   filters.lowStock = false
-  loadProducts()
-}
-
-function createProduct() {
-  navigateTo('/inventory/products/new')
-}
-
-function confirmDelete(product: Product) {
-  selectedProduct.value = product
-  deleteDialog.value = true
-}
-
-async function handleDelete() {
-  if (!selectedProduct.value)
-    return
-
-  try {
-    await deleteProduct(selectedProduct.value.id)
-    toast.showSuccess(t('messages.success_delete'), t('products.deleted_successfully'))
-    await loadProducts()
-  }
-  catch (error) {
-    const errMessage = error instanceof Error ? error.message : 'Unknown error'
-    toast.showError(t('messages.error_delete'), errMessage)
-  }
-  finally {
-    deleteDialog.value = false
-    selectedProduct.value = null
-  }
+  loadData()
 }
 
 function formatCurrency(value: number): string {
@@ -119,14 +98,6 @@ function formatCurrency(value: number): string {
     style: 'currency',
     currency: 'USD',
   }).format(value)
-}
-
-function getStatusLabel(isActive: boolean): string {
-  return isActive ? t('common.active') : t('common.inactive')
-}
-
-function getStatusSeverity(isActive: boolean): 'success' | 'danger' {
-  return isActive ? 'success' : 'danger'
 }
 
 function getActiveFilterCount(): number {
@@ -147,14 +118,6 @@ function getActiveFilterCount(): number {
     count++
   return count
 }
-
-onMounted(() => {
-  uiStore.setBreadcrumbs([
-    { label: t('nav.inventory'), to: '/inventory' },
-    { label: t('products.title') },
-  ])
-  loadProducts()
-})
 </script>
 
 <template>
@@ -169,7 +132,7 @@ onMounted(() => {
           v-if="can.createProduct()"
           :label="t('products.create')"
           icon="pi pi-plus"
-          @click="createProduct"
+          @click="handleCreate"
         />
       </template>
     </PageHeader>
@@ -337,7 +300,7 @@ onMounted(() => {
               :description="can.createProduct() ? t('products.empty_description') : undefined"
               :action-label="t('products.create')"
               action-icon="pi pi-plus"
-              @action="createProduct"
+              @action="handleCreate"
             />
           </template>
 
@@ -382,8 +345,8 @@ onMounted(() => {
                 :show-view="can.viewProducts()"
                 :show-edit="can.editProduct()"
                 :show-delete="can.deleteProduct()"
-                @view="navigateTo(`/inventory/products/${data.id}`)"
-                @edit="navigateTo(`/inventory/products/${data.id}/edit`)"
+                @view="handleView(data)"
+                @edit="handleEdit(data)"
                 @delete="confirmDelete(data)"
               />
             </template>
@@ -392,33 +355,11 @@ onMounted(() => {
       </template>
     </Card>
 
-    <!-- Delete Confirmation Dialog -->
-    <Dialog
+    <!-- ✅ Using DeleteConfirmDialog component -->
+    <DeleteConfirmDialog
       v-model:visible="deleteDialog"
-      :header="t('common.confirm')"
-      :modal="true"
-      :style="{ width: '450px' }"
-    >
-      <div class="flex items-center gap-4">
-        <i class="pi pi-exclamation-triangle text-3xl text-orange-500" />
-        <span v-if="selectedProduct">
-          {{ t('products.confirm_delete', { name: selectedProduct.name }) }}
-        </span>
-      </div>
-      <template #footer>
-        <Button
-          :label="t('common.cancel')"
-          icon="pi pi-times"
-          text
-          @click="deleteDialog = false"
-        />
-        <Button
-          :label="t('common.delete')"
-          icon="pi pi-trash"
-          severity="danger"
-          @click="handleDelete"
-        />
-      </template>
-    </Dialog>
+      :item-name="selectedProduct?.name"
+      @confirm="handleDelete"
+    />
   </div>
 </template>
