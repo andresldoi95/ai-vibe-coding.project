@@ -81,7 +81,7 @@ const rules = computed(() => ({
     // Required if initialQuantity is provided
     required: helpers.withMessage(
       t('validation.initial_warehouse_required'),
-      (value: any) => !formData.initialQuantity || !!value
+      value => !formData.initialQuantity || !!value,
     ),
   },
   weight: {
