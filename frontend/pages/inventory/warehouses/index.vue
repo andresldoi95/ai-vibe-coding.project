@@ -9,13 +9,18 @@ definePageMeta({
 const { t } = useI18n()
 const uiStore = useUiStore()
 const toast = useNotification()
-const { getAllWarehouses, deleteWarehouse } = useWarehouse()
+const { getAllWarehouses, deleteWarehouse, exportWarehouseStockSummary } = useWarehouse()
 const { can } = usePermissions()
 
 const warehouses = ref<Warehouse[]>([])
 const loading = ref(false)
 const deleteDialog = ref(false)
+const exportDialog = ref(false)
+const exporting = ref(false)
 const selectedWarehouse = ref<Warehouse | null>(null)
+
+// Export format
+const exportFormat = ref<'csv' | 'excel'>('excel')
 
 async function loadWarehouses() {
   loading.value = true
@@ -67,6 +72,26 @@ function getStatusSeverity(isActive: boolean): 'success' | 'danger' {
   return isActive ? 'success' : 'danger'
 }
 
+function openExportDialog() {
+  exportDialog.value = true
+}
+
+async function handleExport() {
+  exporting.value = true
+  try {
+    await exportWarehouseStockSummary({ format: exportFormat.value })
+    toast.showSuccess(t('warehouses.export_success'))
+    exportDialog.value = false
+  }
+  catch (error) {
+    const errMessage = error instanceof Error ? error.message : 'Unknown error'
+    toast.showError(t('warehouses.export_error'), errMessage)
+  }
+  finally {
+    exporting.value = false
+  }
+}
+
 onMounted(() => {
   uiStore.setBreadcrumbs([
     { label: t('nav.inventory'), to: '/inventory' },
@@ -84,6 +109,13 @@ onMounted(() => {
       :description="t('warehouses.description')"
     >
       <template #actions>
+        <Button
+          :label="t('warehouses.export_stock_summary')"
+          icon="pi pi-download"
+          severity="secondary"
+          outlined
+          @click="openExportDialog"
+        />
         <Button
           v-if="can.createWarehouse()"
           :label="t('warehouses.create')"
@@ -179,6 +211,51 @@ onMounted(() => {
           icon="pi pi-trash"
           severity="danger"
           @click="handleDelete"
+        />
+      </template>
+    </Dialog>
+
+    <!-- Export Dialog -->
+    <Dialog
+      v-model:visible="exportDialog"
+      :header="t('warehouses.export_dialog_title')"
+      :modal="true"
+      :style="{ width: '450px' }"
+    >
+      <div class="space-y-4">
+        <p class="text-sm text-gray-600 dark:text-gray-400">
+          Export current stock levels for all warehouses and products.
+        </p>
+        
+        <!-- Export Format -->
+        <div>
+          <label class="block text-sm font-medium mb-2">{{ t('warehouses.export_format') }}</label>
+          <div class="flex gap-4">
+            <div class="flex items-center">
+              <RadioButton v-model="exportFormat" input-id="wh-format-excel" value="excel" />
+              <label for="wh-format-excel" class="ml-2">{{ t('warehouses.export_excel') }}</label>
+            </div>
+            <div class="flex items-center">
+              <RadioButton v-model="exportFormat" input-id="wh-format-csv" value="csv" />
+              <label for="wh-format-csv" class="ml-2">{{ t('warehouses.export_csv') }}</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <template #footer>
+        <Button
+          :label="t('common.cancel')"
+          severity="secondary"
+          outlined
+          :disabled="exporting"
+          @click="exportDialog = false"
+        />
+        <Button
+          :label="exporting ? t('warehouses.exporting') : t('warehouses.export')"
+          icon="pi pi-download"
+          :loading="exporting"
+          @click="handleExport"
         />
       </template>
     </Dialog>

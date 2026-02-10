@@ -25,8 +25,13 @@ interface ApiResponse<T> {
   success: boolean
 }
 
+interface ExportWarehouseStockSummaryFilters {
+  format?: 'csv' | 'excel'
+}
+
 export function useWarehouse() {
   const { apiFetch } = useApi()
+  const config = useRuntimeConfig()
 
   async function getAllWarehouses(): Promise<Warehouse[]> {
     const response = await apiFetch<ApiResponse<Warehouse[]>>('/warehouses', {
@@ -64,11 +69,54 @@ export function useWarehouse() {
     })
   }
 
+  async function exportWarehouseStockSummary(filters: ExportWarehouseStockSummaryFilters = {}): Promise<void> {
+    const { $auth } = useNuxtApp()
+    const tenantId = $auth.getCurrentTenantId()
+    
+    if (!tenantId) {
+      throw new Error('No tenant selected')
+    }
+
+    const params = new URLSearchParams()
+    if (filters.format) params.append('format', filters.format)
+
+    const queryString = params.toString()
+    const url = `${config.public.apiBase}/warehouses/export/stock-summary${queryString ? `?${queryString}` : ''}`
+
+    const response = await fetch(url, {
+      headers: {
+        'Authorization': `Bearer ${$auth.getAccessToken()}`,
+        'X-Tenant-Id': tenantId,
+      },
+    })
+
+    if (!response.ok) {
+      throw new Error('Export failed')
+    }
+
+    // Get filename from Content-Disposition header or use default
+    const contentDisposition = response.headers.get('Content-Disposition')
+    const filenameMatch = contentDisposition?.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/)
+    const filename = filenameMatch?.[1]?.replace(/['"]/g, '') || `warehouse-stock-summary-${new Date().toISOString().split('T')[0]}.${filters.format || 'xlsx'}`
+
+    // Download file
+    const blob = await response.blob()
+    const downloadUrl = window.URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = downloadUrl
+    a.download = filename
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    window.URL.revokeObjectURL(downloadUrl)
+  }
+
   return {
     getAllWarehouses,
     getWarehouseById,
     createWarehouse,
     updateWarehouse,
     deleteWarehouse,
+    exportWarehouseStockSummary,
   }
 }
