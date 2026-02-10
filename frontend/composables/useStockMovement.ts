@@ -72,11 +72,15 @@ export function useStockMovement() {
   }
 
   async function exportStockMovements(filters: ExportStockMovementsFilters = {}): Promise<void> {
-    const { $auth } = useNuxtApp()
-    const tenantId = $auth.getCurrentTenantId()
+    const authStore = useAuthStore()
+    const tenantStore = useTenantStore()
     
-    if (!tenantId) {
+    if (!tenantStore.currentTenantId) {
       throw new Error('No tenant selected')
+    }
+
+    if (!authStore.token) {
+      throw new Error('Not authenticated')
     }
 
     const params = new URLSearchParams()
@@ -92,8 +96,8 @@ export function useStockMovement() {
 
     const response = await fetch(url, {
       headers: {
-        'Authorization': `Bearer ${$auth.getAccessToken()}`,
-        'X-Tenant-Id': tenantId,
+        'Authorization': `Bearer ${authStore.token}`,
+        'X-Tenant-Id': tenantStore.currentTenantId,
       },
     })
 

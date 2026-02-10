@@ -108,7 +108,6 @@
       "successMessage": "Tu contraseña ha sido restablecida exitosamente. Ahora puedes iniciar sesión con tu nueva contraseña.",
       "invalidTokenTitle": "Enlace inválido o expirado",
       "invalidTokenMessage": "Este enlace de restablecimiento es inválido o ha expirado. Por favor solicita uno nuevo."
-
     }
   },
   "dashboard": {
@@ -191,7 +190,16 @@
     "confirm_delete": "¿Está seguro de que desea eliminar el almacén {name}?",
     "deleted_successfully": "Almacén eliminado exitosamente",
     "created_successfully": "Almacén creado exitosamente",
-    "updated_successfully": "Almacén actualizado exitosamente"
+    "updated_successfully": "Almacén actualizado exitosamente",
+    "export": "Exportar",
+    "export_stock_summary": "Exportar Resumen de Stock",
+    "export_dialog_title": "Exportar Resumen de Stock de Almacenes",
+    "export_format": "Formato de Exportación",
+    "export_excel": "Excel (.xlsx)",
+    "export_csv": "CSV (.csv)",
+    "exporting": "Exportando...",
+    "export_success": "Resumen de stock exportado con éxito",
+    "export_error": "Error en la exportación"
   },
   "products": {
     "title": "Productos",
@@ -349,7 +357,23 @@
     "delete_title": "Eliminar Movimiento de Stock",
     "delete_confirm": "¿Está seguro de que desea eliminar este movimiento de stock?",
     "view_details": "Ver Detalles",
-    "movement_info": "Información del Movimiento"
+    "movement_info": "Información del Movimiento",
+    "export": "Exportar",
+    "export_data": "Exportar Datos",
+    "export_dialog_title": "Exportar Movimientos de Stock",
+    "export_format": "Formato de Exportación",
+    "export_excel": "Excel (.xlsx)",
+    "export_csv": "CSV (.csv)",
+    "export_filters": "Filtros de Exportación",
+    "filter_by_brand": "Filtrar por Marca",
+    "filter_by_category": "Filtrar por Categoría",
+    "filter_by_warehouse": "Filtrar por Almacén",
+    "filter_by_date_range": "Filtrar por Rango de Fechas",
+    "from_date": "Desde Fecha",
+    "to_date": "Hasta Fecha",
+    "exporting": "Exportando...",
+    "export_success": "Exportación completada con éxito",
+    "export_error": "Error en la exportación"
   },
   "validation": {
     "required": "Este campo es obligatorio",

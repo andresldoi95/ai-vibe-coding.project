@@ -108,7 +108,6 @@
       "successMessage": "Votre mot de passe a été réinitialisé avec succès. Vous pouvez maintenant vous connecter avec votre nouveau mot de passe.",
       "invalidTokenTitle": "Lien invalide ou expiré",
       "invalidTokenMessage": "Ce lien de réinitialisation est invalide ou a expiré. Veuillez en demander un nouveau."
-
     }
   },
   "dashboard": {
@@ -191,7 +190,16 @@
     "confirm_delete": "Êtes-vous sûr de vouloir supprimer l'entrepôt {name}?",
     "deleted_successfully": "Entrepôt supprimé avec succès",
     "created_successfully": "Entrepôt créé avec succès",
-    "updated_successfully": "Entrepôt mis à jour avec succès"
+    "updated_successfully": "Entrepôt mis à jour avec succès",
+    "export": "Exporter",
+    "export_stock_summary": "Exporter le Résumé du Stock",
+    "export_dialog_title": "Exporter le Résumé du Stock des Entrepôts",
+    "export_format": "Format d'Exportation",
+    "export_excel": "Excel (.xlsx)",
+    "export_csv": "CSV (.csv)",
+    "exporting": "Exportation en cours...",
+    "export_success": "Résumé du stock exporté avec succès",
+    "export_error": "Erreur lors de l'exportation"
   },
   "products": {
     "title": "Produits",
@@ -210,7 +218,6 @@
     "sku": "SKU",
     "sku_placeholder": "SKU-12345",
     "sku_helper": "Unité de Gestion des Stocks. Doit être unique.",
-
     "description_placeholder": "Description détaillée du produit",
     "category": "Catégorie",
     "category_placeholder": "Électronique",
@@ -350,7 +357,23 @@
     "delete_title": "Supprimer le Mouvement de Stock",
     "delete_confirm": "Êtes-vous sûr de vouloir supprimer ce mouvement de stock?",
     "view_details": "Voir les Détails",
-    "movement_info": "Informations du Mouvement"
+    "movement_info": "Informations du Mouvement",
+    "export": "Exporter",
+    "export_data": "Exporter les Données",
+    "export_dialog_title": "Exporter les Mouvements de Stock",
+    "export_format": "Format d'Exportation",
+    "export_excel": "Excel (.xlsx)",
+    "export_csv": "CSV (.csv)",
+    "export_filters": "Filtres d'Exportation",
+    "filter_by_brand": "Filtrer par Marque",
+    "filter_by_category": "Filtrer par Catégorie",
+    "filter_by_warehouse": "Filtrer par Entrepôt",
+    "filter_by_date_range": "Filtrer par Période",
+    "from_date": "Date de Début",
+    "to_date": "Date de Fin",
+    "exporting": "Exportation en cours...",
+    "export_success": "Exportation terminée avec succès",
+    "export_error": "Erreur lors de l'exportation"
   },
   "validation": {
     "required": "Ce champ est obligatoire",
