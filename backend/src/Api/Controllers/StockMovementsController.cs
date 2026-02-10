@@ -1,11 +1,13 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SaaS.Application.Common.Interfaces;
 using SaaS.Application.Features.StockMovements.Commands.CreateStockMovement;
 using SaaS.Application.Features.StockMovements.Commands.DeleteStockMovement;
 using SaaS.Application.Features.StockMovements.Commands.UpdateStockMovement;
 using SaaS.Application.Features.StockMovements.Queries.GetAllStockMovements;
 using SaaS.Application.Features.StockMovements.Queries.GetStockMovementById;
+using SaaS.Application.Features.StockMovements.Queries.GetStockMovementsForExport;
 
 namespace SaaS.Api.Controllers;
 
@@ -17,8 +19,11 @@ namespace SaaS.Api.Controllers;
 [Authorize]
 public class StockMovementsController : BaseController
 {
-    public StockMovementsController(IMediator mediator) : base(mediator)
+    private readonly IExportService _exportService;
+
+    public StockMovementsController(IMediator mediator, IExportService exportService) : base(mediator)
     {
+        _exportService = exportService;
     }
 
     /// <summary>
@@ -135,5 +140,55 @@ public class StockMovementsController : BaseController
         }
 
         return NoContent();
+    }
+
+    /// <summary>
+    /// Export stock movements to Excel or CSV with optional filters
+    /// </summary>
+    /// <param name="format">Export format: excel or csv (default: excel)</param>
+    /// <param name="brand">Filter by product brand (optional)</param>
+    /// <param name="category">Filter by product category (optional)</param>
+    /// <param name="warehouseId">Filter by warehouse ID (optional)</param>
+    /// <param name="fromDate">Filter movements from this date (optional, format: yyyy-MM-dd)</param>
+    /// <param name="toDate">Filter movements to this date (optional, format: yyyy-MM-dd)</param>
+    [HttpGet("export")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> Export(
+        [FromQuery] string format = "excel",
+        [FromQuery] string? brand = null,
+        [FromQuery] string? category = null,
+        [FromQuery] Guid? warehouseId = null,
+        [FromQuery] DateTime? fromDate = null,
+        [FromQuery] DateTime? toDate = null)
+    {
+        var query = new GetStockMovementsForExportQuery
+        {
+            Brand = brand,
+            Category = category,
+            WarehouseId = warehouseId,
+            FromDate = fromDate,
+            ToDate = toDate
+        };
+
+        var result = await _mediator.Send(query);
+
+        if (!result.IsSuccess)
+        {
+            return BadRequest(new { success = false, message = result.Error });
+        }
+
+        var data = result.Value ?? new List<SaaS.Application.DTOs.StockMovementExportDto>();
+        var fileName = $"stock-movements-{DateTime.UtcNow:yyyyMMdd-HHmmss}";
+
+        if (format.ToLower() == "csv")
+        {
+            var csvBytes = _exportService.ExportToCsv(data);
+            return File(csvBytes, "text/csv", $"{fileName}.csv");
+        }
+
+        var excelBytes = _exportService.ExportToExcel(data, "Stock Movements");
+        return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"{fileName}.xlsx");
     }
 }

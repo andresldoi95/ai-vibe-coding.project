@@ -155,6 +155,7 @@ builder.Services.AddScoped<IApplicationDbContext>(sp => sp.GetRequiredService<Ap
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserPermissionService, UserPermissionService>();
 builder.Services.AddScoped<SaaS.Application.Services.IStockLevelService, SaaS.Application.Services.StockLevelService>();
+builder.Services.AddScoped<IExportService, SaaS.Application.Services.ExportService>();
 
 // Configure Email Settings
 builder.Services.Configure<SaaS.Application.Common.Models.EmailSettings>(

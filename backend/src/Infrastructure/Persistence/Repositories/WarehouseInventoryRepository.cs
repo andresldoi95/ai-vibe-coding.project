@@ -108,4 +108,16 @@ public class WarehouseInventoryRepository : Repository<WarehouseInventory>, IWar
             .Select(g => new { ProductId = g.Key, TotalQuantity = g.Sum(wi => wi.Quantity) })
             .ToDictionaryAsync(x => x.ProductId, x => x.TotalQuantity, cancellationToken);
     }
+
+    public async Task<List<WarehouseInventory>> GetAllWithDetailsForTenantAsync(Guid tenantId, CancellationToken cancellationToken = default)
+    {
+        return await _context.WarehouseInventory
+            .Include(wi => wi.Warehouse)
+            .Include(wi => wi.Product)
+            .Where(wi => wi.TenantId == tenantId)
+            .OrderBy(wi => wi.Warehouse.Name)
+            .ThenBy(wi => wi.Product.Name)
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
+    }
 }

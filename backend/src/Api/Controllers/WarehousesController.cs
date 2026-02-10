@@ -1,11 +1,13 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SaaS.Application.Common.Interfaces;
 using SaaS.Application.Features.Warehouses.Commands.CreateWarehouse;
 using SaaS.Application.Features.Warehouses.Commands.DeleteWarehouse;
 using SaaS.Application.Features.Warehouses.Commands.UpdateWarehouse;
 using SaaS.Application.Features.Warehouses.Queries.GetAllWarehouses;
 using SaaS.Application.Features.Warehouses.Queries.GetWarehouseById;
+using SaaS.Application.Features.Warehouses.Queries.GetWarehouseStockSummary;
 
 namespace SaaS.Api.Controllers;
 
@@ -14,8 +16,11 @@ namespace SaaS.Api.Controllers;
 [Authorize]
 public class WarehousesController : BaseController
 {
-    public WarehousesController(IMediator mediator) : base(mediator)
+    private readonly IExportService _exportService;
+
+    public WarehousesController(IMediator mediator, IExportService exportService) : base(mediator)
     {
+        _exportService = exportService;
     }
 
     /// <summary>
@@ -112,5 +117,34 @@ public class WarehousesController : BaseController
         }
 
         return Ok(new { message = "Warehouse deleted successfully", success = true });
+    }
+
+    /// <summary>
+    /// Export warehouse stock summary to Excel or CSV
+    /// </summary>
+    /// <param name="format">Export format: excel or csv (default: excel)</param>
+    [HttpGet("export/stock-summary")]
+    [Authorize(Policy = "warehouses.read")]
+    public async Task<IActionResult> ExportStockSummary([FromQuery] string format = "excel")
+    {
+        var query = new GetWarehouseStockSummaryQuery();
+        var result = await _mediator.Send(query);
+
+        if (!result.IsSuccess)
+        {
+            return BadRequest(new { message = result.Error, success = false });
+        }
+
+        var data = result.Value ?? new List<SaaS.Application.DTOs.WarehouseStockSummaryDto>();
+        var fileName = $"warehouse-stock-summary-{DateTime.UtcNow:yyyyMMdd-HHmmss}";
+
+        if (format.ToLower() == "csv")
+        {
+            var csvBytes = _exportService.ExportToCsv(data);
+            return File(csvBytes, "text/csv", $"{fileName}.csv");
+        }
+
+        var excelBytes = _exportService.ExportToExcel(data, "Warehouse Stock Summary");
+        return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"{fileName}.xlsx");
     }
 }

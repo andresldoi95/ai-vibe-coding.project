@@ -61,4 +61,54 @@ public class StockMovementRepository : Repository<StockMovement>, IStockMovement
             .Include(sm => sm.DestinationWarehouse)
             .FirstOrDefaultAsync(sm => sm.Id == id && sm.TenantId == tenantId);
     }
+
+    public async Task<List<StockMovement>> GetForExportAsync(
+        Guid tenantId,
+        string? brand = null,
+        string? category = null,
+        Guid? warehouseId = null,
+        DateTime? fromDate = null,
+        DateTime? toDate = null,
+        CancellationToken cancellationToken = default)
+    {
+        var query = _context.StockMovements
+            .Include(sm => sm.Product)
+            .Include(sm => sm.Warehouse)
+            .Include(sm => sm.DestinationWarehouse)
+            .Where(sm => sm.TenantId == tenantId)
+            .AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(brand))
+        {
+            query = query.Where(sm => sm.Product.Brand == brand);
+        }
+
+        if (!string.IsNullOrWhiteSpace(category))
+        {
+            query = query.Where(sm => sm.Product.Category == category);
+        }
+
+        if (warehouseId.HasValue)
+        {
+            query = query.Where(sm =>
+                sm.WarehouseId == warehouseId.Value ||
+                sm.DestinationWarehouseId == warehouseId.Value);
+        }
+
+        if (fromDate.HasValue)
+        {
+            query = query.Where(sm => sm.MovementDate >= fromDate.Value);
+        }
+
+        if (toDate.HasValue)
+        {
+            query = query.Where(sm => sm.MovementDate <= toDate.Value);
+        }
+
+        return await query
+            .OrderByDescending(sm => sm.MovementDate)
+            .ThenByDescending(sm => sm.CreatedAt)
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
+    }
 }

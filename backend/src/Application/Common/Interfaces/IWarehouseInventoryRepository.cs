@@ -41,4 +41,9 @@ public interface IWarehouseInventoryRepository : IRepository<WarehouseInventory>
     /// Get total stock quantities for multiple products
     /// </summary>
     Task<Dictionary<Guid, int>> GetTotalStockByProductIdsAsync(List<Guid> productIds, Guid tenantId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Get all warehouse inventory records with warehouse and product details for a tenant
+    /// </summary>
+    Task<List<WarehouseInventory>> GetAllWithDetailsForTenantAsync(Guid tenantId, CancellationToken cancellationToken = default);
 }

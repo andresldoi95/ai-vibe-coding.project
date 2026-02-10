@@ -26,4 +26,16 @@ public interface IStockMovementRepository : IRepository<StockMovement>
     /// Get stock movement by ID with related entities
     /// </summary>
     Task<StockMovement?> GetByIdWithDetailsAsync(Guid id, Guid tenantId);
+
+    /// <summary>
+    /// Get stock movements for export with optional filters
+    /// </summary>
+    Task<List<StockMovement>> GetForExportAsync(
+        Guid tenantId,
+        string? brand = null,
+        string? category = null,
+        Guid? warehouseId = null,
+        DateTime? fromDate = null,
+        DateTime? toDate = null,
+        CancellationToken cancellationToken = default);
 }
