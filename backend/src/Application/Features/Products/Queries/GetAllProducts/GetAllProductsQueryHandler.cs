@@ -65,6 +65,18 @@ public class GetAllProductsQueryHandler : IRequestHandler<GetAllProductsQuery, R
                 UpdatedAt = p.UpdatedAt
             }).ToList();
 
+            // Apply low stock filter if specified (done at application layer using WarehouseInventory data)
+            if (request.Filters != null)
+            {
+                var lowStockFilter = request.Filters.LowStock ?? request.Filters.LowStockOnly;
+                if (lowStockFilter.HasValue && lowStockFilter.Value)
+                {
+                    productDtos = productDtos
+                        .Where(p => p.CurrentStockLevel <= p.MinimumStockLevel)
+                        .ToList();
+                }
+            }
+
             return Result<List<ProductDto>>.Success(productDtos);
         }
         catch (Exception ex)

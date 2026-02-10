@@ -21,7 +21,7 @@ public class ProductDto
 
     // Inventory
     public int MinimumStockLevel { get; set; }
-    public int? CurrentStockLevel { get; set; }
+    public int CurrentStockLevel { get; set; }
 
     // Physical Properties
     public decimal? Weight { get; set; }
