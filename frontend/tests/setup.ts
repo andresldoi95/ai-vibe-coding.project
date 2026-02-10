@@ -24,11 +24,17 @@ const mockRuntimeConfig = {
   },
 }
 
+// Mock useNuxtApp for composables that use $apiFetch directly
+const useNuxtApp = vi.fn(() => ({
+  $apiFetch: mockApiFetch,
+}))
+
 // Make them available globally
 globalThis.useApi = useApi
+globalThis.useNuxtApp = useNuxtApp
 globalThis.useRuntimeConfig = vi.fn(() => mockRuntimeConfig)
 globalThis.useAuthStore = vi.fn(() => mockAuthStore)
 globalThis.useTenantStore = vi.fn(() => mockTenantStore)
 
 // Export for test files that need to manipulate the mocks
-export { mockApiFetch, mockAuthStore, mockRuntimeConfig, mockTenantStore, useApi }
+export { mockApiFetch, mockAuthStore, mockRuntimeConfig, mockTenantStore, useApi, useNuxtApp }
