@@ -199,6 +199,16 @@ public class SeedController : ControllerBase
                 await _context.InvoiceConfigurations.AddAsync(invoiceConfig);
                 await _context.SaveChangesAsync();
 
+                // Seed Establishments (Ecuador SRI requirement)
+                var establishments = CreateEstablishmentsForTenant(tenant.Id, tenant.Slug, now);
+                await _context.Establishments.AddRangeAsync(establishments);
+                await _context.SaveChangesAsync();
+
+                // Seed Emission Points (Ecuador SRI requirement)
+                var emissionPoints = CreateEmissionPointsForTenant(tenant.Id, establishments, now);
+                await _context.EmissionPoints.AddRangeAsync(emissionPoints);
+                await _context.SaveChangesAsync();
+
                 var warehouses = CreateWarehousesForTenant(tenant.Id, tenant.Slug, now);
                 await _context.Warehouses.AddRangeAsync(warehouses);
                 await _context.SaveChangesAsync();
@@ -224,6 +234,8 @@ public class SeedController : ControllerBase
                     tenant = new { id = tenant.Id, name = tenant.Name, slug = tenant.Slug },
                     taxRates = taxRates.Count,
                     invoiceConfiguration = 1,
+                    establishments = establishments.Count,
+                    emissionPoints = emissionPoints.Count,
                     warehouses = warehouses.Count,
                     products = products.Count,
                     customers = customers.Count,
@@ -996,6 +1008,97 @@ public class SeedController : ControllerBase
             UpdatedAt = now,
             IsDeleted = false
         };
+    }
+
+    private List<Establishment> CreateEstablishmentsForTenant(Guid tenantId, string slug, DateTime now)
+    {
+        var locations = slug switch
+        {
+            "demo-company" => new[]
+            {
+                ("Main Office", "001", "123 Industrial Blvd, New York, NY 10001", "+1 (555) 100-1000"),
+                ("West Coast Branch", "002", "456 Commerce Way, Los Angeles, CA 90001", "+1 (555) 200-2000")
+            },
+            "tech-startup" => new[]
+            {
+                ("Headquarters", "001", "100 Tech Plaza, San Francisco, CA 94105", "+1 (555) 400-4000"),
+                ("Seattle Office", "002", "200 Innovation Way, Seattle, WA 98101", "+1 (555) 500-5000")
+            },
+            "manufacturing-corp" => new[]
+            {
+                ("Main Plant", "001", "400 Factory Road, Chicago, IL 60601", "+1 (555) 700-7000"),
+                ("Assembly Center", "002", "500 Manufacturing Dr, Detroit, MI 48201", "+1 (555) 800-8000")
+            },
+            _ => throw new ArgumentException($"Unknown tenant slug: {slug}")
+        };
+
+        var establishments = new List<Establishment>();
+        foreach (var loc in locations)
+        {
+            establishments.Add(new Establishment
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                EstablishmentCode = loc.Item2,
+                Name = loc.Item1,
+                Address = loc.Item3,
+                Phone = loc.Item4,
+                IsActive = true,
+                CreatedAt = now,
+                UpdatedAt = now,
+                IsDeleted = false
+            });
+        }
+
+        return establishments;
+    }
+
+    private List<EmissionPoint> CreateEmissionPointsForTenant(
+        Guid tenantId,
+        List<Establishment> establishments,
+        DateTime now)
+    {
+        var emissionPoints = new List<EmissionPoint>();
+
+        foreach (var establishment in establishments)
+        {
+            // Create 2 emission points per establishment
+            emissionPoints.Add(new EmissionPoint
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                EstablishmentId = establishment.Id,
+                EmissionPointCode = "001",
+                Name = "Main Cashier",
+                IsActive = true,
+                InvoiceSequence = 1,
+                CreditNoteSequence = 1,
+                DebitNoteSequence = 1,
+                RetentionSequence = 1,
+                CreatedAt = now,
+                UpdatedAt = now,
+                IsDeleted = false
+            });
+
+            emissionPoints.Add(new EmissionPoint
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                EstablishmentId = establishment.Id,
+                EmissionPointCode = "002",
+                Name = "Secondary Cashier",
+                IsActive = true,
+                InvoiceSequence = 1,
+                CreditNoteSequence = 1,
+                DebitNoteSequence = 1,
+                RetentionSequence = 1,
+                CreatedAt = now,
+                UpdatedAt = now,
+                IsDeleted = false
+            });
+        }
+
+        return emissionPoints;
     }
 
     #endregion
