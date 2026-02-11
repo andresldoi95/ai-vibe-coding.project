@@ -8,6 +8,8 @@ export interface EmissionPoint {
   debitNoteSequence: number
   retentionSequence: number
   establishmentId: string
+  establishmentCode?: string
+  establishmentName?: string
   createdAt: string
   updatedAt?: string
 }

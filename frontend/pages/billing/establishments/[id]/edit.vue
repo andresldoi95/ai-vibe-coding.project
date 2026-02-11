@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useVuelidate } from '@vuelidate/core'
-import { helpers, maxLength, required } from '@vuelidate/validators'
+import { email, helpers, maxLength, required } from '@vuelidate/validators'
 import type { Establishment } from '~/types/establishment'
 
 definePageMeta({
@@ -24,6 +24,7 @@ const formData = reactive({
   name: '',
   address: '',
   phone: '',
+  email: '',
   isActive: true,
 })
 
@@ -49,6 +50,10 @@ const rules = computed(() => ({
   phone: {
     maxLength: maxLength(50),
   },
+  email: {
+    email,
+    maxLength: maxLength(256),
+  },
 }))
 
 const v$ = useVuelidate(rules, formData)
@@ -64,6 +69,7 @@ async function loadEstablishment() {
     formData.name = establishment.value.name
     formData.address = establishment.value.address
     formData.phone = establishment.value.phone || ''
+    formData.email = establishment.value.email || ''
     formData.isActive = establishment.value.isActive
 
     uiStore.setBreadcrumbs([
@@ -98,6 +104,7 @@ async function handleSubmit() {
       name: formData.name,
       address: formData.address,
       phone: formData.phone || undefined,
+      email: formData.email || undefined,
       isActive: formData.isActive,
     })
 
@@ -146,70 +153,127 @@ onMounted(() => {
 
             <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
               <!-- Establishment Code -->
-              <FormField
-                v-model="formData.establishmentCode"
-                name="establishmentCode"
-                :label="t('establishments.code')"
-                :placeholder="t('establishments.code_placeholder')"
-                :error="v$.establishmentCode.$errors[0]?.$message"
-                :help-text="t('establishments.code_helper')"
-                required
-                maxlength="3"
-              />
+              <div class="flex flex-col gap-2">
+                <label for="establishmentCode" class="font-semibold text-slate-700 dark:text-slate-200">
+                  {{ t('establishments.code') }} *
+                </label>
+                <InputText
+                  id="establishmentCode"
+                  v-model="formData.establishmentCode"
+                  :invalid="v$.establishmentCode.$error"
+                  :placeholder="t('establishments.code_placeholder')"
+                  maxlength="3"
+                  @blur="v$.establishmentCode.$touch()"
+                />
+                <small v-if="v$.establishmentCode.$error" class="text-red-600 dark:text-red-400">
+                  {{ v$.establishmentCode.$errors[0].$message }}
+                </small>
+                <small v-else class="text-slate-500 dark:text-slate-400">
+                  {{ t('establishments.code_helper') }}
+                </small>
+              </div>
 
               <!-- Establishment Name -->
-              <FormField
-                v-model="formData.name"
-                name="name"
-                :label="t('establishments.name')"
-                :placeholder="t('establishments.name_placeholder')"
-                :error="v$.name.$errors[0]?.$message"
-                required
-              />
-
-              <!-- Address -->
-              <div class="md:col-span-2">
-                <FormField
-                  v-model="formData.address"
-                  name="address"
-                  :label="t('establishments.address')"
-                  :placeholder="t('establishments.address_placeholder')"
-                  :error="v$.address.$errors[0]?.$message"
-                  required
-                />
-              </div>
-
-              <!-- Phone -->
-              <FormField
-                v-model="formData.phone"
-                name="phone"
-                type="tel"
-                :label="t('common.phone')"
-                :placeholder="t('establishments.phone_placeholder')"
-                :error="v$.phone.$errors[0]?.$message"
-              />
-
-              <!-- Is Active -->
-              <div class="flex items-center gap-3 pt-6">
-                <InputSwitch
-                  id="isActive"
-                  v-model="formData.isActive"
-                  :aria-label="t('establishments.is_active')"
-                />
-                <label for="isActive" class="cursor-pointer text-sm font-medium text-slate-700 dark:text-slate-300">
-                  {{ t('establishments.is_active') }}
+              <div class="flex flex-col gap-2">
+                <label for="name" class="font-semibold text-slate-700 dark:text-slate-200">
+                  {{ t('establishments.name') }} *
                 </label>
+                <InputText
+                  id="name"
+                  v-model="formData.name"
+                  :invalid="v$.name.$error"
+                  :placeholder="t('establishments.name_placeholder')"
+                  @blur="v$.name.$touch()"
+                />
+                <small v-if="v$.name.$error" class="text-red-600 dark:text-red-400">
+                  {{ v$.name.$errors[0].$message }}
+                </small>
               </div>
+            </div>
+
+            <!-- Address -->
+            <div class="mt-6 flex flex-col gap-2">
+              <label for="address" class="font-semibold text-slate-700 dark:text-slate-200">
+                {{ t('establishments.address') }} *
+              </label>
+              <Textarea
+                id="address"
+                v-model="formData.address"
+                :invalid="v$.address.$error"
+                :placeholder="t('establishments.address_placeholder')"
+                rows="3"
+                @blur="v$.address.$touch()"
+              />
+              <small v-if="v$.address.$error" class="text-red-600 dark:text-red-400">
+                {{ v$.address.$errors[0].$message }}
+              </small>
+            </div>
+
+            <div class="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
+              <!-- Phone -->
+              <div class="flex flex-col gap-2">
+                <label for="phone" class="font-semibold text-slate-700 dark:text-slate-200">
+                  {{ t('common.phone') }}
+                </label>
+                <InputText
+                  id="phone"
+                  v-model="formData.phone"
+                  type="tel"
+                  :invalid="v$.phone.$error"
+                  :placeholder="t('establishments.phone_placeholder')"
+                  @blur="v$.phone.$touch()"
+                />
+                <small v-if="v$.phone.$error" class="text-red-600 dark:text-red-400">
+                  {{ v$.phone.$errors[0].$message }}
+                </small>
+              </div>
+
+              <!-- Email -->
+              <div class="flex flex-col gap-2">
+                <label for="email" class="font-semibold text-slate-700 dark:text-slate-200">
+                  {{ t('common.email') }}
+                </label>
+                <InputText
+                  id="email"
+                  v-model="formData.email"
+                  type="email"
+                  :invalid="v$.email.$error"
+                  :placeholder="t('establishments.email_placeholder')"
+                  @blur="v$.email.$touch()"
+                />
+                <small v-if="v$.email.$error" class="text-red-600 dark:text-red-400">
+                  {{ v$.email.$errors[0].$message }}
+                </small>
+              </div>
+            </div>
+
+            <!-- Is Active -->
+            <div class="mt-6 flex items-center gap-3">
+              <InputSwitch
+                id="isActive"
+                v-model="formData.isActive"
+              />
+              <label for="isActive" class="cursor-pointer font-semibold text-slate-700 dark:text-slate-200">
+                {{ t('establishments.is_active') }}
+              </label>
             </div>
           </div>
 
-          <!-- Form Actions -->
-          <FormActions
-            :loading="loading"
-            :submit-label="t('common.save_changes')"
-            :cancel-label="t('common.cancel')"
-            @cancel="cancel"
-          />
+          <!-- Action Buttons -->
+          <div class="flex justify-end gap-3 pt-4">
+            <Button
+              :label="t('common.cancel')"
+              severity="secondary"
+              outlined
+              @click="cancel"
+            />
+            <Button
+              type="submit"
+              :label="t('common.save_changes')"
+              :loading="loading"
+              icon="pi pi-check"
+            />
+          </div>
         </form>
       </template>
     </Card>

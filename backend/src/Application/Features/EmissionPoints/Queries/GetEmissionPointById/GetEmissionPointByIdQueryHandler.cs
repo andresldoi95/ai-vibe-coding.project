@@ -45,6 +45,8 @@ public class GetEmissionPointByIdQueryHandler : IRequestHandler<GetEmissionPoint
             {
                 Id = emissionPoint.Id,
                 EstablishmentId = emissionPoint.EstablishmentId,
+                EstablishmentCode = emissionPoint.Establishment?.EstablishmentCode,
+                EstablishmentName = emissionPoint.Establishment?.Name,
                 EmissionPointCode = emissionPoint.EmissionPointCode,
                 Name = emissionPoint.Name,
                 IsActive = emissionPoint.IsActive,

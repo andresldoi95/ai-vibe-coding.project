@@ -350,14 +350,15 @@ public class SeedController : ControllerBase
             }).ToList();
         await _context.RolePermissions.AddRangeAsync(adminPermissions);
 
-        // Manager: Full access to warehouses, products, customers, stock
-        // Read/create/update/send/export for invoices, read/update for tax-rates, read for invoice-config
+        // Manager: Full access to warehouses, products, customers, stock, establishments, emission_points
+        // Read/create/update/send/export for invoices, read/update for tax-rates, read for invoice-config, sri_configuration
         var managerPermissions = allPermissions
             .Where(p =>
-                new[] { "warehouses", "products", "customers", "stock" }.Contains(p.Resource) ||
+                new[] { "warehouses", "products", "customers", "stock", "establishments", "emission_points" }.Contains(p.Resource) ||
                 (p.Resource == "invoices" && new[] { "read", "create", "update", "send", "export" }.Contains(p.Action)) ||
-                (p.Resource == "tax-rates" && new[] { "read", "update" }.Contains(p.Action)) ||
-                (p.Resource == "invoice-config" && p.Action == "read"))
+                (p.Resource == "tax-rates" && new[] { "read", "create", "update" }.Contains(p.Action)) ||
+                (p.Resource == "invoice-config" && new[] { "read", "update" }.Contains(p.Action)) ||
+                (p.Resource == "sri_configuration" && new[] { "read", "update" }.Contains(p.Action)))
             .Select(p => new RolePermission
             {
                 Id = Guid.NewGuid(),

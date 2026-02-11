@@ -158,26 +158,42 @@ onMounted(() => {
               </div>
 
               <!-- Emission Point Code -->
-              <FormField
-                v-model="formData.emissionPointCode"
-                name="emissionPointCode"
-                :label="t('emissionPoints.code')"
-                :placeholder="t('emissionPoints.code_placeholder')"
-                :error="v$.emissionPointCode.$errors[0]?.$message"
-                :help-text="t('emissionPoints.code_helper')"
-                required
-                maxlength="3"
-              />
+              <div class="flex flex-col gap-2">
+                <label for="emissionPointCode" class="font-semibold text-slate-700 dark:text-slate-200">
+                  {{ t('emissionPoints.code') }} *
+                </label>
+                <InputText
+                  id="emissionPointCode"
+                  v-model="formData.emissionPointCode"
+                  :invalid="v$.emissionPointCode.$error"
+                  :placeholder="t('emissionPoints.code_placeholder')"
+                  maxlength="3"
+                  @blur="v$.emissionPointCode.$touch()"
+                />
+                <small v-if="v$.emissionPointCode.$error" class="text-red-600 dark:text-red-400">
+                  {{ v$.emissionPointCode.$errors[0].$message }}
+                </small>
+                <small v-else class="text-slate-500 dark:text-slate-400">
+                  {{ t('emissionPoints.code_helper') }}
+                </small>
+              </div>
 
               <!-- Emission Point Name -->
-              <FormField
-                v-model="formData.name"
-                name="name"
-                :label="t('emissionPoints.name')"
-                :placeholder="t('emissionPoints.name_placeholder')"
-                :error="v$.name.$errors[0]?.$message"
-                required
-              />
+              <div class="flex flex-col gap-2">
+                <label for="name" class="font-semibold text-slate-700 dark:text-slate-200">
+                  {{ t('emissionPoints.name') }} *
+                </label>
+                <InputText
+                  id="name"
+                  v-model="formData.name"
+                  :invalid="v$.name.$error"
+                  :placeholder="t('emissionPoints.name_placeholder')"
+                  @blur="v$.name.$touch()"
+                />
+                <small v-if="v$.name.$error" class="text-red-600 dark:text-red-400">
+                  {{ v$.name.$errors[0].$message }}
+                </small>
+              </div>
 
               <!-- Is Active -->
               <div class="flex items-center gap-3 pt-6 md:col-span-2">
@@ -208,13 +224,21 @@ onMounted(() => {
             </div>
           </div>
 
-          <!-- Form Actions -->
-          <FormActions
-            :loading="loading"
-            :submit-label="t('common.create')"
-            :cancel-label="t('common.cancel')"
-            @cancel="cancel"
-          />
+          <!-- Action Buttons -->
+          <div class="flex justify-end gap-3 pt-4">
+            <Button
+              :label="t('common.cancel')"
+              severity="secondary"
+              outlined
+              @click="cancel"
+            />
+            <Button
+              type="submit"
+              :label="t('common.create')"
+              :loading="loading"
+              icon="pi pi-check"
+            />
+          </div>
         </form>
       </template>
     </Card>

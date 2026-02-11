@@ -120,6 +120,47 @@ function updateProductDetails(index: number) {
   }
 }
 
+// Calculate line item totals
+function getLineItemTaxRate(taxRateId: string): number {
+  const taxRate = taxRates.value.find((tr: TaxRate) => tr.id === taxRateId)
+  return taxRate?.rate || 0
+}
+
+function calculateLineItemSubtotal(item: UpdateInvoiceItemDto): number {
+  return item.quantity * item.unitPrice
+}
+
+function calculateLineItemTax(item: UpdateInvoiceItemDto): number {
+  const subtotal = calculateLineItemSubtotal(item)
+  const rate = getLineItemTaxRate(item.taxRateId)
+  return subtotal * rate
+}
+
+function calculateLineItemTotal(item: UpdateInvoiceItemDto): number {
+  return calculateLineItemSubtotal(item) + calculateLineItemTax(item)
+}
+
+// Calculate invoice totals
+const invoiceSubtotal = computed(() => {
+  return formData.items.reduce((sum, item) => sum + calculateLineItemSubtotal(item), 0)
+})
+
+const invoiceTax = computed(() => {
+  return formData.items.reduce((sum, item) => sum + calculateLineItemTax(item), 0)
+})
+
+const invoiceTotal = computed(() => {
+  return invoiceSubtotal.value + invoiceTax.value
+})
+
+function formatCurrency(amount: number): string {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2,
+  }).format(amount)
+}
+
 async function handleSubmit() {
   const isValid = await v$.value.$validate()
   if (!isValid || formData.items.length === 0) {
@@ -279,7 +320,7 @@ function handleCancel() {
                 </div>
               </template>
 
-              <Column :header="t('invoices.product')" style="width: 25%">
+              <Column :header="t('invoices.product')" style="width: 18%">
                 <template #body="{ data, index }">
                   <Select
                     v-model="data.productId"
@@ -294,7 +335,7 @@ function handleCancel() {
                 </template>
               </Column>
 
-              <Column :header="t('invoices.description')" style="width: 20%">
+              <Column :header="t('invoices.description')" style="width: 16%">
                 <template #body="{ data }">
                   <InputText
                     v-model="data.description"
@@ -304,7 +345,7 @@ function handleCancel() {
                 </template>
               </Column>
 
-              <Column :header="t('invoices.quantity')" style="width: 15%">
+              <Column :header="t('invoices.quantity')" style="width: 10%">
                 <template #body="{ data }">
                   <InputNumber
                     v-model="data.quantity"
@@ -314,7 +355,7 @@ function handleCancel() {
                 </template>
               </Column>
 
-              <Column :header="t('invoices.unit_price')" style="width: 15%">
+              <Column :header="t('invoices.unit_price')" style="width: 12%">
                 <template #body="{ data }">
                   <InputNumber
                     v-model="data.unitPrice"
@@ -327,7 +368,7 @@ function handleCancel() {
                 </template>
               </Column>
 
-              <Column :header="t('invoices.tax_rate')" style="width: 15%">
+              <Column :header="t('invoices.tax_rate')" style="width: 12%">
                 <template #body="{ data }">
                   <Select
                     v-model="data.taxRateId"
@@ -339,7 +380,29 @@ function handleCancel() {
                 </template>
               </Column>
 
-              <Column :header="t('common.actions')" style="width: 10%">
+              <Column :header="t('invoices.subtotal')" style="width: 10%">
+                <template #body="{ data }">
+                  <span class="font-semibold">
+                    {{ formatCurrency(calculateLineItemSubtotal(data)) }}
+                  </span>
+                </template>
+              </Column>
+
+              <Column :header="t('invoices.tax')" style="width: 10%">
+                <template #body="{ data }">
+                  <span>{{ formatCurrency(calculateLineItemTax(data)) }}</span>
+                </template>
+              </Column>
+
+              <Column :header="t('invoices.total')" style="width: 12%">
+                <template #body="{ data }">
+                  <span class="font-semibold text-primary-600">
+                    {{ formatCurrency(calculateLineItemTotal(data)) }}
+                  </span>
+                </template>
+              </Column>
+
+              <Column :header="t('common.actions')" style="width: 8%">
                 <template #body="{ index }">
                   <Button
                     icon="pi pi-trash"
@@ -351,6 +414,44 @@ function handleCancel() {
                 </template>
               </Column>
             </DataTable>
+
+            <!-- Invoice Totals Summary -->
+            <div class="flex justify-end mt-6">
+              <Card class="w-full md:w-96">
+                <template #content>
+                  <div class="space-y-3">
+                    <div class="flex justify-between items-center">
+                      <span class="text-surface-600 dark:text-surface-400">
+                        {{ t('invoices.subtotal_amount') }}
+                      </span>
+                      <span class="font-semibold text-lg">
+                        {{ formatCurrency(invoiceSubtotal) }}
+                      </span>
+                    </div>
+
+                    <div class="flex justify-between items-center">
+                      <span class="text-surface-600 dark:text-surface-400">
+                        {{ t('invoices.tax_amount') }}
+                      </span>
+                      <span class="font-semibold text-lg">
+                        {{ formatCurrency(invoiceTax) }}
+                      </span>
+                    </div>
+
+                    <Divider />
+
+                    <div class="flex justify-between items-center">
+                      <span class="text-xl font-semibold text-surface-900 dark:text-surface-50">
+                        {{ t('invoices.total_amount') }}
+                      </span>
+                      <span class="text-2xl font-bold text-primary-600">
+                        {{ formatCurrency(invoiceTotal) }}
+                      </span>
+                    </div>
+                  </div>
+                </template>
+              </Card>
+            </div>
           </div>
 
           <!-- Form Actions -->

@@ -73,6 +73,8 @@ public class CreateEmissionPointCommandHandlerTests
         result.Value!.EmissionPointCode.Should().Be("001");
         result.Value.Name.Should().Be("POS 1");
         result.Value.EstablishmentId.Should().Be(establishmentId);
+        result.Value.EstablishmentCode.Should().Be("001");
+        result.Value.EstablishmentName.Should().Be("Main Office");
         result.Value.IsActive.Should().BeTrue();
         result.Value.InvoiceSequence.Should().Be(1);
         result.Value.CreditNoteSequence.Should().Be(1);

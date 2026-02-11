@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { EmissionPoint } from '~/types/emission-point'
-import type { Establishment } from '~/types/establishment'
 
 definePageMeta({
   middleware: ['auth', 'tenant'],
@@ -14,11 +13,9 @@ const route = useRoute()
 const router = useRouter()
 const { can } = usePermissions()
 const { getEmissionPointById, deleteEmissionPoint } = useEmissionPoint()
-const { getEstablishmentById } = useEstablishment()
 const { getStatusLabel, getStatusSeverity } = useStatus()
 
 const emissionPoint = ref<EmissionPoint | null>(null)
-const establishment = ref<Establishment | null>(null)
 const loading = ref(false)
 const deleteDialog = ref(false)
 
@@ -27,16 +24,6 @@ async function loadEmissionPoint() {
   try {
     const id = route.params.id as string
     emissionPoint.value = await getEmissionPointById(id)
-
-    // Load establishment details
-    if (emissionPoint.value.establishmentId) {
-      try {
-        establishment.value = await getEstablishmentById(emissionPoint.value.establishmentId)
-      }
-      catch (error) {
-        console.error('Failed to load establishment:', error)
-      }
-    }
 
     uiStore.setBreadcrumbs([
       { label: t('nav.billing'), to: '/billing' },
@@ -77,8 +64,8 @@ async function handleDelete() {
 }
 
 function viewEstablishment() {
-  if (establishment.value) {
-    router.push(`/billing/establishments/${establishment.value.id}`)
+  if (emissionPoint.value?.establishmentId) {
+    router.push(`/billing/establishments/${emissionPoint.value.establishmentId}`)
   }
 }
 
@@ -98,7 +85,7 @@ onMounted(() => {
       >
         <template #actions>
           <Button
-            v-if="establishment && can.viewEstablishments()"
+            v-if="emissionPoint.establishmentCode && can.viewEstablishments()"
             :label="t('common.view_establishment')"
             icon="pi pi-building"
             severity="secondary"
@@ -155,8 +142,8 @@ onMounted(() => {
                     {{ t('emissionPoints.establishment') }}
                   </label>
                   <p class="text-slate-900 dark:text-white">
-                    <span v-if="establishment">
-                      {{ establishment.establishmentCode }} - {{ establishment.name }}
+                    <span v-if="emissionPoint.establishmentCode">
+                      {{ emissionPoint.establishmentCode }} - {{ emissionPoint.establishmentName }}
                     </span>
                     <span v-else class="text-slate-500">
                       {{ emissionPoint.establishmentId }}

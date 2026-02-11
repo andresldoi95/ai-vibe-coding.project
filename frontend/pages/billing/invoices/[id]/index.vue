@@ -79,10 +79,15 @@ async function handleStatusChange() {
 function getStatusLabel(status: InvoiceStatus): string {
   const labels: Record<InvoiceStatus, string> = {
     [InvoiceStatus.Draft]: t('invoices.status_draft'),
+    [InvoiceStatus.PendingSignature]: t('invoices.status_pending_signature'),
+    [InvoiceStatus.PendingAuthorization]: t('invoices.status_pending_authorization'),
+    [InvoiceStatus.Authorized]: t('invoices.status_authorized'),
+    [InvoiceStatus.Rejected]: t('invoices.status_rejected'),
     [InvoiceStatus.Sent]: t('invoices.status_sent'),
     [InvoiceStatus.Paid]: t('invoices.status_paid'),
     [InvoiceStatus.Overdue]: t('invoices.status_overdue'),
     [InvoiceStatus.Cancelled]: t('invoices.status_cancelled'),
+    [InvoiceStatus.Voided]: t('invoices.status_voided'),
   }
   return labels[status] || status.toString()
 }
@@ -90,10 +95,15 @@ function getStatusLabel(status: InvoiceStatus): string {
 function getStatusSeverity(status: InvoiceStatus): string {
   const severities: Record<InvoiceStatus, string> = {
     [InvoiceStatus.Draft]: 'secondary',
+    [InvoiceStatus.PendingSignature]: 'info',
+    [InvoiceStatus.PendingAuthorization]: 'info',
+    [InvoiceStatus.Authorized]: 'success',
+    [InvoiceStatus.Rejected]: 'danger',
     [InvoiceStatus.Sent]: 'info',
     [InvoiceStatus.Paid]: 'success',
     [InvoiceStatus.Overdue]: 'danger',
     [InvoiceStatus.Cancelled]: 'warn',
+    [InvoiceStatus.Voided]: 'warn',
   }
   return severities[status] || 'secondary'
 }
@@ -106,10 +116,16 @@ function formatCurrency(amount: number): string {
 }
 
 const statusOptions = computed(() => [
+  { value: InvoiceStatus.Draft, label: t('invoices.status_draft') },
+  { value: InvoiceStatus.PendingSignature, label: t('invoices.status_pending_signature') },
+  { value: InvoiceStatus.PendingAuthorization, label: t('invoices.status_pending_authorization') },
+  { value: InvoiceStatus.Authorized, label: t('invoices.status_authorized') },
+  { value: InvoiceStatus.Rejected, label: t('invoices.status_rejected') },
   { value: InvoiceStatus.Sent, label: t('invoices.status_sent') },
   { value: InvoiceStatus.Paid, label: t('invoices.status_paid') },
   { value: InvoiceStatus.Overdue, label: t('invoices.status_overdue') },
   { value: InvoiceStatus.Cancelled, label: t('invoices.status_cancelled') },
+  { value: InvoiceStatus.Voided, label: t('invoices.status_voided') },
 ])
 
 const canChangeStatus = computed(() => {

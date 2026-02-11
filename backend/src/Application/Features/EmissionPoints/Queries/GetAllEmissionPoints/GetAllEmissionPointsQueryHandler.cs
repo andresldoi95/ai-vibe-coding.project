@@ -49,6 +49,8 @@ public class GetAllEmissionPointsQueryHandler : IRequestHandler<GetAllEmissionPo
             {
                 Id = e.Id,
                 EstablishmentId = e.EstablishmentId,
+                EstablishmentCode = e.Establishment?.EstablishmentCode,
+                EstablishmentName = e.Establishment?.Name,
                 EmissionPointCode = e.EmissionPointCode,
                 Name = e.Name,
                 IsActive = e.IsActive,

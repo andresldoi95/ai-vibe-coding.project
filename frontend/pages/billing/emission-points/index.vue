@@ -169,10 +169,13 @@ onMounted(() => {
 
           <Column field="name" :header="t('emissionPoints.name')" sortable />
 
-          <Column field="establishmentId" :header="t('emissionPoints.establishment')" sortable>
+          <Column field="establishmentCode" :header="t('emissionPoints.establishment')" sortable>
             <template #body="{ data }">
-              <span v-if="establishments.length">
-                {{ establishments.find(e => e.id === data.establishmentId)?.name || data.establishmentId }}
+              <span v-if="data.establishmentCode">
+                {{ data.establishmentCode }} - {{ data.establishmentName }}
+              </span>
+              <span v-else class="text-slate-400">
+                {{ t('common.not_available') }}
               </span>
             </template>
           </Column>

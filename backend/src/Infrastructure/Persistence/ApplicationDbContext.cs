@@ -52,6 +52,15 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
         // Global query filter for soft deletes
         modelBuilder.Entity<User>().HasQueryFilter(u => !u.IsDeleted);
         modelBuilder.Entity<Tenant>().HasQueryFilter(t => !t.IsDeleted);
+        modelBuilder.Entity<Warehouse>().HasQueryFilter(w => !w.IsDeleted);
+        modelBuilder.Entity<Product>().HasQueryFilter(p => !p.IsDeleted);
+        modelBuilder.Entity<Customer>().HasQueryFilter(c => !c.IsDeleted);
+        modelBuilder.Entity<StockMovement>().HasQueryFilter(s => !s.IsDeleted);
+        modelBuilder.Entity<Establishment>().HasQueryFilter(e => !e.IsDeleted);
+        modelBuilder.Entity<EmissionPoint>().HasQueryFilter(e => !e.IsDeleted);
+        modelBuilder.Entity<SriConfiguration>().HasQueryFilter(s => !s.IsDeleted);
+        modelBuilder.Entity<Invoice>().HasQueryFilter(i => !i.IsDeleted);
+        modelBuilder.Entity<TaxRate>().HasQueryFilter(t => !t.IsDeleted);
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
