@@ -34,19 +34,52 @@ Write-Host "Step 1: Stopping backend to close database connections..." -Foregrou
 docker-compose stop backend
 
 Write-Host ""
-Write-Host "Step 2: Terminating all database connections..." -ForegroundColor Cyan
+Write-Host "Step 2: Waiting for PostgreSQL to be ready..." -ForegroundColor Cyan
+$dbReady = $false
+$dbAttempts = 0
+$maxDbAttempts = 30
+
+while ($dbAttempts -lt $maxDbAttempts -and !$dbReady) {
+    $dbAttempts++
+    Write-Host "  Checking PostgreSQL availability (attempt $dbAttempts/$maxDbAttempts)..." -ForegroundColor Gray
+
+    try {
+        $result = docker-compose exec -T db psql -U postgres -c "SELECT 1" 2>&1
+        if ($result -match "1 row") {
+            $dbReady = $true
+            Write-Host "  PostgreSQL is ready!" -ForegroundColor Green
+        }
+    }
+    catch {
+        Start-Sleep -Seconds 1
+    }
+
+    if (!$dbReady) {
+        Start-Sleep -Seconds 1
+    }
+}
+
+if (!$dbReady) {
+    Write-Host ""
+    Write-Host "ERROR: PostgreSQL did not become ready in time." -ForegroundColor Red
+    Write-Host "Check logs with: docker logs saas-postgres" -ForegroundColor Yellow
+    exit 1
+}
+
+Write-Host ""
+Write-Host "Step 3: Terminating all database connections..." -ForegroundColor Cyan
 docker-compose exec -T db psql -U postgres -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = 'saas' AND pid <> pg_backend_pid();"
 
 Write-Host ""
-Write-Host "Step 3: Dropping existing database..." -ForegroundColor Cyan
+Write-Host "Step 4: Dropping existing database..." -ForegroundColor Cyan
 docker-compose exec -T db psql -U postgres -c "DROP DATABASE IF EXISTS saas;"
 
 Write-Host ""
-Write-Host "Step 4: Creating fresh database..." -ForegroundColor Cyan
+Write-Host "Step 5: Creating fresh database..." -ForegroundColor Cyan
 docker-compose exec -T db psql -U postgres -c "CREATE DATABASE saas OWNER postgres;"
 
 Write-Host ""
-Write-Host "Step 5: Starting backend and applying migrations..." -ForegroundColor Cyan
+Write-Host "Step 6: Starting backend and applying migrations..." -ForegroundColor Cyan
 docker-compose up -d backend
 
 Write-Host ""
@@ -82,7 +115,7 @@ if (!$healthy) {
 }
 
 Write-Host ""
-Write-Host "Step 6: Seeding demo data..." -ForegroundColor Cyan
+Write-Host "Step 7: Seeding demo data..." -ForegroundColor Cyan
 try {
     $response = Invoke-WebRequest -Uri "http://localhost:5000/api/seed/demo" -Method Post -TimeoutSec 30 -UseBasicParsing
 
