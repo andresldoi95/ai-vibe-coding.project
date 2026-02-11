@@ -9,6 +9,7 @@ using SaaS.Api.Authorization;
 using SaaS.Api.Middleware;
 using SaaS.Application.Common.Behaviors;
 using SaaS.Application.Common.Interfaces;
+using SaaS.Application.Interfaces;
 using SaaS.Infrastructure.Persistence;
 using SaaS.Infrastructure.Persistence.Repositories;
 using SaaS.Infrastructure.Services;
@@ -118,7 +119,13 @@ builder.Services.AddAuthorization(options =>
         "invoice-config.read", "invoice-config.update",
         // Invoices
         "invoices.read", "invoices.create", "invoices.update", "invoices.delete",
-        "invoices.send", "invoices.void", "invoices.export"
+        "invoices.send", "invoices.void", "invoices.export",
+        // SRI - Establishments
+        "establishments.read", "establishments.create", "establishments.update", "establishments.delete",
+        // SRI - Emission Points
+        "emission_points.read", "emission_points.create", "emission_points.update", "emission_points.delete",
+        // SRI - Configuration
+        "sri_configuration.read", "sri_configuration.update"
     };
 
     foreach (var permission in permissions)
@@ -166,6 +173,11 @@ builder.Services.AddScoped<IExportService, SaaS.Application.Services.ExportServi
 builder.Services.AddScoped<ITaxCalculationService, TaxCalculationService>();
 builder.Services.AddScoped<IInvoiceNumberService, InvoiceNumberService>();
 
+// Register SRI Services for electronic invoicing
+builder.Services.AddScoped<ISriAccessKeyService, SriAccessKeyService>();
+builder.Services.AddScoped<IInvoiceXmlService, InvoiceXmlService>();
+builder.Services.AddScoped<IXmlSignatureService, XmlSignatureService>();
+
 // Configure Email Settings
 builder.Services.Configure<SaaS.Application.Common.Models.EmailSettings>(
     builder.Configuration.GetSection("Email"));
@@ -191,6 +203,9 @@ builder.Services.AddScoped<ITaxRateRepository, TaxRateRepository>();
 builder.Services.AddScoped<IInvoiceConfigurationRepository, InvoiceConfigurationRepository>();
 builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
 builder.Services.AddScoped<IRepository<SaaS.Domain.Entities.InvoiceItem>, Repository<SaaS.Domain.Entities.InvoiceItem>>();
+builder.Services.AddScoped<IEstablishmentRepository, EstablishmentRepository>();
+builder.Services.AddScoped<IEmissionPointRepository, EmissionPointRepository>();
+builder.Services.AddScoped<ISriConfigurationRepository, SriConfigurationRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 var app = builder.Build();

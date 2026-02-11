@@ -1,4 +1,5 @@
 using SaaS.Domain.Common;
+using SaaS.Domain.Enums;
 
 namespace SaaS.Domain.Entities;
 
@@ -11,7 +12,11 @@ public class Customer : TenantEntity
     public string Name { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
     public string? Phone { get; set; }
+
+    // SRI Ecuador Identification
+    public IdentificationType IdentificationType { get; set; } = IdentificationType.Cedula;
     public string? TaxId { get; set; }
+
     public string? ContactPerson { get; set; }
 
     // Billing Address

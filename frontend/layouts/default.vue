@@ -58,6 +58,22 @@ const menuItems = computed(() => {
           icon: 'pi pi-cog',
           command: () => navigateTo('/billing/invoice-configuration'),
         },
+        { separator: true },
+        {
+          label: t('nav.establishments'),
+          icon: 'pi pi-building',
+          command: () => navigateTo('/billing/establishments'),
+        },
+        {
+          label: t('nav.emission_points'),
+          icon: 'pi pi-sitemap',
+          command: () => navigateTo('/billing/emission-points'),
+        },
+        {
+          label: t('nav.sri_configuration'),
+          icon: 'pi pi-shield',
+          command: () => navigateTo('/billing/sri-configuration'),
+        },
       ],
     },
     {

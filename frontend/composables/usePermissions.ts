@@ -88,6 +88,22 @@ export function usePermissions() {
     // Invoice Configuration
     readInvoiceConfiguration: () => hasPermission('invoiceconfigurations.read'),
     updateInvoiceConfiguration: () => hasPermission('invoiceconfigurations.update'),
+
+    // Establishments
+    viewEstablishments: () => hasPermission('establishments.read'),
+    createEstablishment: () => hasPermission('establishments.create'),
+    editEstablishment: () => hasPermission('establishments.update'),
+    deleteEstablishment: () => hasPermission('establishments.delete'),
+
+    // Emission Points
+    viewEmissionPoints: () => hasPermission('emission_points.read'),
+    createEmissionPoint: () => hasPermission('emission_points.create'),
+    editEmissionPoint: () => hasPermission('emission_points.update'),
+    deleteEmissionPoint: () => hasPermission('emission_points.delete'),
+
+    // SRI Configuration
+    viewSriConfiguration: () => hasPermission('sri_configuration.read'),
+    updateSriConfiguration: () => hasPermission('sri_configuration.update'),
   }
 
   return {

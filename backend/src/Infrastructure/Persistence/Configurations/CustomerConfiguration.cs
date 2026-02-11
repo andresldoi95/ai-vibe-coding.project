@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SaaS.Domain.Entities;
+using SaaS.Domain.Enums;
 
 namespace SaaS.Infrastructure.Persistence.Configurations;
 
@@ -26,6 +27,12 @@ public class CustomerConfiguration : IEntityTypeConfiguration<Customer>
 
         builder.Property(c => c.Phone)
             .HasMaxLength(50);
+
+        // SRI Ecuador Identification
+        builder.Property(c => c.IdentificationType)
+            .IsRequired()
+            .HasConversion<int>()
+            .HasDefaultValue(IdentificationType.Cedula);
 
         builder.Property(c => c.TaxId)
             .HasMaxLength(50);

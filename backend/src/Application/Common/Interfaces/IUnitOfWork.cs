@@ -22,6 +22,9 @@ public interface IUnitOfWork : IDisposable
     IInvoiceConfigurationRepository InvoiceConfigurations { get; }
     IInvoiceRepository Invoices { get; }
     IRepository<InvoiceItem> InvoiceItems { get; }
+    IEstablishmentRepository Establishments { get; }
+    IEmissionPointRepository EmissionPoints { get; }
+    ISriConfigurationRepository SriConfigurations { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     Task BeginTransactionAsync(CancellationToken cancellationToken = default);

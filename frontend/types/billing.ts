@@ -77,6 +77,15 @@ export interface Invoice {
   totalAmount: number
   status: InvoiceStatus
   notes?: string
+
+  // SRI Ecuador fields
+  emissionPointId?: string
+  documentType: number
+  accessKey?: string
+  paymentMethod: number
+  xmlFilePath?: string
+  signedXmlFilePath?: string
+  environment: number
   sriAuthorization?: string     // Ecuador SRI authorization number
   authorizationDate?: string    // Ecuador SRI authorization date
   items: InvoiceItem[]
@@ -86,10 +95,15 @@ export interface Invoice {
 
 export enum InvoiceStatus {
   Draft = 0,
-  Sent = 1,
-  Paid = 2,
-  Overdue = 3,
-  Cancelled = 4
+  PendingSignature = 1,
+  PendingAuthorization = 2,
+  Authorized = 3,
+  Rejected = 4,
+  Sent = 5,
+  Paid = 6,
+  Overdue = 7,
+  Cancelled = 8,
+  Voided = 9
 }
 
 export interface InvoiceItem {
@@ -139,6 +153,7 @@ export interface Customer {
   name: string
   email: string
   phone?: string
+  identificationType: number  // IdentificationType enum
   taxId?: string
   contactPerson?: string
 

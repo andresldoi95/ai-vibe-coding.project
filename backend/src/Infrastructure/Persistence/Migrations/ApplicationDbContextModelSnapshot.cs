@@ -66,6 +66,11 @@ namespace SaaS.Infrastructure.Persistence.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
+                    b.Property<int>("IdentificationType")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(5);
+
                     b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
@@ -289,11 +294,165 @@ namespace SaaS.Infrastructure.Persistence.Migrations
                     b.ToTable("EmailTemplates", (string)null);
                 });
 
+            modelBuilder.Entity("SaaS.Domain.Entities.EmissionPoint", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<int>("CreditNoteSequence")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(1);
+
+                    b.Property<int>("DebitNoteSequence")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(1);
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("EmissionPointCode")
+                        .IsRequired()
+                        .HasMaxLength(3)
+                        .HasColumnType("character(3)")
+                        .IsFixedLength();
+
+                    b.Property<Guid>("EstablishmentId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("InvoiceSequence")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(1);
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int>("RetentionSequence")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(1);
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EstablishmentId")
+                        .HasDatabaseName("IX_EmissionPoints_EstablishmentId");
+
+                    b.HasIndex("EstablishmentId", "EmissionPointCode")
+                        .IsUnique()
+                        .HasDatabaseName("IX_EmissionPoints_EstablishmentId_Code");
+
+                    b.ToTable("EmissionPoints", (string)null);
+                });
+
+            modelBuilder.Entity("SaaS.Domain.Entities.Establishment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("EstablishmentCode")
+                        .IsRequired()
+                        .HasMaxLength(3)
+                        .HasColumnType("character(3)")
+                        .IsFixedLength();
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("Phone")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId")
+                        .HasDatabaseName("IX_Establishments_TenantId");
+
+                    b.HasIndex("TenantId", "EstablishmentCode")
+                        .IsUnique()
+                        .HasDatabaseName("IX_Establishments_TenantId_Code");
+
+                    b.ToTable("Establishments", (string)null);
+                });
+
             modelBuilder.Entity("SaaS.Domain.Entities.Invoice", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
+
+                    b.Property<string>("AccessKey")
+                        .HasMaxLength(49)
+                        .HasColumnType("character varying(49)");
 
                     b.Property<DateTime?>("AuthorizationDate")
                         .HasColumnType("timestamp with time zone");
@@ -310,8 +469,21 @@ namespace SaaS.Infrastructure.Persistence.Migrations
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int>("DocumentType")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(1);
+
                     b.Property<DateTime>("DueDate")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("EmissionPointId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Environment")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(1);
 
                     b.Property<string>("InvoiceNumber")
                         .IsRequired()
@@ -330,6 +502,15 @@ namespace SaaS.Infrastructure.Persistence.Migrations
 
                     b.Property<DateTime?>("PaidDate")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("PaymentMethod")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(1);
+
+                    b.Property<string>("SignedXmlFilePath")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
 
                     b.Property<string>("SriAuthorization")
                         .HasMaxLength(49)
@@ -362,9 +543,21 @@ namespace SaaS.Infrastructure.Persistence.Migrations
                     b.Property<Guid?>("WarehouseId")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("XmlFilePath")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
                     b.HasKey("Id");
 
+                    b.HasIndex("AccessKey")
+                        .IsUnique()
+                        .HasDatabaseName("IX_Invoices_AccessKey")
+                        .HasFilter("\"AccessKey\" IS NOT NULL");
+
                     b.HasIndex("CustomerId");
+
+                    b.HasIndex("EmissionPointId")
+                        .HasDatabaseName("IX_Invoices_EmissionPointId");
 
                     b.HasIndex("TenantId")
                         .HasDatabaseName("IX_Invoices_TenantId");
@@ -777,6 +970,88 @@ namespace SaaS.Infrastructure.Persistence.Migrations
                         .IsUnique();
 
                     b.ToTable("RolePermissions", (string)null);
+                });
+
+            modelBuilder.Entity("SaaS.Domain.Entities.SriConfiguration", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("AccountingRequired")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
+                    b.Property<DateTime?>("CertificateExpiryDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CertificatePassword")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("CompanyRuc")
+                        .IsRequired()
+                        .HasMaxLength(13)
+                        .HasColumnType("character(13)")
+                        .IsFixedLength();
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<byte[]>("DigitalCertificate")
+                        .HasColumnType("bytea");
+
+                    b.Property<int>("Environment")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(1);
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("LegalName")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)");
+
+                    b.Property<string>("MainAddress")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("TradeName")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompanyRuc")
+                        .HasDatabaseName("IX_SriConfigurations_CompanyRuc");
+
+                    b.HasIndex("TenantId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_SriConfigurations_TenantId");
+
+                    b.ToTable("SriConfigurations", (string)null);
                 });
 
             modelBuilder.Entity("SaaS.Domain.Entities.StockMovement", b =>
@@ -1250,6 +1525,17 @@ namespace SaaS.Infrastructure.Persistence.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("SaaS.Domain.Entities.EmissionPoint", b =>
+                {
+                    b.HasOne("SaaS.Domain.Entities.Establishment", "Establishment")
+                        .WithMany("EmissionPoints")
+                        .HasForeignKey("EstablishmentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Establishment");
+                });
+
             modelBuilder.Entity("SaaS.Domain.Entities.Invoice", b =>
                 {
                     b.HasOne("SaaS.Domain.Entities.Customer", "Customer")
@@ -1258,12 +1544,19 @@ namespace SaaS.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("SaaS.Domain.Entities.EmissionPoint", "EmissionPoint")
+                        .WithMany("Invoices")
+                        .HasForeignKey("EmissionPointId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("SaaS.Domain.Entities.Warehouse", "Warehouse")
                         .WithMany()
                         .HasForeignKey("WarehouseId")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Customer");
+
+                    b.Navigation("EmissionPoint");
 
                     b.Navigation("Warehouse");
                 });
@@ -1411,6 +1704,16 @@ namespace SaaS.Infrastructure.Persistence.Migrations
                     b.Navigation("Product");
 
                     b.Navigation("Warehouse");
+                });
+
+            modelBuilder.Entity("SaaS.Domain.Entities.EmissionPoint", b =>
+                {
+                    b.Navigation("Invoices");
+                });
+
+            modelBuilder.Entity("SaaS.Domain.Entities.Establishment", b =>
+                {
+                    b.Navigation("EmissionPoints");
                 });
 
             modelBuilder.Entity("SaaS.Domain.Entities.Invoice", b =>

@@ -3,8 +3,13 @@ namespace SaaS.Domain.Enums;
 public enum InvoiceStatus
 {
     Draft = 0,
-    Sent = 1,
-    Paid = 2,
-    Overdue = 3,
-    Cancelled = 4
+    PendingSignature = 1,
+    PendingAuthorization = 2,
+    Authorized = 3,
+    Rejected = 4,
+    Sent = 5,
+    Paid = 6,
+    Overdue = 7,
+    Cancelled = 8,
+    Voided = 9
 }

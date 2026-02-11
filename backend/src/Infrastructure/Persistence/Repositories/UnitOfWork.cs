@@ -27,6 +27,9 @@ public class UnitOfWork : IUnitOfWork
     public IInvoiceConfigurationRepository InvoiceConfigurations { get; }
     public IInvoiceRepository Invoices { get; }
     public IRepository<InvoiceItem> InvoiceItems { get; }
+    public IEstablishmentRepository Establishments { get; }
+    public IEmissionPointRepository EmissionPoints { get; }
+    public ISriConfigurationRepository SriConfigurations { get; }
 
     public UnitOfWork(
         ApplicationDbContext context,
@@ -44,7 +47,10 @@ public class UnitOfWork : IUnitOfWork
         ITaxRateRepository taxRateRepository,
         IInvoiceConfigurationRepository invoiceConfigurationRepository,
         IInvoiceRepository invoiceRepository,
-        IRepository<InvoiceItem> invoiceItemRepository)
+        IRepository<InvoiceItem> invoiceItemRepository,
+        IEstablishmentRepository establishmentRepository,
+        IEmissionPointRepository emissionPointRepository,
+        ISriConfigurationRepository sriConfigurationRepository)
     {
         _context = context;
         Users = userRepository;
@@ -62,6 +68,9 @@ public class UnitOfWork : IUnitOfWork
         WarehouseInventory = warehouseInventoryRepository;
         Roles = roleRepository;
         Permissions = permissionRepository;
+        Establishments = establishmentRepository;
+        EmissionPoints = emissionPointRepository;
+        SriConfigurations = sriConfigurationRepository;
     }
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

@@ -37,6 +37,11 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<Invoice> Invoices => Set<Invoice>();
     public DbSet<InvoiceItem> InvoiceItems => Set<InvoiceItem>();
 
+    // SRI Ecuador entities
+    public DbSet<Establishment> Establishments => Set<Establishment>();
+    public DbSet<EmissionPoint> EmissionPoints => Set<EmissionPoint>();
+    public DbSet<SriConfiguration> SriConfigurations => Set<SriConfiguration>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
