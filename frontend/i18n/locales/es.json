@@ -42,7 +42,16 @@
     "deselect_all": "Deseleccionar Todo",
     "type": "Tipo",
     "basic_info": "Información Básica",
-    "not_specified": "No especificado"
+    "not_specified": "No especificado",
+    "view": "Ver",
+    "export": "Exportar",
+    "export_format": "Formato de Exportación",
+    "export_description": "Exportar datos en tu formato preferido",
+    "exporting": "Exportando...",
+    "filters": "Filtros",
+    "select": "Seleccionar",
+    "confirm_delete": "¿Está seguro de que desea eliminar este elemento?",
+    "confirm_delete_item": "¿Está seguro de que desea eliminar {name}?"
   },
   "nav": {
     "dashboard": "Panel",
@@ -707,6 +716,7 @@
     "description": "Gestionar facturas y facturación de clientes",
     "create": "Crear Factura",
     "edit": "Editar Factura",
+    "edit_description": "Actualizar información y líneas de la factura",
     "view_title": "Detalles de Factura",
     "view_description": "Ver información y líneas de la factura",
     "create_description": "Crear una nueva factura de cliente",

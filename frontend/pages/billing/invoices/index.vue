@@ -18,6 +18,7 @@ const {
   selectedItem: selectedInvoice,
   handleCreate,
   handleView,
+  handleEdit,
   confirmDelete,
   handleDelete,
 } = useCrudPage({
@@ -137,6 +138,14 @@ function formatCurrency(amount: number): string {
                   text
                   rounded
                   @click="handleView(data)"
+                />
+                <Button
+                  v-if="can.updateInvoice() && data.status === InvoiceStatus.Draft"
+                  icon="pi pi-pencil"
+                  severity="info"
+                  text
+                  rounded
+                  @click="handleEdit(data)"
                 />
                 <Button
                   v-if="can.deleteInvoice() && data.status === InvoiceStatus.Draft"

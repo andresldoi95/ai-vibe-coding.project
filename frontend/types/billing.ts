@@ -130,12 +130,29 @@ export interface CreateInvoiceItemDto {
   description?: string
 }
 
+export interface UpdateInvoiceItemDto {
+  id?: string              // Present if updating existing item
+  productId: string
+  quantity: number
+  unitPrice: number
+  taxRateId: string
+  description?: string
+}
+
 export interface CreateInvoiceDto {
   customerId: string
   warehouseId?: string
   issueDate: string
   notes?: string
   items: CreateInvoiceItemDto[]
+}
+
+export interface UpdateInvoiceDto {
+  customerId: string
+  warehouseId?: string
+  issueDate: string
+  notes?: string
+  items: UpdateInvoiceItemDto[]
 }
 
 export interface InvoiceFilters {

@@ -23,11 +23,39 @@ const modules = [
     color: 'bg-green-500',
   },
   {
-    title: 'nav.payments',
-    description: 'Track payments and payment history',
-    icon: 'pi pi-credit-card',
-    to: '/billing/payments',
+    title: 'nav.establishments',
+    description: 'Manage physical business locations for electronic invoicing',
+    icon: 'pi pi-building',
+    to: '/billing/establishments',
     color: 'bg-purple-500',
+  },
+  {
+    title: 'nav.emission_points',
+    description: 'Manage point-of-sale locations within establishments',
+    icon: 'pi pi-map-marker',
+    to: '/billing/emission-points',
+    color: 'bg-orange-500',
+  },
+  {
+    title: 'nav.tax_rates',
+    description: 'Configure tax rates for invoicing',
+    icon: 'pi pi-percentage',
+    to: '/billing/tax-rates',
+    color: 'bg-teal-500',
+  },
+  {
+    title: 'nav.sri_configuration',
+    description: 'Configure SRI settings and digital certificates',
+    icon: 'pi pi-shield',
+    to: '/billing/sri-configuration',
+    color: 'bg-indigo-500',
+  },
+  {
+    title: 'nav.invoice_configuration',
+    description: 'Configure invoice numbering and default settings',
+    icon: 'pi pi-cog',
+    to: '/billing/invoice-configuration',
+    color: 'bg-pink-500',
   },
 ]
 

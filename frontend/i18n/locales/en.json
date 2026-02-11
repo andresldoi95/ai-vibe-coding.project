@@ -718,6 +718,7 @@
     "description": "Manage customer invoices and billing",
     "create": "Create Invoice",
     "edit": "Edit Invoice",
+    "edit_description": "Update invoice information and line items",
     "view_title": "Invoice Details",
     "view_description": "View invoice information and line items",
     "create_description": "Create a new customer invoice",

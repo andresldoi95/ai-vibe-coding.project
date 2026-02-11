@@ -1,4 +1,4 @@
-import type { CreateInvoiceDto, Invoice, InvoiceFilters, InvoiceStatus } from '~/types/billing'
+import type { CreateInvoiceDto, UpdateInvoiceDto, Invoice, InvoiceFilters, InvoiceStatus } from '~/types/billing'
 
 interface ApiResponse<T> {
   data: T
@@ -48,6 +48,14 @@ export function useInvoice() {
     return response.data
   }
 
+  async function updateInvoice(id: string, data: UpdateInvoiceDto): Promise<Invoice> {
+    const response = await apiFetch<ApiResponse<Invoice>>(`/invoices/${id}`, {
+      method: 'PUT',
+      body: data,
+    })
+    return response.data
+  }
+
   async function changeInvoiceStatus(id: string, newStatus: InvoiceStatus): Promise<Invoice> {
     const response = await apiFetch<ApiResponse<Invoice>>(`/invoices/${id}/status`, {
       method: 'PATCH',
@@ -66,6 +74,7 @@ export function useInvoice() {
     getAllInvoices,
     getInvoiceById,
     createInvoice,
+    updateInvoice,
     changeInvoiceStatus,
     deleteInvoice,
   }
