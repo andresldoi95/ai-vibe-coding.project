@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore.Storage;
 using SaaS.Application.Common.Interfaces;
+using SaaS.Domain.Entities;
 
 namespace SaaS.Infrastructure.Persistence.Repositories;
 
@@ -22,6 +23,10 @@ public class UnitOfWork : IUnitOfWork
     public IWarehouseInventoryRepository WarehouseInventory { get; }
     public IRoleRepository Roles { get; }
     public IPermissionRepository Permissions { get; }
+    public ITaxRateRepository TaxRates { get; }
+    public IInvoiceConfigurationRepository InvoiceConfigurations { get; }
+    public IInvoiceRepository Invoices { get; }
+    public IRepository<InvoiceItem> InvoiceItems { get; }
 
     public UnitOfWork(
         ApplicationDbContext context,
@@ -35,7 +40,11 @@ public class UnitOfWork : IUnitOfWork
         IStockMovementRepository stockMovementRepository,
         IWarehouseInventoryRepository warehouseInventoryRepository,
         IRoleRepository roleRepository,
-        IPermissionRepository permissionRepository)
+        IPermissionRepository permissionRepository,
+        ITaxRateRepository taxRateRepository,
+        IInvoiceConfigurationRepository invoiceConfigurationRepository,
+        IInvoiceRepository invoiceRepository,
+        IRepository<InvoiceItem> invoiceItemRepository)
     {
         _context = context;
         Users = userRepository;
@@ -45,6 +54,10 @@ public class UnitOfWork : IUnitOfWork
         Warehouses = warehouseRepository;
         Products = productRepository;
         Customers = customerRepository;
+        TaxRates = taxRateRepository;
+        InvoiceConfigurations = invoiceConfigurationRepository;
+        Invoices = invoiceRepository;
+        InvoiceItems = invoiceItemRepository;
         StockMovements = stockMovementRepository;
         WarehouseInventory = warehouseInventoryRepository;
         Roles = roleRepository;

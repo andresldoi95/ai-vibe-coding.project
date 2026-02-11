@@ -48,9 +48,14 @@ public class SeedController : ControllerBase
             _logger.LogInformation("Starting multi-tenant demo data seeding...");
 
             // Check if any demo companies already exist
+            var allTenants = await _context.Tenants.ToListAsync();
+            _logger.LogInformation($"Total tenants in database: {allTenants.Count}");
+
             var existingTenants = await _context.Tenants
                 .Where(t => t.Slug == "demo-company" || t.Slug == "tech-startup" || t.Slug == "manufacturing-corp")
                 .AnyAsync();
+
+            _logger.LogInformation($"Existing demo tenants found: {existingTenants}");
 
             if (existingTenants)
             {
@@ -184,6 +189,16 @@ public class SeedController : ControllerBase
             {
                 _logger.LogInformation($"Seeding data for tenant: {tenant.Name}");
 
+                // Seed Tax Rates (Ecuador IVA rates)
+                var taxRates = CreateTaxRatesForTenant(tenant.Id, now);
+                await _context.TaxRates.AddRangeAsync(taxRates);
+                await _context.SaveChangesAsync();
+
+                // Seed Invoice Configuration (Ecuador numbering format)
+                var invoiceConfig = CreateInvoiceConfigurationForTenant(tenant.Id, taxRates, now);
+                await _context.InvoiceConfigurations.AddAsync(invoiceConfig);
+                await _context.SaveChangesAsync();
+
                 var warehouses = CreateWarehousesForTenant(tenant.Id, tenant.Slug, now);
                 await _context.Warehouses.AddRangeAsync(warehouses);
                 await _context.SaveChangesAsync();
@@ -207,6 +222,8 @@ public class SeedController : ControllerBase
                 summaries.Add(new
                 {
                     tenant = new { id = tenant.Id, name = tenant.Name, slug = tenant.Slug },
+                    taxRates = taxRates.Count,
+                    invoiceConfiguration = 1,
                     warehouses = warehouses.Count,
                     products = products.Count,
                     customers = customers.Count,
@@ -334,8 +351,13 @@ public class SeedController : ControllerBase
         await _context.RolePermissions.AddRangeAsync(adminPermissions);
 
         // Manager: Full access to warehouses, products, customers, stock
+        // Read/create/update/send/export for invoices, read/update for tax-rates, read for invoice-config
         var managerPermissions = allPermissions
-            .Where(p => new[] { "warehouses", "products", "customers", "stock" }.Contains(p.Resource))
+            .Where(p =>
+                new[] { "warehouses", "products", "customers", "stock" }.Contains(p.Resource) ||
+                (p.Resource == "invoices" && new[] { "read", "create", "update", "send", "export" }.Contains(p.Action)) ||
+                (p.Resource == "tax-rates" && new[] { "read", "update" }.Contains(p.Action)) ||
+                (p.Resource == "invoice-config" && p.Action == "read"))
             .Select(p => new RolePermission
             {
                 Id = Guid.NewGuid(),
@@ -899,6 +921,80 @@ public class SeedController : ControllerBase
         }
 
         return inventoryLevels;
+    }
+
+    private List<TaxRate> CreateTaxRatesForTenant(Guid tenantId, DateTime now)
+    {
+        return new List<TaxRate>
+        {
+            new TaxRate
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                Code = "IVA_0",
+                Name = "IVA 0%",
+                Rate = 0.00m,
+                IsDefault = false,
+                IsActive = true,
+                Country = "EC", // Ecuador ISO code
+                CreatedAt = now,
+                UpdatedAt = now,
+                IsDeleted = false
+            },
+            new TaxRate
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                Code = "IVA_12",
+                Name = "IVA 12%",
+                Rate = 0.12m,
+                IsDefault = false,
+                IsActive = true,
+                Country = "EC", // Ecuador ISO code
+                CreatedAt = now,
+                UpdatedAt = now,
+                IsDeleted = false
+            },
+            new TaxRate
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                Code = "IVA_15",
+                Name = "IVA 15%",
+                Rate = 0.15m,
+                IsDefault = true, // Ecuador's standard IVA rate
+                IsActive = true,
+                Country = "EC", // Ecuador ISO code
+                CreatedAt = now,
+                UpdatedAt = now,
+                IsDeleted = false
+            }
+        };
+    }
+
+    private InvoiceConfiguration CreateInvoiceConfigurationForTenant(
+        Guid tenantId,
+        List<TaxRate> taxRates,
+        DateTime now)
+    {
+        // Find default tax rate (IVA 15%)
+        var defaultTaxRate = taxRates.FirstOrDefault(t => t.IsDefault);
+
+        return new InvoiceConfiguration
+        {
+            Id = Guid.NewGuid(),
+            TenantId = tenantId,
+            EstablishmentCode = "001", // Ecuador standard establishment code
+            EmissionPointCode = "001",  // Ecuador standard emission point code
+            NextSequentialNumber = 1,
+            DefaultTaxRateId = defaultTaxRate?.Id,
+            DefaultWarehouseId = null, // Will be set by user later
+            DueDays = 30, // Default payment terms: Net 30
+            RequireCustomerTaxId = true, // Ecuador requires RUC/Cédula on invoices
+            CreatedAt = now,
+            UpdatedAt = now,
+            IsDeleted = false
+        };
     }
 
     #endregion

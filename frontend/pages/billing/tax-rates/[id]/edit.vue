@@ -1,0 +1,239 @@
+<script setup lang="ts">
+import { useVuelidate } from '@vuelidate/core'
+import { between, helpers, maxLength, required } from '@vuelidate/validators'
+import type { TaxRate } from '~/types/billing'
+
+definePageMeta({
+  middleware: ['auth', 'tenant'],
+  layout: 'default',
+})
+
+const { t } = useI18n()
+const route = useRoute()
+const toast = useNotification()
+const router = useRouter()
+const { getTaxRateById, updateTaxRate } = useTaxRate()
+
+const loading = ref(false)
+const initialLoading = ref(true)
+
+const formData = reactive({
+  id: '',
+  code: '',
+  name: '',
+  rate: 0,
+  isDefault: false,
+  isActive: true,
+  country: '',
+})
+
+const codeFormat = helpers.regex(/^[A-Z0-9_]+$/)
+
+const rules = computed(() => ({
+  code: {
+    required,
+    maxLength: maxLength(50),
+    codeFormat: helpers.withMessage(t('validation.tax_code_format'), codeFormat),
+  },
+  name: {
+    required,
+    maxLength: maxLength(256),
+  },
+  rate: {
+    required,
+    between: between(0, 1),
+  },
+  country: {
+    maxLength: maxLength(100),
+  },
+}))
+
+const v$ = useVuelidate(rules, formData)
+
+onMounted(async () => {
+  try {
+    const id = route.params.id as string
+    const taxRate = await getTaxRateById(id)
+
+    formData.id = taxRate.id
+    formData.code = taxRate.code
+    formData.name = taxRate.name
+    formData.rate = taxRate.rate
+    formData.isDefault = taxRate.isDefault
+    formData.isActive = taxRate.isActive
+    formData.country = taxRate.country || ''
+  }
+  catch (error) {
+    toast.showError(t('taxRates.load_error'))
+    router.push('/billing/tax-rates')
+  }
+  finally {
+    initialLoading.value = false
+  }
+})
+
+async function handleSubmit() {
+  const isValid = await v$.value.$validate()
+  if (!isValid) {
+    toast.showError(t('common.validation_error'), t('common.fix_errors'))
+    return
+  }
+
+  loading.value = true
+  try {
+    await updateTaxRate(formData)
+    toast.showSuccess(t('taxRates.update_success'))
+    router.push('/billing/tax-rates')
+  }
+  catch (error) {
+    const errMessage = error instanceof Error ? error.message : 'Unknown error'
+    toast.showError(t('taxRates.update_error'), errMessage)
+  }
+  finally {
+    loading.value = false
+  }
+}
+
+function handleCancel() {
+  router.push('/billing/tax-rates')
+}
+</script>
+
+<template>
+  <div>
+    <PageHeader
+      :title="t('taxRates.edit')"
+      :description="t('taxRates.edit_description')"
+    />
+
+    <Card v-if="initialLoading">
+      <template #content>
+        <div class="flex justify-center py-8">
+          <ProgressSpinner />
+        </div>
+      </template>
+    </Card>
+
+    <Card v-else>
+      <template #content>
+        <form @submit.prevent="handleSubmit">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Code -->
+            <div class="field">
+              <label for="code" class="font-semibold">
+                {{ t('taxRates.code') }} <span class="text-red-500">*</span>
+              </label>
+              <InputText
+                id="code"
+                v-model="formData.code"
+                :placeholder="t('taxRates.code_placeholder')"
+                :class="{ 'p-invalid': v$.code.$error }"
+                class="w-full"
+              />
+              <small v-if="v$.code.$error" class="p-error">
+                {{ v$.code.$errors[0].$message }}
+              </small>
+              <small class="text-surface-500">{{ t('taxRates.code_hint') }}</small>
+            </div>
+
+            <!-- Name -->
+            <div class="field">
+              <label for="name" class="font-semibold">
+                {{ t('taxRates.name') }} <span class="text-red-500">*</span>
+              </label>
+              <InputText
+                id="name"
+                v-model="formData.name"
+                :placeholder="t('taxRates.name_placeholder')"
+                :class="{ 'p-invalid': v$.name.$error }"
+                class="w-full"
+              />
+              <small v-if="v$.name.$error" class="p-error">
+                {{ v$.name.$errors[0].$message }}
+              </small>
+            </div>
+
+            <!-- Rate -->
+            <div class="field">
+              <label for="rate" class="font-semibold">
+                {{ t('taxRates.rate') }} <span class="text-red-500">*</span>
+              </label>
+              <InputNumber
+                id="rate"
+                v-model="formData.rate"
+                :min="0"
+                :max="1"
+                :min-fraction-digits="2"
+                :max-fraction-digits="4"
+                :step="0.01"
+                :placeholder="t('taxRates.rate_placeholder')"
+                :class="{ 'p-invalid': v$.rate.$error }"
+                class="w-full"
+              />
+              <small v-if="v$.rate.$error" class="p-error">
+                {{ v$.rate.$errors[0].$message }}
+              </small>
+              <small class="text-surface-500">{{ t('taxRates.rate_hint') }}</small>
+            </div>
+
+            <!-- Country -->
+            <div class="field">
+              <label for="country" class="font-semibold">
+                {{ t('taxRates.country') }}
+              </label>
+              <InputText
+                id="country"
+                v-model="formData.country"
+                :placeholder="t('taxRates.country_placeholder')"
+                :class="{ 'p-invalid': v$.country.$error }"
+                class="w-full"
+              />
+              <small v-if="v$.country.$error" class="p-error">
+                {{ v$.country.$errors[0].$message }}
+              </small>
+            </div>
+
+            <!-- Is Default -->
+            <div class="field flex items-center gap-2">
+              <Checkbox
+                id="isDefault"
+                v-model="formData.isDefault"
+                binary
+              />
+              <label for="isDefault" class="font-semibold cursor-pointer">
+                {{ t('taxRates.is_default') }}
+              </label>
+            </div>
+
+            <!-- Is Active -->
+            <div class="field flex items-center gap-2">
+              <Checkbox
+                id="isActive"
+                v-model="formData.isActive"
+                binary
+              />
+              <label for="isActive" class="font-semibold cursor-pointer">
+                {{ t('taxRates.is_active') }}
+              </label>
+            </div>
+          </div>
+
+          <!-- Form Actions -->
+          <div class="flex justify-end gap-3 mt-6 pt-6 border-t">
+            <Button
+              :label="t('common.cancel')"
+              severity="secondary"
+              outlined
+              @click="handleCancel"
+            />
+            <Button
+              type="submit"
+              :label="t('common.save')"
+              :loading="loading"
+            />
+          </div>
+        </form>
+      </template>
+    </Card>
+  </div>
+</template>

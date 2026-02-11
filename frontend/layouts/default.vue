@@ -48,6 +48,16 @@ const menuItems = computed(() => {
           icon: 'pi pi-credit-card',
           command: () => navigateTo('/billing/payments'),
         },
+        {
+          label: t('nav.tax_rates'),
+          icon: 'pi pi-percentage',
+          command: () => navigateTo('/billing/tax-rates'),
+        },
+        {
+          label: t('nav.invoice_configuration'),
+          icon: 'pi pi-cog',
+          command: () => navigateTo('/billing/invoice-configuration'),
+        },
       ],
     },
     {
@@ -147,14 +157,13 @@ const breadcrumbHome = { icon: 'pi pi-home', to: '/' }
         <ClientOnly>
           <div class="flex items-center gap-2">
             <!-- Tenant Selector -->
-            <Dropdown
+            <Select
               v-if="tenantStore.availableTenants.length > 0"
               :modelValue="tenantStore.currentTenantId"
               :options="tenantStore.availableTenants"
               optionLabel="name"
               optionValue="id"
               placeholder="Select Company"
-              appendTo="body"
               class="w-48"
               @change="handleTenantChange"
             >
@@ -164,7 +173,7 @@ const breadcrumbHome = { icon: 'pi pi-home', to: '/' }
                   <span>{{ tenantStore.currentTenant?.name }}</span>
                 </div>
               </template>
-            </Dropdown>
+            </Select>
 
             <!-- Language Switcher -->
             <LanguageSwitcher />

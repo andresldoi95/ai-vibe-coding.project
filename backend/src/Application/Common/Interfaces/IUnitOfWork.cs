@@ -1,3 +1,5 @@
+using SaaS.Domain.Entities;
+
 namespace SaaS.Application.Common.Interfaces;
 
 /// <summary>
@@ -16,6 +18,10 @@ public interface IUnitOfWork : IDisposable
     IWarehouseInventoryRepository WarehouseInventory { get; }
     IRoleRepository Roles { get; }
     IPermissionRepository Permissions { get; }
+    ITaxRateRepository TaxRates { get; }
+    IInvoiceConfigurationRepository InvoiceConfigurations { get; }
+    IInvoiceRepository Invoices { get; }
+    IRepository<InvoiceItem> InvoiceItems { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     Task BeginTransactionAsync(CancellationToken cancellationToken = default);

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Invoice } from '~/types/billing'
-import { getInvoiceStatusSeverity, getStatusLabel } from '~/utils/status'
+import { InvoiceStatus } from '~/types/billing'
 
 definePageMeta({
   middleware: ['auth', 'tenant'],
@@ -8,25 +8,9 @@ definePageMeta({
 })
 
 const { t } = useI18n()
-const toast = useNotification()
-const { formatCurrency, formatDate } = useFormatters()
+const { getAllInvoices, deleteInvoice } = useInvoice()
+const { can } = usePermissions()
 
-// Simple load function for invoices (backend not ready)
-async function loadInvoices() {
-  // This will work once backend is ready
-  // return await apiFetch<Invoice[]>('/billing/invoices')
-
-  // Mock data for now
-  toast.showInfo(t('messages.error_load'), 'Backend not connected')
-  return []
-}
-
-// Simple delete function (backend not ready)
-async function deleteInvoice(_id: string) {
-  toast.showSuccess(t('messages.success_delete'))
-}
-
-// ✅ Using useCrudPage composable
 const {
   items: invoices,
   loading,
@@ -40,134 +24,126 @@ const {
   resourceName: 'invoices',
   parentRoute: 'billing',
   basePath: '/billing/invoices',
-  loadItems: loadInvoices,
-  deleteItem: id => deleteInvoice(id),
+  loadItems: getAllInvoices,
+  deleteItem: deleteInvoice,
 })
 
-const selectedInvoices = ref<Invoice[]>([])
+function getStatusLabel(status: InvoiceStatus): string {
+  const labels: Record<InvoiceStatus, string> = {
+    [InvoiceStatus.Draft]: t('invoices.status_draft'),
+    [InvoiceStatus.Sent]: t('invoices.status_sent'),
+    [InvoiceStatus.Paid]: t('invoices.status_paid'),
+    [InvoiceStatus.Overdue]: t('invoices.status_overdue'),
+    [InvoiceStatus.Cancelled]: t('invoices.status_cancelled'),
+  }
+  return labels[status] || status.toString()
+}
+
+function getStatusSeverity(status: InvoiceStatus): string {
+  const severities: Record<InvoiceStatus, string> = {
+    [InvoiceStatus.Draft]: 'secondary',
+    [InvoiceStatus.Sent]: 'info',
+    [InvoiceStatus.Paid]: 'success',
+    [InvoiceStatus.Overdue]: 'danger',
+    [InvoiceStatus.Cancelled]: 'warn',
+  }
+  return severities[status] || 'secondary'
+}
+
+function formatCurrency(amount: number): string {
+  return new Intl.NumberFormat('es-EC', {
+    style: 'currency',
+    currency: 'USD',
+  }).format(amount)
+}
 </script>
 
 <template>
   <div>
-    <!-- Page Header Component -->
     <PageHeader
-      :title="t('billing.invoices')"
-      description="Manage and track all customer invoices"
+      :title="t('invoices.title')"
+      :description="t('invoices.description')"
     >
       <template #actions>
         <Button
-          :label="t('billing.create_invoice')"
+          v-if="can.createInvoice()"
+          :label="t('invoices.create')"
           icon="pi pi-plus"
           @click="handleCreate"
         />
       </template>
     </PageHeader>
 
-    <!-- Data Table Card -->
     <Card>
       <template #content>
-        <LoadingState v-if="loading" message="Loading invoices..." />
         <DataTable
-          v-else
-          v-model:selection="selectedInvoices"
           :value="invoices"
-          :paginator="true"
+          :loading="loading"
+          striped-rows
+          paginator
           :rows="10"
-          :rowsPerPageOptions="[10, 25, 50]"
-          stripedRows
-          responsiveLayout="scroll"
-          filterDisplay="row"
+          :rows-per-page-options="[5, 10, 20, 50]"
+          current-page-report-template="{first} to {last} of {totalRecords}"
+          paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
         >
           <template #empty>
-            <EmptyState
-              icon="pi pi-file"
-              :title="t('common.no_data')"
-              description="Create your first invoice to get started with billing"
-              :actionLabel="t('billing.create_invoice')"
-              actionIcon="pi pi-plus"
-              @action="handleCreate"
-            />
+            <div class="text-center py-8 text-surface-500">
+              {{ t('invoices.no_records') }}
+            </div>
           </template>
 
-          <Column
-            selectionMode="multiple"
-            headerStyle="width: 3rem"
-          />
-
-          <Column
-            field="number"
-            header="Invoice #"
-            sortable
-          >
+          <Column field="invoiceNumber" :header="t('invoices.invoice_number')" sortable>
             <template #body="{ data }">
-              <span class="font-mono text-sm">{{ data.number }}</span>
+              <span class="font-mono font-semibold">{{ data.invoiceNumber }}</span>
             </template>
           </Column>
 
-          <Column
-            field="customer"
-            header="Customer"
-            sortable
-          />
+          <Column field="customerName" :header="t('invoices.customer')" sortable />
 
-          <Column
-            field="issueDate"
-            header="Issue Date"
-            sortable
-          >
+          <Column field="issueDate" :header="t('invoices.issue_date')" sortable>
             <template #body="{ data }">
-              {{ formatDate(data.issueDate) }}
+              {{ new Date(data.issueDate).toLocaleDateString() }}
             </template>
           </Column>
 
-          <Column
-            field="dueDate"
-            header="Due Date"
-            sortable
-          >
+          <Column field="dueDate" :header="t('invoices.due_date')" sortable>
             <template #body="{ data }">
-              {{ formatDate(data.dueDate) }}
+              {{ new Date(data.dueDate).toLocaleDateString() }}
             </template>
           </Column>
 
-          <Column
-            field="amount"
-            header="Amount"
-            sortable
-          >
+          <Column field="totalAmount" :header="t('invoices.total')" sortable>
             <template #body="{ data }">
-              {{ formatCurrency(data.amount) }}
+              <span class="font-semibold">{{ formatCurrency(data.totalAmount) }}</span>
             </template>
           </Column>
 
-          <Column
-            field="status"
-            header="Status"
-            sortable
-          >
+          <Column field="status" :header="t('common.status')" sortable>
             <template #body="{ data }">
               <Tag
                 :value="getStatusLabel(data.status)"
-                :severity="getInvoiceStatusSeverity(data.status)"
+                :severity="getStatusSeverity(data.status)"
               />
             </template>
           </Column>
 
-          <Column header="Actions">
+          <Column :header="t('common.actions')" style="width: 10rem">
             <template #body="{ data }">
               <div class="flex gap-2">
                 <Button
+                  v-if="can.readInvoice()"
                   icon="pi pi-eye"
+                  severity="secondary"
                   text
                   rounded
-                  severity="info"
                   @click="handleView(data)"
                 />
                 <Button
+                  v-if="can.deleteInvoice() && data.status === InvoiceStatus.Draft"
                   icon="pi pi-trash"
+                  severity="danger"
                   text
                   rounded
-                  severity="danger"
                   @click="confirmDelete(data)"
                 />
               </div>
@@ -180,7 +156,7 @@ const selectedInvoices = ref<Invoice[]>([])
     <!-- ✅ Using DeleteConfirmDialog component -->
     <DeleteConfirmDialog
       v-model:visible="deleteDialog"
-      :item-name="selectedInvoice?.number"
+      :item-name="selectedInvoice?.invoiceNumber"
       @confirm="handleDelete"
     />
   </div>

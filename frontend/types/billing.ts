@@ -1,33 +1,137 @@
 // Billing module types
+
+// Tax Rates
+export interface TaxRate {
+  id: string
+  tenantId: string
+  code: string
+  name: string
+  rate: number  // Decimal value (e.g., 0.12 for 12%)
+  isDefault: boolean
+  isActive: boolean
+  country?: string
+  createdAt: string
+  updatedAt: string
+}
+
+export interface CreateTaxRateDto {
+  code: string
+  name: string
+  rate: number
+  isDefault: boolean
+  isActive: boolean
+  country?: string
+}
+
+export interface UpdateTaxRateDto {
+  id: string
+  code: string
+  name: string
+  rate: number
+  isDefault: boolean
+  isActive: boolean
+  country?: string
+}
+
+// Invoice Configuration
+export interface InvoiceConfiguration {
+  id: string
+  tenantId: string
+  establishmentCode: string    // Ecuador: 001
+  emissionPointCode: string     // Ecuador: 001
+  nextSequentialNumber: number
+  defaultTaxRateId?: string
+  defaultTaxRateName?: string  // Included from backend DTO
+  defaultWarehouseId?: string
+  defaultWarehouseName?: string // Included from backend DTO
+  dueDays: number
+  requireCustomerTaxId: boolean
+  createdAt: string
+  updatedAt: string
+}
+
+export interface UpdateInvoiceConfigurationDto {
+  establishmentCode: string
+  emissionPointCode: string
+  defaultTaxRateId?: string
+  defaultWarehouseId?: string
+  dueDays: number
+  requireCustomerTaxId: boolean
+}
+
+// Invoices
 export interface Invoice {
   id: string
   tenantId: string
   invoiceNumber: string
   customerId: string
   customerName: string
-  totalAmount: number
-  taxAmount: number
-  subtotalAmount: number
-  status: InvoiceStatus
-  dueDate: string
+  customerTaxId?: string
+  warehouseId?: string
+  warehouseName?: string
   issueDate: string
+  dueDate: string
   paidDate?: string
+  subtotalAmount: number
+  taxAmount: number
+  totalAmount: number
+  status: InvoiceStatus
+  notes?: string
+  sriAuthorization?: string     // Ecuador SRI authorization number
+  authorizationDate?: string    // Ecuador SRI authorization date
+  items: InvoiceItem[]
   createdAt: string
   updatedAt: string
-  items: InvoiceItem[]
 }
 
-export type InvoiceStatus = 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled'
+export enum InvoiceStatus {
+  Draft = 0,
+  Sent = 1,
+  Paid = 2,
+  Overdue = 3,
+  Cancelled = 4
+}
 
 export interface InvoiceItem {
   id: string
   invoiceId: string
-  description: string
+  productId: string
+  productCode: string       // Denormalized for history
+  productName: string       // Denormalized for history
+  description?: string
   quantity: number
   unitPrice: number
-  totalPrice: number
-  taxRate: number
+  taxRateId: string
+  taxRate: number           // Denormalized tax rate value for history
+  subtotalAmount: number    // Calculated: quantity * unitPrice
+  taxAmount: number         // Calculated: subtotalAmount * taxRate
+  totalAmount: number       // Calculated: subtotalAmount + taxAmount
 }
+
+export interface CreateInvoiceItemDto {
+  productId: string
+  quantity: number
+  unitPrice: number
+  taxRateId: string
+  description?: string
+}
+
+export interface CreateInvoiceDto {
+  customerId: string
+  warehouseId?: string
+  issueDate: string
+  notes?: string
+  items: CreateInvoiceItemDto[]
+}
+
+export interface InvoiceFilters {
+  customerId?: string
+  status?: InvoiceStatus
+  dateFrom?: string
+  dateTo?: string
+}
+
+// Customer (existing, no changes needed)
 
 export interface Customer {
   id: string

@@ -70,6 +70,24 @@ export function usePermissions() {
     // Roles
     viewRoles: () => hasPermission('roles.read'),
     manageRoles: () => hasPermission('roles.manage'),
+
+    // Tax Rates
+    viewTaxRates: () => hasPermission('taxrates.read'),
+    readTaxRate: () => hasPermission('taxrates.read'),
+    createTaxRate: () => hasPermission('taxrates.create'),
+    updateTaxRate: () => hasPermission('taxrates.update'),
+    deleteTaxRate: () => hasPermission('taxrates.delete'),
+
+    // Invoices
+    viewInvoices: () => hasPermission('invoices.read'),
+    readInvoice: () => hasPermission('invoices.read'),
+    createInvoice: () => hasPermission('invoices.create'),
+    updateInvoice: () => hasPermission('invoices.update'),
+    deleteInvoice: () => hasPermission('invoices.delete'),
+
+    // Invoice Configuration
+    readInvoiceConfiguration: () => hasPermission('invoiceconfigurations.read'),
+    updateInvoiceConfiguration: () => hasPermission('invoiceconfigurations.update'),
   }
 
   return {

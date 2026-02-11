@@ -111,7 +111,14 @@ builder.Services.AddAuthorization(options =>
         // Users
         "users.read", "users.create", "users.update", "users.delete", "users.invite", "users.remove",
         // Roles
-        "roles.read", "roles.manage"
+        "roles.read", "roles.manage",
+        // Tax Rates
+        "tax-rates.read", "tax-rates.create", "tax-rates.update", "tax-rates.delete",
+        // Invoice Configurations
+        "invoice-config.read", "invoice-config.update",
+        // Invoices
+        "invoices.read", "invoices.create", "invoices.update", "invoices.delete",
+        "invoices.send", "invoices.void", "invoices.export"
     };
 
     foreach (var permission in permissions)
@@ -156,6 +163,8 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserPermissionService, UserPermissionService>();
 builder.Services.AddScoped<SaaS.Application.Services.IStockLevelService, SaaS.Application.Services.StockLevelService>();
 builder.Services.AddScoped<IExportService, SaaS.Application.Services.ExportService>();
+builder.Services.AddScoped<ITaxCalculationService, TaxCalculationService>();
+builder.Services.AddScoped<IInvoiceNumberService, InvoiceNumberService>();
 
 // Configure Email Settings
 builder.Services.Configure<SaaS.Application.Common.Models.EmailSettings>(
@@ -178,6 +187,10 @@ builder.Services.AddScoped<IEmailLogRepository, SaaS.Infrastructure.Persistence.
 builder.Services.AddScoped<IEmailTemplateRepository, SaaS.Infrastructure.Persistence.Repositories.EmailTemplateRepository>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IPermissionRepository, PermissionRepository>();
+builder.Services.AddScoped<ITaxRateRepository, TaxRateRepository>();
+builder.Services.AddScoped<IInvoiceConfigurationRepository, InvoiceConfigurationRepository>();
+builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
+builder.Services.AddScoped<IRepository<SaaS.Domain.Entities.InvoiceItem>, Repository<SaaS.Domain.Entities.InvoiceItem>>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 var app = builder.Build();
