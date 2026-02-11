@@ -199,6 +199,21 @@ public class SeedController : ControllerBase
                 await _context.InvoiceConfigurations.AddAsync(invoiceConfig);
                 await _context.SaveChangesAsync();
 
+                // Seed SRI Configuration
+                var sriConfig = CreateSriConfigurationForTenant(tenant.Id, tenant.Slug, now);
+                await _context.SriConfigurations.AddAsync(sriConfig);
+                await _context.SaveChangesAsync();
+
+                // Seed Establishments
+                var establishments = CreateEstablishmentsForTenant(tenant.Id, tenant.Slug, now);
+                await _context.Establishments.AddRangeAsync(establishments);
+                await _context.SaveChangesAsync();
+
+                // Seed Emission Points
+                var emissionPoints = CreateEmissionPointsForEstablishments(establishments, tenant.Id, now);
+                await _context.EmissionPoints.AddRangeAsync(emissionPoints);
+                await _context.SaveChangesAsync();
+
                 var warehouses = CreateWarehousesForTenant(tenant.Id, tenant.Slug, now);
                 await _context.Warehouses.AddRangeAsync(warehouses);
                 await _context.SaveChangesAsync();
@@ -219,16 +234,31 @@ public class SeedController : ControllerBase
                 await _context.WarehouseInventory.AddRangeAsync(inventoryLevels);
                 await _context.SaveChangesAsync();
 
+                // Seed Invoices
+                var invoices = CreateInvoicesForTenant(tenant.Id, customers, warehouses, emissionPoints, taxRates, now);
+                await _context.Invoices.AddRangeAsync(invoices);
+                await _context.SaveChangesAsync();
+
+                // Seed Invoice Items
+                var invoiceItems = CreateInvoiceItemsForInvoices(invoices, products, taxRates, now);
+                await _context.InvoiceItems.AddRangeAsync(invoiceItems);
+                await _context.SaveChangesAsync();
+
                 summaries.Add(new
                 {
                     tenant = new { id = tenant.Id, name = tenant.Name, slug = tenant.Slug },
                     taxRates = taxRates.Count,
                     invoiceConfiguration = 1,
+                    sriConfiguration = 1,
+                    establishments = establishments.Count,
+                    emissionPoints = emissionPoints.Count,
                     warehouses = warehouses.Count,
                     products = products.Count,
                     customers = customers.Count,
                     stockMovements = stockMovements.Count,
-                    inventoryRecords = inventoryLevels.Count
+                    inventoryRecords = inventoryLevels.Count,
+                    invoices = invoices.Count,
+                    invoiceItems = invoiceItems.Count
                 });
             }
 
@@ -571,7 +601,8 @@ public class SeedController : ControllerBase
                 Name = $"Acme Corporation {customerSuffix}",
                 Email = $"contact@acme-{slug}.example.com",
                 Phone = "+1 (555) 123-4567",
-                TaxId = $"TAX-ACME-{tenantId.ToString().Substring(0, 8)}",
+                IdentificationType = IdentificationType.Ruc,
+                TaxId = "1790123456001", // Valid Ecuador RUC format
                 ContactPerson = "John Smith",
                 BillingStreet = "123 Business Ave",
                 BillingCity = "New York",
@@ -597,7 +628,8 @@ public class SeedController : ControllerBase
                 Name = $"Tech Solutions Inc {customerSuffix}",
                 Email = $"sales@techsolutions-{slug}.example.com",
                 Phone = "+1 (555) 234-5678",
-                TaxId = $"TAX-TECH-{tenantId.ToString().Substring(0, 8)}",
+                IdentificationType = IdentificationType.Ruc,
+                TaxId = "1791234567001", // Valid Ecuador RUC format
                 ContactPerson = "Sarah Johnson",
                 BillingStreet = "456 Innovation Dr",
                 BillingCity = "San Francisco",
@@ -623,7 +655,8 @@ public class SeedController : ControllerBase
                 Name = $"Global Enterprises LLC {customerSuffix}",
                 Email = $"procurement@globalent-{slug}.example.com",
                 Phone = "+1 (555) 345-6789",
-                TaxId = $"TAX-GLOBAL-{tenantId.ToString().Substring(0, 8)}",
+                IdentificationType = IdentificationType.Cedula,
+                TaxId = "1712345678", // Valid Ecuador Cédula format (10 digits)
                 ContactPerson = "Michael Chen",
                 BillingStreet = "789 Commerce Blvd",
                 BillingCity = "Chicago",
@@ -649,7 +682,8 @@ public class SeedController : ControllerBase
                 Name = $"Retail Partners Co {customerSuffix}",
                 Email = $"orders@retailpartners-{slug}.example.com",
                 Phone = "+1 (555) 456-7890",
-                TaxId = $"TAX-RETAIL-{tenantId.ToString().Substring(0, 8)}",
+                IdentificationType = IdentificationType.Passport,
+                TaxId = "AB123456", // Passport format
                 ContactPerson = "Emily Rodriguez",
                 BillingStreet = "555 Retail Plaza",
                 BillingCity = "Miami",
@@ -675,7 +709,8 @@ public class SeedController : ControllerBase
                 Name = $"Startup Innovations {customerSuffix}",
                 Email = $"hello@startupinnovations-{slug}.example.com",
                 Phone = "+1 (555) 567-8901",
-                TaxId = $"TAX-STARTUP-{tenantId.ToString().Substring(0, 8)}",
+                IdentificationType = IdentificationType.ConsumerFinal,
+                TaxId = "9999999999999", // Consumidor Final
                 ContactPerson = "David Park",
                 BillingStreet = "100 Startup Lane",
                 BillingCity = "Austin",
@@ -995,6 +1030,262 @@ public class SeedController : ControllerBase
             UpdatedAt = now,
             IsDeleted = false
         };
+    }
+
+    private SriConfiguration CreateSriConfigurationForTenant(Guid tenantId, string slug, DateTime now)
+    {
+        var (ruc, legalName, tradeName, address) = slug switch
+        {
+            "demo-company" => ("1790001234001", "Demo Company S.A.", "Demo Company", "Av. Amazonas N123-456 y Naciones Unidas, Quito"),
+            "tech-startup" => ("1791234567001", "Tech Startup Inc. S.A.S.", "Tech Startup", "Av. República del Salvador N345-678, Quito"),
+            "manufacturing-corp" => ("1792345678001", "Manufacturing Corporation del Ecuador C.A.", "Manufacturing Corp", "Av. 6 de Diciembre N567-890, Quito"),
+            _ => ("1790000000001", "Default Company", "Default", "Quito, Ecuador")
+        };
+
+        return new SriConfiguration
+        {
+            Id = Guid.NewGuid(),
+            TenantId = tenantId,
+            CompanyRuc = ruc,
+            LegalName = legalName,
+            TradeName = tradeName,
+            MainAddress = address,
+            AccountingRequired = true,
+            Environment = SriEnvironment.Test, // Test environment for demo
+            CreatedAt = now,
+            UpdatedAt = now,
+            IsDeleted = false
+        };
+    }
+
+    private List<Establishment> CreateEstablishmentsForTenant(Guid tenantId, string slug, DateTime now)
+    {
+        var establishments = new List<Establishment>();
+
+        var locations = slug switch
+        {
+            "demo-company" => new[]
+            {
+                ("001", "Matriz Quito", "Av. Amazonas N123-456, Quito", "+593-2-234-5678"),
+                ("002", "Sucursal Guayaquil", "Av. 9 de Octubre 234-345, Guayaquil", "+593-4-345-6789")
+            },
+            "tech-startup" => new[]
+            {
+                ("001", "Oficina Principal", "Av. República 345-678, Quito", "+593-2-345-6789"),
+                ("002", "Sucursal Cuenca", "Calle Larga 456-567, Cuenca", "+593-7-456-7890")
+            },
+            "manufacturing-corp" => new[]
+            {
+                ("001", "Planta Industrial", "Av. 6 de Diciembre 567-890, Quito", "+593-2-456-7890"),
+                ("002", "Bodega Central", "Av. Simón Bolívar 678-901, Guayaquil", "+593-4-567-8901")
+            },
+            _ => new[]
+            {
+                ("001", "Matriz", "Quito, Ecuador", "+593-2-000-0000")
+            }
+        };
+
+        foreach (var (code, name, address, phone) in locations)
+        {
+            establishments.Add(new Establishment
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                EstablishmentCode = code,
+                Name = name,
+                Address = address,
+                Phone = phone,
+                IsActive = true,
+                CreatedAt = now,
+                UpdatedAt = now,
+                IsDeleted = false
+            });
+        }
+
+        return establishments;
+    }
+
+    private List<EmissionPoint> CreateEmissionPointsForEstablishments(
+        List<Establishment> establishments,
+        Guid tenantId,
+        DateTime now)
+    {
+        var emissionPoints = new List<EmissionPoint>();
+
+        foreach (var establishment in establishments)
+        {
+            // Add 2 emission points per establishment
+            emissionPoints.Add(new EmissionPoint
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                EstablishmentId = establishment.Id,
+                EmissionPointCode = "001",
+                Name = "Caja Principal",
+                IsActive = true,
+                InvoiceSequence = 1,
+                CreditNoteSequence = 1,
+                DebitNoteSequence = 1,
+                RetentionSequence = 1,
+                CreatedAt = now,
+                UpdatedAt = now,
+                IsDeleted = false
+            });
+
+            emissionPoints.Add(new EmissionPoint
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                EstablishmentId = establishment.Id,
+                EmissionPointCode = "002",
+                Name = "Caja Secundaria",
+                IsActive = true,
+                InvoiceSequence = 1,
+                CreditNoteSequence = 1,
+                DebitNoteSequence = 1,
+                RetentionSequence = 1,
+                CreatedAt = now,
+                UpdatedAt = now,
+                IsDeleted = false
+            });
+        }
+
+        return emissionPoints;
+    }
+
+    private List<Invoice> CreateInvoicesForTenant(
+        Guid tenantId,
+        List<Customer> customers,
+        List<Warehouse> warehouses,
+        List<EmissionPoint> emissionPoints,
+        List<TaxRate> taxRates,
+        DateTime now)
+    {
+        var invoices = new List<Invoice>();
+        var random = new Random(tenantId.GetHashCode());
+
+        // Create 10 invoices with various statuses
+        for (int i = 0; i < 10; i++)
+        {
+            var customer = customers[random.Next(customers.Count)];
+            var warehouse = warehouses[random.Next(warehouses.Count)];
+            var emissionPoint = emissionPoints[random.Next(emissionPoints.Count)];
+            
+            var issueDate = now.AddDays(-random.Next(1, 60));
+            var dueDate = issueDate.AddDays(30);
+
+            // Determine status based on age
+            var daysOld = (now - issueDate).Days;
+            InvoiceStatus status;
+            if (i < 2)
+                status = InvoiceStatus.Draft;
+            else if (i < 4)
+                status = InvoiceStatus.Authorized;
+            else if (i < 7)
+                status = InvoiceStatus.Sent;
+            else if (i < 9)
+                status = InvoiceStatus.Paid;
+            else
+                status = InvoiceStatus.Overdue;
+
+            var invoice = new Invoice
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                InvoiceNumber = $"{emissionPoint.Establishment.EstablishmentCode}-{emissionPoint.EmissionPointCode}-{(i + 1):D9}",
+                CustomerId = customer.Id,
+                IssueDate = issueDate,
+                DueDate = dueDate,
+                Status = status,
+                WarehouseId = warehouse.Id,
+                EmissionPointId = emissionPoint.Id,
+                DocumentType = DocumentType.Invoice,
+                PaymentMethod = (SriPaymentMethod)random.Next(1, 5), // Random payment method
+                Environment = SriEnvironment.Test,
+                SubtotalAmount = 0, // Will be calculated from items
+                TaxAmount = 0,
+                TotalAmount = 0,
+                Notes = $"Factura de prueba #{i + 1}",
+                CreatedAt = issueDate,
+                UpdatedAt = issueDate,
+                IsDeleted = false
+            };
+
+            // Add authorization for non-draft invoices
+            if (status != InvoiceStatus.Draft)
+            {
+                invoice.AccessKey = $"1120{issueDate:ddMMyyyy}01{emissionPoint.Establishment.EstablishmentCode}{emissionPoint.EmissionPointCode}{(i + 1):D9}12345678{random.Next(10000000, 99999999)}";
+                invoice.SriAuthorization = invoice.AccessKey;
+                invoice.AuthorizationDate = issueDate.AddHours(2);
+            }
+
+            // Set paid date for paid invoices
+            if (status == InvoiceStatus.Paid)
+            {
+                invoice.PaidDate = issueDate.AddDays(random.Next(5, 25));
+            }
+
+            invoices.Add(invoice);
+        }
+
+        return invoices;
+    }
+
+    private List<InvoiceItem> CreateInvoiceItemsForInvoices(
+        List<Invoice> invoices,
+        List<Product> products,
+        List<TaxRate> taxRates,
+        DateTime now)
+    {
+        var items = new List<InvoiceItem>();
+        var random = new Random();
+
+        foreach (var invoice in invoices)
+        {
+            // Each invoice has 2-5 items
+            var itemCount = random.Next(2, 6);
+            decimal invoiceSubtotal = 0;
+            decimal invoiceTax = 0;
+
+            for (int i = 0; i < itemCount; i++)
+            {
+                var product = products[random.Next(products.Count)];
+                var quantity = random.Next(1, 10);
+                var unitPrice = product.UnitPrice;
+                var taxRate = taxRates.FirstOrDefault(t => t.IsDefault) ?? taxRates.First();
+
+                var subtotal = unitPrice * quantity;
+                var tax = subtotal * taxRate.Rate;
+                var total = subtotal + tax;
+
+                invoiceSubtotal += subtotal;
+                invoiceTax += tax;
+
+                items.Add(new InvoiceItem
+                {
+                    Id = Guid.NewGuid(),
+                    InvoiceId = invoice.Id,
+                    ProductId = product.Id,
+                    ProductCode = product.Code,
+                    ProductName = product.Name,
+                    Description = product.Description ?? product.Name,
+                    Quantity = quantity,
+                    UnitPrice = unitPrice,
+                    TaxRateId = taxRate.Id,
+                    TaxRate = taxRate.Rate,
+                    SubtotalAmount = subtotal,
+                    TaxAmount = tax,
+                    TotalAmount = total
+                });
+            }
+
+            // Update invoice totals
+            invoice.SubtotalAmount = invoiceSubtotal;
+            invoice.TaxAmount = invoiceTax;
+            invoice.TotalAmount = invoiceSubtotal + invoiceTax;
+        }
+
+        return items;
     }
 
     #endregion
