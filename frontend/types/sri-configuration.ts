@@ -6,7 +6,11 @@ export interface SriConfiguration {
   legalName: string
   tradeName: string
   mainAddress: string
+  phone: string
+  email: string
   accountingRequired: boolean
+  specialTaxpayerNumber?: string
+  isRiseRegime: boolean
   environment: SriEnvironment
   isCertificateConfigured: boolean
   certificateExpiryDate?: string
@@ -21,13 +25,17 @@ export interface UpdateSriConfigurationDto {
   legalName: string
   tradeName: string
   mainAddress: string
+  phone: string
+  email: string
   accountingRequired: boolean
+  specialTaxpayerNumber?: string
+  isRiseRegime: boolean
   environment: SriEnvironment
 }
 
 export interface UploadCertificateDto {
-  certificateData: string // Base64 encoded
-  password: string
+  certificateFile: File
+  certificatePassword: string
 }
 
 export interface CertificateInfo {

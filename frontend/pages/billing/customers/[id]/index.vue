@@ -187,16 +187,16 @@ onMounted(() => {
                   </p>
                 </div>
 
-                <div v-if="customer.billingPostalCode || customer.billingCountry">
+                <div v-if="customer.billingPostalCode || customer.billingCountryName">
                   <label class="text-sm font-medium text-slate-600 dark:text-slate-400">
                     {{ t('customers.postal_country') }}
                   </label>
                   <p class="text-slate-900 dark:text-white">
-                    {{ [customer.billingPostalCode, customer.billingCountry].filter(Boolean).join(', ') || '—' }}
+                    {{ [customer.billingPostalCode, customer.billingCountryName].filter(Boolean).join(', ') || '—' }}
                   </p>
                 </div>
 
-                <div v-if="!customer.billingStreet && !customer.billingCity && !customer.billingState && !customer.billingPostalCode && !customer.billingCountry">
+                <div v-if="!customer.billingStreet && !customer.billingCity && !customer.billingState && !customer.billingPostalCode && !customer.billingCountryName">
                   <p class="text-slate-500 dark:text-slate-400 italic">
                     {{ t('customers.no_billing_address') }}
                   </p>
@@ -228,16 +228,16 @@ onMounted(() => {
                   </p>
                 </div>
 
-                <div v-if="customer.shippingPostalCode || customer.shippingCountry">
+                <div v-if="customer.shippingPostalCode || customer.shippingCountryName">
                   <label class="text-sm font-medium text-slate-600 dark:text-slate-400">
                     {{ t('customers.postal_country') }}
                   </label>
                   <p class="text-slate-900 dark:text-white">
-                    {{ [customer.shippingPostalCode, customer.shippingCountry].filter(Boolean).join(', ') || '—' }}
+                    {{ [customer.shippingPostalCode, customer.shippingCountryName].filter(Boolean).join(', ') || '—' }}
                   </p>
                 </div>
 
-                <div v-if="!customer.shippingStreet && !customer.shippingCity && !customer.shippingState && !customer.shippingPostalCode && !customer.shippingCountry">
+                <div v-if="!customer.shippingStreet && !customer.shippingCity && !customer.shippingState && !customer.shippingPostalCode && !customer.shippingCountryName">
                   <p class="text-slate-500 dark:text-slate-400 italic">
                     {{ t('customers.no_shipping_address') }}
                   </p>

@@ -10,6 +10,7 @@ using SaaS.Api.Middleware;
 using SaaS.Application.Common.Behaviors;
 using SaaS.Application.Common.Interfaces;
 using SaaS.Application.Interfaces;
+using SaaS.Domain.Interfaces;
 using SaaS.Infrastructure.Persistence;
 using SaaS.Infrastructure.Persistence.Repositories;
 using SaaS.Infrastructure.Services;
@@ -28,7 +29,11 @@ Log.Logger = new LoggerConfiguration()
 builder.Host.UseSerilog();
 
 // Add services to the container
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
+    });
 builder.Services.AddEndpointsApiExplorer();
 
 // Configure Swagger
@@ -203,6 +208,7 @@ builder.Services.AddScoped<ITaxRateRepository, TaxRateRepository>();
 builder.Services.AddScoped<IInvoiceConfigurationRepository, InvoiceConfigurationRepository>();
 builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
 builder.Services.AddScoped<IRepository<SaaS.Domain.Entities.InvoiceItem>, Repository<SaaS.Domain.Entities.InvoiceItem>>();
+builder.Services.AddScoped<ICountryRepository, CountryRepository>();
 builder.Services.AddScoped<IEstablishmentRepository, EstablishmentRepository>();
 builder.Services.AddScoped<IEmissionPointRepository, EmissionPointRepository>();
 builder.Services.AddScoped<ISriConfigurationRepository, SriConfigurationRepository>();

@@ -21,14 +21,14 @@ public record CreateCustomerCommand : IRequest<Result<CustomerDto>>
     public string? BillingCity { get; init; }
     public string? BillingState { get; init; }
     public string? BillingPostalCode { get; init; }
-    public string? BillingCountry { get; init; }
+    public Guid? BillingCountryId { get; init; }
 
     // Shipping Address
     public string? ShippingStreet { get; init; }
     public string? ShippingCity { get; init; }
     public string? ShippingState { get; init; }
     public string? ShippingPostalCode { get; init; }
-    public string? ShippingCountry { get; init; }
+    public Guid? ShippingCountryId { get; init; }
 
     // Additional Information
     public string? Notes { get; init; }

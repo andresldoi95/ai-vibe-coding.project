@@ -48,11 +48,16 @@ Agents are organized in two locations:
 ## Code Generation Guidelines
 
 Before generating any code, **always**:
-1. Review relevant `/docs` files to understand established patterns and guidelines
-2. Consult the appropriate specialized agent for your domain
-3. Reference the canonical implementation examples (e.g., `WAREHOUSE_IMPLEMENTATION_REFERENCE.md`)
-4. Ensure your implementation aligns with project standards and conventions
-5. Never generate code without reviewing the documentation first
+1. **Review common mistakes** (`docs/COMMON_MISTAKES_AND_PATTERNS.md`) to avoid recurring errors
+2. Review relevant `/docs` files to understand established patterns and guidelines
+3. Consult the appropriate specialized agent for your domain
+4. Reference the canonical implementation examples (e.g., `WAREHOUSE_IMPLEMENTATION_REFERENCE.md`)
+5. **Check i18n standards** (`docs/i18n-standards.md`) before adding any translation keys
+6. **Verify component existence** before using them (search for component files first)
+7. **Update seed data** in `backend/src/Api/Controllers/SeedController.cs` after adding new entities or migrations
+8. **Run `reset-demo-data.ps1`** after database schema changes to verify demo data compatibility
+9. Ensure your implementation aligns with project standards and conventions
+10. Never generate code without reviewing the documentation first
 
 
 
@@ -115,6 +120,25 @@ User Request → Select Agent → Review Agent File (.github/agents/)
 
 ## Reference Documentation
 
+### Common Mistakes and Patterns Guide
+
+The Common Mistakes document catalogs **recurring errors and establishes patterns** to prevent them in future development. This is the first document to consult before implementing any feature.
+
+- ✅ **Form Development Patterns**: Standard form field structure using PrimeVue components
+- ✅ **i18n Special Characters**: Proper escaping for `@`, `{`, and other special characters
+- ✅ **Component Verification**: How to check component existence before use
+- ✅ **Validation Patterns**: Complete Vuelidate rules for all form fields
+- ✅ **Pre-Implementation Checklist**: Step-by-step verification before coding
+- ✅ **Lessons Learned**: Historical mistakes and how to avoid them
+
+**Location**: [`docs/COMMON_MISTAKES_AND_PATTERNS.md`](docs/COMMON_MISTAKES_AND_PATTERNS.md)
+
+**Always consult this before**:
+- Implementing any new form or CRUD feature
+- Using components you're not familiar with
+- Adding i18n translations
+- Starting any feature without a reference implementation
+
 ### Warehouse Module (Complete Implementation Reference)
 
 The Warehouse module serves as the **canonical reference implementation** for all CRUD features in this project. It demonstrates:
@@ -129,6 +153,27 @@ The Warehouse module serves as the **canonical reference implementation** for al
 - New inventory entities (Products, Stock Movements, Suppliers)
 - Billing entities (Invoices, Customers, Payments)
 - Any CRUD module across the application
+
+### i18n Standards (Translation & Localization Reference)
+
+The i18n standards document defines **naming conventions, patterns, and best practices** for all translations in the project. It prevents common locale mistakes and ensures consistency.
+
+- ✅ **Naming Conventions**: snake_case keys, camelCase namespaces, consistent patterns
+- ✅ **CRUD Patterns**: Standard structure for all CRUD modules (based on Warehouse)
+- ✅ **Message Patterns**: Success, error, confirmation, and validation messages
+- ✅ **Form Field Patterns**: Labels, placeholders, helpers, hints
+- ✅ **Common Keys**: Reusable translations from `common` namespace
+- ✅ **Interpolation**: Variable substitution guidelines
+- ✅ **Common Mistakes**: What to avoid and how to fix
+
+**Location**: [`docs/i18n-standards.md`](docs/i18n-standards.md)
+
+**Always consult this before**:
+- Adding any new translation keys
+- Creating form labels or validation messages
+- Implementing new CRUD pages
+- Writing success/error messages
+- Working with locale files (`frontend/i18n/locales/*.json`)
 
 ## Implementation Status
 

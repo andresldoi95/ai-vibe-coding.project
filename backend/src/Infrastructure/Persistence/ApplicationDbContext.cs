@@ -36,6 +36,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<InvoiceConfiguration> InvoiceConfigurations => Set<InvoiceConfiguration>();
     public DbSet<Invoice> Invoices => Set<Invoice>();
     public DbSet<InvoiceItem> InvoiceItems => Set<InvoiceItem>();
+    public DbSet<Country> Countries => Set<Country>();
 
     // SRI Ecuador entities
     public DbSet<Establishment> Establishments => Set<Establishment>();

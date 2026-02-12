@@ -13,7 +13,9 @@ public class WarehouseDto
     public string City { get; set; } = string.Empty;
     public string? State { get; set; }
     public string PostalCode { get; set; } = string.Empty;
-    public string Country { get; set; } = string.Empty;
+    public Guid CountryId { get; set; }
+    public string CountryName { get; set; } = string.Empty;
+    public string CountryCode { get; set; } = string.Empty;
 
     // Contact information
     public string? Phone { get; set; }

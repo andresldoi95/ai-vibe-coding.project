@@ -110,7 +110,7 @@ async function handleExport({ format }: { format: string }) {
 
           <Column field="location" :header="t('warehouses.location')" sortable>
             <template #body="{ data }">
-              {{ data.city }}, {{ data.country }}
+              {{ data.city }}, {{ data.countryName }}
             </template>
           </Column>
 

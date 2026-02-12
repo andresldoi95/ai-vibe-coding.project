@@ -16,7 +16,7 @@ public record CreateWarehouseCommand : IRequest<Result<WarehouseDto>>
     public string City { get; init; } = string.Empty;
     public string? State { get; init; }
     public string PostalCode { get; init; } = string.Empty;
-    public string Country { get; init; } = string.Empty;
+    public Guid CountryId { get; init; }
     public string? Phone { get; init; }
     public string? Email { get; init; }
     public bool IsActive { get; init; } = true;

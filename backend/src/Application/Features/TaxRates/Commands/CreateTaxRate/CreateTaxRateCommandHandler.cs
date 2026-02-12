@@ -45,7 +45,7 @@ public class CreateTaxRateCommandHandler : IRequestHandler<CreateTaxRateCommand,
                 IsDefault = request.IsDefault,
                 IsActive = request.IsActive,
                 Description = request.Description,
-                Country = request.Country
+                CountryId = request.CountryId
             };
 
             await _unitOfWork.TaxRates.AddAsync(taxRate, cancellationToken);
@@ -63,7 +63,9 @@ public class CreateTaxRateCommandHandler : IRequestHandler<CreateTaxRateCommand,
                 IsDefault = taxRate.IsDefault,
                 IsActive = taxRate.IsActive,
                 Description = taxRate.Description,
-                Country = taxRate.Country,
+                CountryId = taxRate.CountryId,
+                CountryCode = null,
+                CountryName = null,
                 CreatedAt = taxRate.CreatedAt,
                 UpdatedAt = taxRate.UpdatedAt
             };

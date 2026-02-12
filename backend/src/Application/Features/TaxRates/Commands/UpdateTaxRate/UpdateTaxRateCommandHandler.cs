@@ -47,7 +47,7 @@ public class UpdateTaxRateCommandHandler : IRequestHandler<UpdateTaxRateCommand,
             taxRate.IsDefault = request.IsDefault;
             taxRate.IsActive = request.IsActive;
             taxRate.Description = request.Description;
-            taxRate.Country = request.Country;
+            taxRate.CountryId = request.CountryId;
 
             await _unitOfWork.TaxRates.UpdateAsync(taxRate, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
@@ -64,7 +64,9 @@ public class UpdateTaxRateCommandHandler : IRequestHandler<UpdateTaxRateCommand,
                 IsDefault = taxRate.IsDefault,
                 IsActive = taxRate.IsActive,
                 Description = taxRate.Description,
-                Country = taxRate.Country,
+                CountryId = taxRate.CountryId,
+                CountryCode = null,
+                CountryName = null,
                 CreatedAt = taxRate.CreatedAt,
                 UpdatedAt = taxRate.UpdatedAt
             };

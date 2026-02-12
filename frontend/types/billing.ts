@@ -1,5 +1,7 @@
 // Billing module types
 
+import type { Country } from './common'
+
 // Tax Rates
 export interface TaxRate {
   id: string
@@ -9,7 +11,9 @@ export interface TaxRate {
   rate: number  // Decimal value (e.g., 0.12 for 12%)
   isDefault: boolean
   isActive: boolean
-  country?: string
+  countryId?: string
+  countryCode?: string
+  countryName?: string
   createdAt: string
   updatedAt: string
 }
@@ -20,7 +24,7 @@ export interface CreateTaxRateDto {
   rate: number
   isDefault: boolean
   isActive: boolean
-  country?: string
+  countryId?: string
 }
 
 export interface UpdateTaxRateDto {
@@ -30,7 +34,7 @@ export interface UpdateTaxRateDto {
   rate: number
   isDefault: boolean
   isActive: boolean
-  country?: string
+  countryId?: string
 }
 
 // Invoice Configuration
@@ -179,14 +183,16 @@ export interface Customer {
   billingCity?: string
   billingState?: string
   billingPostalCode?: string
-  billingCountry?: string
+  billingCountryId?: string
+  billingCountryName?: string
 
   // Shipping Address
   shippingStreet?: string
   shippingCity?: string
   shippingState?: string
   shippingPostalCode?: string
-  shippingCountry?: string
+  shippingCountryId?: string
+  shippingCountryName?: string
 
   // Additional Information
   notes?: string

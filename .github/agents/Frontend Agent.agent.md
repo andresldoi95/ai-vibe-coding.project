@@ -47,10 +47,10 @@ Implement frontend features using:
 
 ### DataTable Pattern
 ```vue
-<DataTable 
-  :value="items" 
+<DataTable
+  :value="items"
   :loading="loading"
-  paginator 
+  paginator
   :rows="10"
   responsiveLayout="scroll"
 >
@@ -64,6 +64,30 @@ Implement frontend features using:
   </Column>
 </DataTable>
 ```
+
+### API Integration Pattern (CRITICAL)
+**⚠️ ALWAYS use `useApi()` for API calls - `useAuth()` DOES NOT EXIST**
+
+```typescript
+// ✅ CORRECT - Use useApi() composable
+export function useYourService() {
+  const { apiFetch } = useApi()  // Authentication headers added automatically
+
+  const getData = async () => {
+    const response = await apiFetch('/endpoint')  // NO /api/v1 prefix!
+    return response.data
+  }
+}
+
+// ❌ WRONG - useAuth() doesn't exist, will crash!
+const { getAuthHeaders } = useAuth()  // This will cause "useAuth is not defined" error
+```
+
+**Key Rules**:
+- Use `useApi()` which provides `apiFetch` with auto-authentication
+- DO NOT manually add auth headers - handled by `api.ts` plugin
+- DO NOT use `/api/v1` prefix - already included in base URL
+- DO NOT use `useAuth()` - it doesn't exist in this codebase
 
 ## Key Constraints
 

@@ -12,6 +12,7 @@ const uiStore = useUiStore()
 const toast = useNotification()
 const router = useRouter()
 const { createWarehouse } = useWarehouse()
+const { countries, getAllCountries, getCountryOptions } = useCountry()
 
 const loading = ref(false)
 
@@ -23,12 +24,17 @@ const formData = reactive({
   city: '',
   state: '',
   postalCode: '',
-  country: '',
+  countryId: '',
   phone: '',
   email: '',
   isActive: true,
   squareFootage: null as number | null,
   capacity: null as number | null,
+})
+
+// Load countries on mount
+onMounted(async () => {
+  await getAllCountries()
 })
 
 // Validation rules
@@ -62,9 +68,8 @@ const rules = computed(() => ({
     required,
     maxLength: maxLength(20),
   },
-  country: {
+  countryId: {
     required,
-    maxLength: maxLength(100),
   },
   phone: {
     maxLength: maxLength(50),
@@ -96,7 +101,7 @@ async function handleSubmit() {
       city: formData.city,
       state: formData.state || undefined,
       postalCode: formData.postalCode,
-      country: formData.country,
+      countryId: formData.countryId,
       phone: formData.phone || undefined,
       email: formData.email || undefined,
       isActive: formData.isActive,
@@ -277,15 +282,20 @@ onMounted(() => {
                 <label for="country" class="font-semibold text-slate-700 dark:text-slate-200">
                   {{ t('common.country') }} *
                 </label>
-                <InputText
+                <Dropdown
                   id="country"
-                  v-model="formData.country"
-                  :invalid="v$.country.$error"
-                  :placeholder="t('warehouses.country_placeholder')"
-                  @blur="v$.country.$touch()"
+                  v-model="formData.countryId"
+                  :options="getCountryOptions()"
+                  option-label="label"
+                  option-value="value"
+                  :invalid="v$.countryId.$error"
+                  :placeholder="t('warehouses.select_country')"
+                  filter
+                  class="w-full"
+                  @blur="v$.countryId.$touch()"
                 />
-                <small v-if="v$.country.$error" class="text-red-600 dark:text-red-400">
-                  {{ v$.country.$errors[0].$message }}
+                <small v-if="v$.countryId.$error" class="text-red-600 dark:text-red-400">
+                  {{ v$.countryId.$errors[0].$message }}
                 </small>
               </div>
             </div>

@@ -14,6 +14,10 @@ public record UpdateSriConfigurationCommand : IRequest<Result<SriConfigurationDt
     public string LegalName { get; init; } = string.Empty;
     public string? TradeName { get; init; }
     public string MainAddress { get; init; } = string.Empty;
+    public string Phone { get; init; } = string.Empty;
+    public string Email { get; init; } = string.Empty;
     public SriEnvironment Environment { get; init; }
     public bool AccountingRequired { get; init; }
+    public string? SpecialTaxpayerNumber { get; init; }
+    public bool IsRiseRegime { get; init; }
 }

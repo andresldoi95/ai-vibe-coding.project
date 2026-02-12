@@ -69,6 +69,100 @@ docker-compose ps backend
 
 **Always verify the build completes successfully before marking the task as complete.** Check for compilation errors and ensure the container starts properly.
 
+### Database Change Workflow
+
+**⚠️ CRITICAL**: Whenever you make database schema changes (adding/modifying entities, migrations, or configurations), you MUST follow this 3-step workflow:
+
+#### Step 1: Apply Migration
+
+Generate and apply the database migration:
+
+```powershell
+# Access the backend container
+docker exec -it saas-backend /bin/bash
+
+# Navigate to Infrastructure project
+cd /src/src/Infrastructure
+
+# Create migration
+dotnet ef migrations add MigrationName --startup-project ../Api --context ApplicationDbContext
+
+# Apply migration
+dotnet ef database update --startup-project ../Api --context ApplicationDbContext
+```
+
+#### Step 2: Update SeedController
+
+**Always update `backend/src/Api/Controllers/SeedController.cs`** to include sample data for your new entities:
+
+- Add creation methods for new entities (e.g., `CreateProductsForTenant`, `CreateCustomersForTenant`)
+- Update the `SeedDemoData()` method to seed your new entities
+- Follow the existing patterns for multi-tenant data (Demo Company, Tech Startup, Manufacturing Corp)
+- Include realistic sample data that demonstrates functionality
+
+Example pattern:
+```csharp
+private List<YourEntity> CreateYourEntitiesForTenant(Guid tenantId, string slug, DateTime now)
+{
+    // Create 3-5 sample entities per tenant
+    return new List<YourEntity> { /* ... */ };
+}
+```
+
+#### Step 3: Reset Demo Data
+
+**⚠️ IMPORTANT**: The reset script MUST be run from inside a Docker container because the database host (`db`) is only resolvable within the Docker network.
+
+**Option 1: Run from host (uses docker-compose exec internally)**
+
+```powershell
+# Interactive mode (asks for confirmation)
+.\reset-demo-data.ps1
+
+# Unattended mode (skips confirmation)
+.\reset-demo-data.ps1 -Force
+```
+
+**Option 2: Run from inside backend container**
+
+```powershell
+# Access backend container
+docker exec -it saas-backend /bin/bash
+
+# Install PowerShell in container (if needed)
+apt-get update && apt-get install -y wget apt-transport-https software-properties-common
+wget -q https://packages.microsoft.com/config/debian/10/packages-microsoft-prod.deb
+dpkg -i packages-microsoft-prod.deb
+apt-get update
+apt-get install -y powershell
+
+# Run reset script
+pwsh /src/reset-demo-data.ps1 -Force
+```
+
+**What it does**:
+- Terminates all database connections
+- Drops and recreates the database
+- Applies all migrations
+- Seeds demo companies with comprehensive sample data
+- Creates demo users (owner@demo.com, admin@demo.com, manager@demo.com, user@demo.com)
+
+#### Workflow Checklist
+
+When making database changes:
+
+- [ ] Create/modify entity in `Domain/Entities/`
+- [ ] Add/update EF configuration in `Infrastructure/Persistence/Configurations/`
+- [ ] Generate migration with meaningful name
+- [ ] Apply migration to development database
+- [ ] **Update `SeedController.cs` with sample data for new entities**
+- [ ] **Run `reset-demo-data.ps1` to verify seed data works**
+- [ ] Test API endpoints with freshly seeded data
+- [ ] Rebuild and restart backend
+- [ ] Update API documentation (Swagger comments)
+
+**Common Pitfall**: Forgetting to update SeedController leads to missing demo data, broken reset scripts, and inconsistent testing environments. Always update seed data immediately after schema changes.
+
 ## Core Responsibilities
 
 ### 1. Project Structure & Organization

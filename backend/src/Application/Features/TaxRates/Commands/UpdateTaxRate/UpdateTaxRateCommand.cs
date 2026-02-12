@@ -13,5 +13,5 @@ public record UpdateTaxRateCommand : IRequest<Result<TaxRateDto>>
     public bool IsDefault { get; init; }
     public bool IsActive { get; init; }
     public string? Description { get; init; }
-    public string? Country { get; init; }
+    public Guid? CountryId { get; init; }
 }

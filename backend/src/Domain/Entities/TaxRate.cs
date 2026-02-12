@@ -10,5 +10,8 @@ public class TaxRate : TenantEntity
     public bool IsDefault { get; set; }
     public bool IsActive { get; set; } = true;
     public string? Description { get; set; }
-    public string? Country { get; set; }
+
+    // Country relationship (nullable - tax rate may apply to all countries)
+    public Guid? CountryId { get; set; }
+    public Country? Country { get; set; }
 }

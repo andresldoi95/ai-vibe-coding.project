@@ -75,6 +75,30 @@ dotnet ef migrations add MigrationName --startup-project ../Api --context Applic
 dotnet ef database update --startup-project ../Api --context ApplicationDbContext
 ```
 
+### Database Change Workflow
+
+**⚠️ CRITICAL**: When making schema changes, follow this checklist to keep demo data synchronized:
+
+**1. Apply Schema Changes**
+   - Create/modify entities in `src/Domain/Entities/`
+   - Update EF configurations in `src/Infrastructure/Persistence/Configurations/`
+   - Generate and apply migration (see above)
+
+**2. Update Seed Data**
+   - **Always update `src/Api/Controllers/SeedController.cs`**
+   - Add methods to create sample data for new entities
+   - Follow existing patterns (3-5 samples per tenant)
+   - Update `SeedDemoData()` method to include new entities
+
+**3. Reset Demo Database**
+   - Run from project root: `./reset-demo-data.ps1 -Force`
+   - This drops/recreates DB, applies migrations, seeds all data
+   - Verify demo users can login and see sample data
+
+**Why this matters**: Forgetting step 2 causes broken demo data, test failures, and inconsistent development environments. The reset script calls `/api/seed/demo` which relies on SeedController being up-to-date.
+
+**Note**: The reset script must run from the host machine (or inside a container with docker-compose access) because it uses `docker-compose exec` to connect to the database.
+
 ## API Endpoints
 
 ### Authentication

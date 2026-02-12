@@ -64,7 +64,31 @@ public class SeedController : ControllerBase
 
             var now = DateTime.UtcNow;
 
-            // 1. Create Demo Tenants
+            // 1. Seed Countries
+            var usCountry = new Country
+            {
+                Id = Guid.NewGuid(),
+                Code = "US",
+                Name = "United States",
+                Alpha3Code = "USA",
+                NumericCode = "840",
+                IsActive = true
+            };
+
+            var ecuadorCountry = new Country
+            {
+                Id = Guid.NewGuid(),
+                Code = "EC",
+                Name = "Ecuador",
+                Alpha3Code = "ECU",
+                NumericCode = "218",
+                IsActive = true
+            };
+
+            await _context.Countries.AddRangeAsync(usCountry, ecuadorCountry);
+            await _context.SaveChangesAsync();
+
+            // 2. Create Demo Tenants
             var demoCompany = CreateTenant("Demo Company", "demo-company", now);
             var techStartup = CreateTenant("Tech Startup Inc", "tech-startup", now);
             var manufacturingCorp = CreateTenant("Manufacturing Corp", "manufacturing-corp", now);
@@ -143,40 +167,40 @@ public class SeedController : ControllerBase
 
             await _context.SaveChangesAsync(); // Save all roles
 
-            // 4. Create UserTenant associations with varying roles across companies
+            // 4. Create UserTenant associations - each user has same role across all companies for consistency
             var userTenants = new List<UserTenant>
             {
-                // owner@demo.com: Owner in Demo, Admin in Tech, Manager in Manufacturing
+                // owner@demo.com: Owner in all companies
                 new UserTenant { Id = Guid.NewGuid(), UserId = ownerUser.Id, TenantId = demoCompany.Id,
                     RoleId = rolesByTenant[demoCompany.Id]["Owner"].Id, IsActive = true, JoinedAt = now },
                 new UserTenant { Id = Guid.NewGuid(), UserId = ownerUser.Id, TenantId = techStartup.Id,
-                    RoleId = rolesByTenant[techStartup.Id]["Admin"].Id, IsActive = true, JoinedAt = now },
+                    RoleId = rolesByTenant[techStartup.Id]["Owner"].Id, IsActive = true, JoinedAt = now },
                 new UserTenant { Id = Guid.NewGuid(), UserId = ownerUser.Id, TenantId = manufacturingCorp.Id,
-                    RoleId = rolesByTenant[manufacturingCorp.Id]["Manager"].Id, IsActive = true, JoinedAt = now },
+                    RoleId = rolesByTenant[manufacturingCorp.Id]["Owner"].Id, IsActive = true, JoinedAt = now },
 
-                // admin@demo.com: Admin in Demo, Manager in Tech, User in Manufacturing
+                // admin@demo.com: Admin in all companies
                 new UserTenant { Id = Guid.NewGuid(), UserId = adminUser.Id, TenantId = demoCompany.Id,
                     RoleId = rolesByTenant[demoCompany.Id]["Admin"].Id, IsActive = true, JoinedAt = now },
                 new UserTenant { Id = Guid.NewGuid(), UserId = adminUser.Id, TenantId = techStartup.Id,
-                    RoleId = rolesByTenant[techStartup.Id]["Manager"].Id, IsActive = true, JoinedAt = now },
+                    RoleId = rolesByTenant[techStartup.Id]["Admin"].Id, IsActive = true, JoinedAt = now },
                 new UserTenant { Id = Guid.NewGuid(), UserId = adminUser.Id, TenantId = manufacturingCorp.Id,
-                    RoleId = rolesByTenant[manufacturingCorp.Id]["User"].Id, IsActive = true, JoinedAt = now },
+                    RoleId = rolesByTenant[manufacturingCorp.Id]["Admin"].Id, IsActive = true, JoinedAt = now },
 
-                // manager@demo.com: Manager in Demo, User in Tech, Owner in Manufacturing
+                // manager@demo.com: Manager in all companies
                 new UserTenant { Id = Guid.NewGuid(), UserId = managerUser.Id, TenantId = demoCompany.Id,
                     RoleId = rolesByTenant[demoCompany.Id]["Manager"].Id, IsActive = true, JoinedAt = now },
                 new UserTenant { Id = Guid.NewGuid(), UserId = managerUser.Id, TenantId = techStartup.Id,
-                    RoleId = rolesByTenant[techStartup.Id]["User"].Id, IsActive = true, JoinedAt = now },
+                    RoleId = rolesByTenant[techStartup.Id]["Manager"].Id, IsActive = true, JoinedAt = now },
                 new UserTenant { Id = Guid.NewGuid(), UserId = managerUser.Id, TenantId = manufacturingCorp.Id,
-                    RoleId = rolesByTenant[manufacturingCorp.Id]["Owner"].Id, IsActive = true, JoinedAt = now },
+                    RoleId = rolesByTenant[manufacturingCorp.Id]["Manager"].Id, IsActive = true, JoinedAt = now },
 
-                // user@demo.com: User in Demo, Owner in Tech, Admin in Manufacturing
+                // user@demo.com: User in all companies
                 new UserTenant { Id = Guid.NewGuid(), UserId = regularUser.Id, TenantId = demoCompany.Id,
                     RoleId = rolesByTenant[demoCompany.Id]["User"].Id, IsActive = true, JoinedAt = now },
                 new UserTenant { Id = Guid.NewGuid(), UserId = regularUser.Id, TenantId = techStartup.Id,
-                    RoleId = rolesByTenant[techStartup.Id]["Owner"].Id, IsActive = true, JoinedAt = now },
+                    RoleId = rolesByTenant[techStartup.Id]["User"].Id, IsActive = true, JoinedAt = now },
                 new UserTenant { Id = Guid.NewGuid(), UserId = regularUser.Id, TenantId = manufacturingCorp.Id,
-                    RoleId = rolesByTenant[manufacturingCorp.Id]["Admin"].Id, IsActive = true, JoinedAt = now }
+                    RoleId = rolesByTenant[manufacturingCorp.Id]["User"].Id, IsActive = true, JoinedAt = now }
             };
 
             await _context.UserTenants.AddRangeAsync(userTenants);
@@ -190,7 +214,7 @@ public class SeedController : ControllerBase
                 _logger.LogInformation($"Seeding data for tenant: {tenant.Name}");
 
                 // Seed Tax Rates (Ecuador IVA rates)
-                var taxRates = CreateTaxRatesForTenant(tenant.Id, now);
+                var taxRates = CreateTaxRatesForTenant(tenant.Id, now, ecuadorCountry);
                 await _context.TaxRates.AddRangeAsync(taxRates);
                 await _context.SaveChangesAsync();
 
@@ -209,7 +233,7 @@ public class SeedController : ControllerBase
                 await _context.EmissionPoints.AddRangeAsync(emissionPoints);
                 await _context.SaveChangesAsync();
 
-                var warehouses = CreateWarehousesForTenant(tenant.Id, tenant.Slug, now);
+                var warehouses = CreateWarehousesForTenant(tenant.Id, tenant.Slug, now, usCountry);
                 await _context.Warehouses.AddRangeAsync(warehouses);
                 await _context.SaveChangesAsync();
 
@@ -217,7 +241,7 @@ public class SeedController : ControllerBase
                 await _context.Products.AddRangeAsync(products);
                 await _context.SaveChangesAsync();
 
-                var customers = CreateCustomersForTenant(tenant.Id, tenant.Slug, now);
+                var customers = CreateCustomersForTenant(tenant.Id, tenant.Slug, now, usCountry);
                 await _context.Customers.AddRangeAsync(customers);
                 await _context.SaveChangesAsync();
 
@@ -253,12 +277,12 @@ public class SeedController : ControllerBase
                 tenants = summaries,
                 users = new[]
                 {
-                    new { email = "owner@demo.com", password = "password", companies = "Demo(Owner), Tech(Admin), Manufacturing(Manager)" },
-                    new { email = "admin@demo.com", password = "password", companies = "Demo(Admin), Tech(Manager), Manufacturing(User)" },
-                    new { email = "manager@demo.com", password = "password", companies = "Demo(Manager), Tech(User), Manufacturing(Owner)" },
-                    new { email = "user@demo.com", password = "password", companies = "Demo(User), Tech(Owner), Manufacturing(Admin)" }
+                    new { email = "owner@demo.com", password = "password", role = "Owner", companies = "All companies" },
+                    new { email = "admin@demo.com", password = "password", role = "Admin", companies = "All companies" },
+                    new { email = "manager@demo.com", password = "password", role = "Manager", companies = "All companies" },
+                    new { email = "user@demo.com", password = "password", role = "User", companies = "All companies" }
                 },
-                note = "All users are shared across all companies with varying role assignments"
+                note = "All users have consistent roles across all three demo companies"
             });
         }
         catch (Exception ex)
@@ -364,13 +388,15 @@ public class SeedController : ControllerBase
 
         // Manager: Full access to warehouses, products, customers, stock, establishments, emission_points
         // Read/create/update/send/export for invoices, read/update for tax-rates, read for invoice-config, sri_configuration
+        // Read-only access to roles
         var managerPermissions = allPermissions
             .Where(p =>
                 new[] { "warehouses", "products", "customers", "stock", "establishments", "emission_points" }.Contains(p.Resource) ||
                 (p.Resource == "invoices" && new[] { "read", "create", "update", "send", "export" }.Contains(p.Action)) ||
                 (p.Resource == "tax-rates" && new[] { "read", "create", "update" }.Contains(p.Action)) ||
                 (p.Resource == "invoice-config" && new[] { "read", "update" }.Contains(p.Action)) ||
-                (p.Resource == "sri_configuration" && new[] { "read", "update" }.Contains(p.Action)))
+                (p.Resource == "sri_configuration" && new[] { "read", "update" }.Contains(p.Action)) ||
+                (p.Resource == "roles" && p.Action == "read"))
             .Select(p => new RolePermission
             {
                 Id = Guid.NewGuid(),
@@ -399,7 +425,7 @@ public class SeedController : ControllerBase
         };
     }
 
-    private List<Warehouse> CreateWarehousesForTenant(Guid tenantId, string slug, DateTime now)
+    private List<Warehouse> CreateWarehousesForTenant(Guid tenantId, string slug, DateTime now, Country usCountry)
     {
         var prefix = slug.ToUpper().Replace("-", "").Substring(0, Math.Min(4, slug.Length));
 
@@ -441,7 +467,7 @@ public class SeedController : ControllerBase
                 City = loc.Item4,
                 State = loc.Item5,
                 PostalCode = loc.Item6,
-                Country = "United States",
+                CountryId = usCountry.Id,
                 Phone = loc.Item7,
                 Email = $"warehouse-{loc.Item2.ToLower()}@{slug}.com",
                 SquareFootage = 50000 - (i * 5000),
@@ -565,7 +591,7 @@ public class SeedController : ControllerBase
         };
     }
 
-    private List<Customer> CreateCustomersForTenant(Guid tenantId, string slug, DateTime now)
+    private List<Customer> CreateCustomersForTenant(Guid tenantId, string slug, DateTime now, Country usCountry)
     {
         var customerSuffix = slug switch
         {
@@ -590,12 +616,12 @@ public class SeedController : ControllerBase
                 BillingCity = "New York",
                 BillingState = "NY",
                 BillingPostalCode = "10001",
-                BillingCountry = "United States",
+                BillingCountryId = usCountry.Id,
                 ShippingStreet = "123 Business Ave",
                 ShippingCity = "New York",
                 ShippingState = "NY",
                 ShippingPostalCode = "10001",
-                ShippingCountry = "United States",
+                ShippingCountryId = usCountry.Id,
                 Website = $"https://acme-{slug}.example.com",
                 Notes = "Major client - priority shipping",
                 IsActive = true,
@@ -616,12 +642,12 @@ public class SeedController : ControllerBase
                 BillingCity = "San Francisco",
                 BillingState = "CA",
                 BillingPostalCode = "94105",
-                BillingCountry = "United States",
+                BillingCountryId = usCountry.Id,
                 ShippingStreet = "456 Innovation Dr",
                 ShippingCity = "San Francisco",
                 ShippingState = "CA",
                 ShippingPostalCode = "94105",
-                ShippingCountry = "United States",
+                ShippingCountryId = usCountry.Id,
                 Website = $"https://techsolutions-{slug}.example.com",
                 Notes = "Net 30 payment terms",
                 IsActive = true,
@@ -642,12 +668,12 @@ public class SeedController : ControllerBase
                 BillingCity = "Chicago",
                 BillingState = "IL",
                 BillingPostalCode = "60601",
-                BillingCountry = "United States",
+                BillingCountryId = usCountry.Id,
                 ShippingStreet = "321 Distribution Way",
                 ShippingCity = "Chicago",
                 ShippingState = "IL",
                 ShippingPostalCode = "60602",
-                ShippingCountry = "United States",
+                ShippingCountryId = usCountry.Id,
                 Website = $"https://globalent-{slug}.example.com",
                 Notes = "Requires detailed invoicing",
                 IsActive = true,
@@ -668,12 +694,12 @@ public class SeedController : ControllerBase
                 BillingCity = "Miami",
                 BillingState = "FL",
                 BillingPostalCode = "33101",
-                BillingCountry = "United States",
+                BillingCountryId = usCountry.Id,
                 ShippingStreet = "555 Retail Plaza",
                 ShippingCity = "Miami",
                 ShippingState = "FL",
                 ShippingPostalCode = "33101",
-                ShippingCountry = "United States",
+                ShippingCountryId = usCountry.Id,
                 Website = $"https://retailpartners-{slug}.example.com",
                 Notes = "Bulk orders - discount applied",
                 IsActive = true,
@@ -694,12 +720,12 @@ public class SeedController : ControllerBase
                 BillingCity = "Austin",
                 BillingState = "TX",
                 BillingPostalCode = "78701",
-                BillingCountry = "United States",
+                BillingCountryId = usCountry.Id,
                 ShippingStreet = "100 Startup Lane",
                 ShippingCity = "Austin",
                 ShippingState = "TX",
                 ShippingPostalCode = "78701",
-                ShippingCountry = "United States",
+                ShippingCountryId = usCountry.Id,
                 Website = $"https://startupinnovations-{slug}.example.com",
                 Notes = "Growing account - good potential",
                 IsActive = true,
@@ -936,7 +962,7 @@ public class SeedController : ControllerBase
         return inventoryLevels;
     }
 
-    private List<TaxRate> CreateTaxRatesForTenant(Guid tenantId, DateTime now)
+    private List<TaxRate> CreateTaxRatesForTenant(Guid tenantId, DateTime now, Country ecuadorCountry)
     {
         return new List<TaxRate>
         {
@@ -949,7 +975,7 @@ public class SeedController : ControllerBase
                 Rate = 0.00m,
                 IsDefault = false,
                 IsActive = true,
-                Country = "EC", // Ecuador ISO code
+                CountryId = ecuadorCountry.Id,
                 CreatedAt = now,
                 UpdatedAt = now,
                 IsDeleted = false
@@ -963,7 +989,7 @@ public class SeedController : ControllerBase
                 Rate = 0.12m,
                 IsDefault = false,
                 IsActive = true,
-                Country = "EC", // Ecuador ISO code
+                CountryId = ecuadorCountry.Id,
                 CreatedAt = now,
                 UpdatedAt = now,
                 IsDeleted = false
@@ -977,7 +1003,7 @@ public class SeedController : ControllerBase
                 Rate = 0.15m,
                 IsDefault = true, // Ecuador's standard IVA rate
                 IsActive = true,
-                Country = "EC", // Ecuador ISO code
+                CountryId = ecuadorCountry.Id,
                 CreatedAt = now,
                 UpdatedAt = now,
                 IsDeleted = false

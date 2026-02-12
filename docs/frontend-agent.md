@@ -1181,6 +1181,42 @@ const { apiFetch } = useApi()
 const response = await apiFetch('/roles')
 ```
 
+##### ❌ MISTAKE 4: Trying to use `useAuth()` for authentication headers
+
+**⚠️ CRITICAL**: `useAuth()` composable **DOES NOT EXIST** in this codebase!
+
+```typescript
+// ❌ WRONG - useAuth() doesn't exist, causes "useAuth is not defined" error
+import { useAuth } from '~/composables/useAuth'
+
+export function useYourService() {
+  const { getAuthHeaders } = useAuth()  // ❌ This will crash!
+
+  const getData = async () => {
+    const headers = await getAuthHeaders()
+    const response = await $fetch('/endpoint', { headers })
+  }
+}
+```
+
+```typescript
+// ✅ CORRECT - Use useApi() which handles authentication automatically
+export function useYourService() {
+  const { apiFetch } = useApi()
+
+  const getData = async () => {
+    const response = await apiFetch('/endpoint')
+    return response
+  }
+}
+```
+
+**Why this matters**:
+- Authentication headers are added **automatically** by the `api.ts` plugin
+- The plugin intercepts ALL `apiFetch` calls and adds `Authorization` and `X-Tenant-Id` headers
+- You **never need to manually add authentication headers**
+- Using `useAuth()` will cause runtime errors
+
 #### Backend API Requirements
 
 The backend requires the following for **ALL non-auth endpoints**:

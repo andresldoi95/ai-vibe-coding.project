@@ -70,7 +70,7 @@ public class UpdateWarehouseCommandHandler : IRequestHandler<UpdateWarehouseComm
             warehouse.City = request.City;
             warehouse.State = request.State;
             warehouse.PostalCode = request.PostalCode;
-            warehouse.Country = request.Country;
+            warehouse.CountryId = request.CountryId;
             warehouse.Phone = request.Phone;
             warehouse.Email = request.Email;
             warehouse.IsActive = request.IsActive;
@@ -97,7 +97,9 @@ public class UpdateWarehouseCommandHandler : IRequestHandler<UpdateWarehouseComm
                 City = warehouse.City,
                 State = warehouse.State,
                 PostalCode = warehouse.PostalCode,
-                Country = warehouse.Country,
+                CountryId = warehouse.CountryId,
+                CountryName = string.Empty,
+                CountryCode = string.Empty,
                 Phone = warehouse.Phone,
                 Email = warehouse.Email,
                 IsActive = warehouse.IsActive,

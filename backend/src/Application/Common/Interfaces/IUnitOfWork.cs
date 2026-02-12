@@ -1,4 +1,5 @@
 using SaaS.Domain.Entities;
+using SaaS.Domain.Interfaces;
 
 namespace SaaS.Application.Common.Interfaces;
 
@@ -22,6 +23,7 @@ public interface IUnitOfWork : IDisposable
     IInvoiceConfigurationRepository InvoiceConfigurations { get; }
     IInvoiceRepository Invoices { get; }
     IRepository<InvoiceItem> InvoiceItems { get; }
+    ICountryRepository Countries { get; }
     IEstablishmentRepository Establishments { get; }
     IEmissionPointRepository EmissionPoints { get; }
     ISriConfigurationRepository SriConfigurations { get; }

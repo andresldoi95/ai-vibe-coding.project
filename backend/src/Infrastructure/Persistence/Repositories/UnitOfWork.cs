@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore.Storage;
 using SaaS.Application.Common.Interfaces;
 using SaaS.Domain.Entities;
+using SaaS.Domain.Interfaces;
 
 namespace SaaS.Infrastructure.Persistence.Repositories;
 
@@ -27,6 +28,7 @@ public class UnitOfWork : IUnitOfWork
     public IInvoiceConfigurationRepository InvoiceConfigurations { get; }
     public IInvoiceRepository Invoices { get; }
     public IRepository<InvoiceItem> InvoiceItems { get; }
+    public ICountryRepository Countries { get; }
     public IEstablishmentRepository Establishments { get; }
     public IEmissionPointRepository EmissionPoints { get; }
     public ISriConfigurationRepository SriConfigurations { get; }
@@ -48,6 +50,7 @@ public class UnitOfWork : IUnitOfWork
         IInvoiceConfigurationRepository invoiceConfigurationRepository,
         IInvoiceRepository invoiceRepository,
         IRepository<InvoiceItem> invoiceItemRepository,
+        ICountryRepository countryRepository,
         IEstablishmentRepository establishmentRepository,
         IEmissionPointRepository emissionPointRepository,
         ISriConfigurationRepository sriConfigurationRepository)
@@ -64,6 +67,7 @@ public class UnitOfWork : IUnitOfWork
         InvoiceConfigurations = invoiceConfigurationRepository;
         Invoices = invoiceRepository;
         InvoiceItems = invoiceItemRepository;
+        Countries = countryRepository;
         StockMovements = stockMovementRepository;
         WarehouseInventory = warehouseInventoryRepository;
         Roles = roleRepository;

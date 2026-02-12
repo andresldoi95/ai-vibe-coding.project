@@ -24,14 +24,16 @@ public class Customer : TenantEntity
     public string? BillingCity { get; set; }
     public string? BillingState { get; set; }
     public string? BillingPostalCode { get; set; }
-    public string? BillingCountry { get; set; }
+    public Guid? BillingCountryId { get; set; }
+    public Country? BillingCountry { get; set; }
 
     // Shipping Address
     public string? ShippingStreet { get; set; }
     public string? ShippingCity { get; set; }
     public string? ShippingState { get; set; }
     public string? ShippingPostalCode { get; set; }
-    public string? ShippingCountry { get; set; }
+    public Guid? ShippingCountryId { get; set; }
+    public Country? ShippingCountry { get; set; }
 
     // Additional Information
     public string? Notes { get; set; }

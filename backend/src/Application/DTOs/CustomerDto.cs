@@ -4,7 +4,7 @@ public class CustomerDto
 {
     public Guid Id { get; set; }
     public Guid TenantId { get; set; }
-    
+
     // Basic Information
     public string Name { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
@@ -17,14 +17,16 @@ public class CustomerDto
     public string? BillingCity { get; set; }
     public string? BillingState { get; set; }
     public string? BillingPostalCode { get; set; }
-    public string? BillingCountry { get; set; }
+    public Guid? BillingCountryId { get; set; }
+    public string? BillingCountryName { get; set; }
 
     // Shipping Address
     public string? ShippingStreet { get; set; }
     public string? ShippingCity { get; set; }
     public string? ShippingState { get; set; }
     public string? ShippingPostalCode { get; set; }
-    public string? ShippingCountry { get; set; }
+    public Guid? ShippingCountryId { get; set; }
+    public string? ShippingCountryName { get; set; }
 
     // Additional Information
     public string? Notes { get; set; }

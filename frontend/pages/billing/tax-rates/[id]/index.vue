@@ -100,7 +100,7 @@ function formatRate(rate: number): string {
           <div class="field">
             <label class="font-semibold text-surface-700">{{ t('taxRates.country') }}</label>
             <p class="mt-1">
-              {{ taxRate.country || t('common.not_specified') }}
+              {{ taxRate.countryName || t('common.not_specified') }}
             </p>
           </div>
 

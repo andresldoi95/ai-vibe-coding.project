@@ -12,6 +12,7 @@ const uiStore = useUiStore()
 const toast = useNotification()
 const router = useRouter()
 const { createCustomer } = useCustomer()
+const { countries, getAllCountries, getCountryOptions } = useCountry()
 
 const loading = ref(false)
 
@@ -27,19 +28,24 @@ const formData = reactive({
   billingCity: '',
   billingState: '',
   billingPostalCode: '',
-  billingCountry: '',
+  billingCountryId: undefined as string | undefined,
 
   // Shipping Address
   shippingStreet: '',
   shippingCity: '',
   shippingState: '',
   shippingPostalCode: '',
-  shippingCountry: '',
+  shippingCountryId: undefined as string | undefined,
 
   // Additional Information
   notes: '',
   website: '',
   isActive: true,
+})
+
+// Load countries on mount
+onMounted(async () => {
+  await getAllCountries()
 })
 
 // Validation rules
@@ -74,9 +80,6 @@ const rules = computed(() => ({
   billingPostalCode: {
     maxLength: maxLength(20),
   },
-  billingCountry: {
-    maxLength: maxLength(100),
-  },
   shippingStreet: {
     maxLength: maxLength(512),
   },
@@ -88,9 +91,6 @@ const rules = computed(() => ({
   },
   shippingPostalCode: {
     maxLength: maxLength(20),
-  },
-  shippingCountry: {
-    maxLength: maxLength(100),
   },
   notes: {
     maxLength: maxLength(1000),
@@ -122,13 +122,13 @@ async function handleSubmit() {
       billingCity: formData.billingCity || undefined,
       billingState: formData.billingState || undefined,
       billingPostalCode: formData.billingPostalCode || undefined,
-      billingCountry: formData.billingCountry || undefined,
+      billingCountryId: formData.billingCountryId || undefined,
 
       shippingStreet: formData.shippingStreet || undefined,
       shippingCity: formData.shippingCity || undefined,
       shippingState: formData.shippingState || undefined,
       shippingPostalCode: formData.shippingPostalCode || undefined,
-      shippingCountry: formData.shippingCountry || undefined,
+      shippingCountryId: formData.shippingCountryId || undefined,
 
       notes: formData.notes || undefined,
       website: formData.website || undefined,
@@ -312,10 +312,16 @@ onMounted(() => {
                   <label for="billingCountry" class="font-semibold text-slate-700 dark:text-slate-200">
                     {{ t('common.country') }}
                   </label>
-                  <InputText
+                  <Dropdown
                     id="billingCountry"
-                    v-model="formData.billingCountry"
-                    :placeholder="t('customers.country_placeholder')"
+                    v-model="formData.billingCountryId"
+                    :options="getCountryOptions()"
+                    option-label="label"
+                    option-value="value"
+                    :placeholder="t('customers.select_country')"
+                    show-clear
+                    filter
+                    class="w-full"
                   />
                 </div>
               </div>
@@ -383,10 +389,16 @@ onMounted(() => {
                   <label for="shippingCountry" class="font-semibold text-slate-700 dark:text-slate-200">
                     {{ t('common.country') }}
                   </label>
-                  <InputText
+                  <Dropdown
                     id="shippingCountry"
-                    v-model="formData.shippingCountry"
-                    :placeholder="t('customers.country_placeholder')"
+                    v-model="formData.shippingCountryId"
+                    :options="getCountryOptions()"
+                    option-label="label"
+                    option-value="value"
+                    :placeholder="t('customers.select_country')"
+                    show-clear
+                    filter
+                    class="w-full"
                   />
                 </div>
               </div>
