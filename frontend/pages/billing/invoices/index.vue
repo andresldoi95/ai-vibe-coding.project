@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { Invoice } from '~/types/billing'
 import { InvoiceStatus } from '~/types/billing'
 
 definePageMeta({

@@ -11,7 +11,7 @@ const { t } = useI18n()
 const toast = useNotification()
 const router = useRouter()
 const { createTaxRate } = useTaxRate()
-const { countries, getAllCountries, getCountryOptions } = useCountry()
+const { getAllCountries, getCountryOptions } = useCountry()
 
 const loading = ref(false)
 

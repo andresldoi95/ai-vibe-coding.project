@@ -20,7 +20,7 @@ onMounted(async () => {
     const id = route.params.id as string
     taxRate.value = await getTaxRateById(id)
   }
-  catch (error) {
+  catch {
     const toast = useNotification()
     toast.showError(t('taxRates.load_error'))
     router.push('/billing/tax-rates')

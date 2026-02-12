@@ -12,7 +12,7 @@ const uiStore = useUiStore()
 const toast = useNotification()
 const router = useRouter()
 const { createCustomer } = useCustomer()
-const { countries, getAllCountries, getCountryOptions } = useCountry()
+const { getAllCountries, getCountryOptions } = useCountry()
 
 const loading = ref(false)
 

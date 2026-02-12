@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useVuelidate } from '@vuelidate/core'
 import { between, helpers, maxLength, required } from '@vuelidate/validators'
-import type { TaxRate } from '~/types/billing'
 
 definePageMeta({
   middleware: ['auth', 'tenant'],
@@ -13,7 +12,7 @@ const route = useRoute()
 const toast = useNotification()
 const router = useRouter()
 const { getTaxRateById, updateTaxRate } = useTaxRate()
-const { countries, getAllCountries, getCountryOptions } = useCountry()
+const { getAllCountries, getCountryOptions } = useCountry()
 
 const loading = ref(false)
 const initialLoading = ref(true)
@@ -63,7 +62,7 @@ onMounted(async () => {
     formData.isActive = taxRate.isActive
     formData.countryId = taxRate.countryId
   }
-  catch (error) {
+  catch {
     toast.showError(t('taxRates.load_error'))
     router.push('/billing/tax-rates')
   }

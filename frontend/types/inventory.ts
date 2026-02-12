@@ -1,7 +1,5 @@
 // Inventory module types
 
-import type { Country } from './common'
-
 export interface Product {
   id: string
   name: string

@@ -16,7 +16,7 @@ const { getAllEstablishments } = useEstablishment()
 
 const loading = ref(false)
 const loadingEstablishments = ref(false)
-const establishments = ref<any[]>([])
+const establishments = ref<{ id: string, code: string, name: string }[]>([])
 
 const formData = reactive({
   emissionPointCode: '',

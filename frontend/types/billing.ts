@@ -1,14 +1,12 @@
 // Billing module types
 
-import type { Country } from './common'
-
 // Tax Rates
 export interface TaxRate {
   id: string
   tenantId: string
   code: string
   name: string
-  rate: number  // Decimal value (e.g., 0.12 for 12%)
+  rate: number // Decimal value (e.g., 0.12 for 12%)
   isDefault: boolean
   isActive: boolean
   countryId?: string
@@ -41,11 +39,11 @@ export interface UpdateTaxRateDto {
 export interface InvoiceConfiguration {
   id: string
   tenantId: string
-  establishmentCode: string    // Ecuador: 001
-  emissionPointCode: string     // Ecuador: 001
+  establishmentCode: string // Ecuador: 001
+  emissionPointCode: string // Ecuador: 001
   nextSequentialNumber: number
   defaultTaxRateId?: string
-  defaultTaxRateName?: string  // Included from backend DTO
+  defaultTaxRateName?: string // Included from backend DTO
   defaultWarehouseId?: string
   defaultWarehouseName?: string // Included from backend DTO
   dueDays: number
@@ -90,8 +88,8 @@ export interface Invoice {
   xmlFilePath?: string
   signedXmlFilePath?: string
   environment: number
-  sriAuthorization?: string     // Ecuador SRI authorization number
-  authorizationDate?: string    // Ecuador SRI authorization date
+  sriAuthorization?: string // Ecuador SRI authorization number
+  authorizationDate?: string // Ecuador SRI authorization date
   items: InvoiceItem[]
   createdAt: string
   updatedAt: string
@@ -107,23 +105,23 @@ export enum InvoiceStatus {
   Paid = 6,
   Overdue = 7,
   Cancelled = 8,
-  Voided = 9
+  Voided = 9,
 }
 
 export interface InvoiceItem {
   id: string
   invoiceId: string
   productId: string
-  productCode: string       // Denormalized for history
-  productName: string       // Denormalized for history
+  productCode: string // Denormalized for history
+  productName: string // Denormalized for history
   description?: string
   quantity: number
   unitPrice: number
   taxRateId: string
-  taxRate: number           // Denormalized tax rate value for history
-  subtotalAmount: number    // Calculated: quantity * unitPrice
-  taxAmount: number         // Calculated: subtotalAmount * taxRate
-  totalAmount: number       // Calculated: subtotalAmount + taxAmount
+  taxRate: number // Denormalized tax rate value for history
+  subtotalAmount: number // Calculated: quantity * unitPrice
+  taxAmount: number // Calculated: subtotalAmount * taxRate
+  totalAmount: number // Calculated: subtotalAmount + taxAmount
 }
 
 export interface CreateInvoiceItemDto {
@@ -135,7 +133,7 @@ export interface CreateInvoiceItemDto {
 }
 
 export interface UpdateInvoiceItemDto {
-  id?: string              // Present if updating existing item
+  id?: string // Present if updating existing item
   productId: string
   quantity: number
   unitPrice: number
@@ -174,7 +172,7 @@ export interface Customer {
   name: string
   email: string
   phone?: string
-  identificationType: number  // IdentificationType enum
+  identificationType: number // IdentificationType enum
   taxId?: string
   contactPerson?: string
 

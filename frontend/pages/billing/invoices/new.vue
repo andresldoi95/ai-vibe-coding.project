@@ -48,7 +48,7 @@ onMounted(async () => {
     taxRates.value = taxRateList.filter(tr => tr.isActive)
     warehouses.value = warehouseList.filter(w => w.isActive)
   }
-  catch (error) {
+  catch {
     toast.showError(t('invoices.load_error'))
   }
   finally {

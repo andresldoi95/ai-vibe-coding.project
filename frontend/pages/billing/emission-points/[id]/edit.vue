@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useVuelidate } from '@vuelidate/core'
-import { helpers, maxLength, required } from '@vuelidate/validators'
+import { maxLength, required } from '@vuelidate/validators'
 import type { EmissionPoint } from '~/types/emission-point'
 
 definePageMeta({

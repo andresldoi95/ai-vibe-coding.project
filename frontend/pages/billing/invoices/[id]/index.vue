@@ -25,7 +25,7 @@ onMounted(async () => {
     const id = route.params.id as string
     invoice.value = await getInvoiceById(id)
   }
-  catch (error) {
+  catch {
     toast.showError(t('invoices.load_error'))
     router.push('/billing/invoices')
   }

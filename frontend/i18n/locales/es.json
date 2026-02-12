@@ -810,7 +810,7 @@
     "no_items": "No hay ítems agregados. Clic en 'Agregar Ítem' para comenzar.",
     "product": "Producto",
     "select_product": "Seleccione un producto",
-    "description": "Descripción",
+
     "description_placeholder": "Descripción del ítem",
     "quantity": "Cantidad",
     "unit_price": "Precio Unitario",

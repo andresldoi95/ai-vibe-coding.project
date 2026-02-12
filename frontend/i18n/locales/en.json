@@ -812,7 +812,6 @@
     "no_items": "No items added. Click 'Add Item' to begin.",
     "product": "Product",
     "select_product": "Select a product",
-    "description": "Description",
     "description_placeholder": "Item description",
     "quantity": "Quantity",
     "unit_price": "Unit Price",

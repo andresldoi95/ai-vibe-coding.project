@@ -30,9 +30,9 @@ export function useCountry() {
         error.value = response.message || 'Failed to load countries'
       }
     }
-    catch (err: any) {
+    catch (err) {
       console.error('Error fetching countries:', err)
-      error.value = err.message || 'An error occurred while fetching countries'
+      error.value = (err as Error).message || 'An error occurred while fetching countries'
     }
     finally {
       loading.value = false

@@ -14,7 +14,7 @@ const toast = useNotification()
 const route = useRoute()
 const router = useRouter()
 const { getWarehouseById, updateWarehouse } = useWarehouse()
-const { countries, getAllCountries, getCountryOptions } = useCountry()
+const { getAllCountries, getCountryOptions } = useCountry()
 
 const loading = ref(false)
 const loadingData = ref(false)

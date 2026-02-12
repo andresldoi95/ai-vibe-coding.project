@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useVuelidate } from '@vuelidate/core'
 import { helpers, maxLength, minValue, required } from '@vuelidate/validators'
-import type { InvoiceConfiguration, TaxRate } from '~/types/billing'
+import type { TaxRate } from '~/types/billing'
 import type { Warehouse } from '~/types/inventory'
 
 definePageMeta({
@@ -75,7 +75,7 @@ onMounted(async () => {
     formData.dueDays = config.dueDays
     formData.requireCustomerTaxId = config.requireCustomerTaxId
   }
-  catch (error) {
+  catch {
     toast.showError(t('invoiceConfig.load_error'))
   }
   finally {

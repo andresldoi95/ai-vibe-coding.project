@@ -2,7 +2,7 @@
 import { useVuelidate } from '@vuelidate/core'
 import { required } from '@vuelidate/validators'
 import type { Customer, Product, TaxRate } from '~/types'
-import type { Invoice, InvoiceItem, InvoiceStatus, UpdateInvoiceDto, UpdateInvoiceItemDto } from '~/types/billing'
+import type { Invoice, InvoiceItem, UpdateInvoiceDto, UpdateInvoiceItemDto } from '~/types/billing'
 import type { Warehouse } from '~/types/inventory'
 
 definePageMeta({

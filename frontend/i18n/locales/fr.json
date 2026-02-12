@@ -799,7 +799,7 @@
     "no_items": "Aucun article ajouté. Cliquez sur 'Ajouter un Article' pour commencer.",
     "product": "Produit",
     "select_product": "Sélectionner un produit",
-    "description": "Description",
+
     "description_placeholder": "Description de l'article",
     "quantity": "Quantité",
     "unit_price": "Prix Unitaire",

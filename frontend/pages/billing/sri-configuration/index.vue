@@ -104,9 +104,8 @@ async function loadConfiguration() {
       formData.environment = configuration.value.environment
     }
   }
-  catch (error) {
+  catch {
     // If no configuration exists yet, that's okay - form will be empty
-    console.log('No SRI configuration found yet')
   }
   finally {
     loadingData.value = false
