@@ -25,7 +25,6 @@ public class UnitOfWork : IUnitOfWork
     public IRoleRepository Roles { get; }
     public IPermissionRepository Permissions { get; }
     public ITaxRateRepository TaxRates { get; }
-    public IInvoiceConfigurationRepository InvoiceConfigurations { get; }
     public IInvoiceRepository Invoices { get; }
     public IRepository<InvoiceItem> InvoiceItems { get; }
     public ICountryRepository Countries { get; }
@@ -47,7 +46,6 @@ public class UnitOfWork : IUnitOfWork
         IRoleRepository roleRepository,
         IPermissionRepository permissionRepository,
         ITaxRateRepository taxRateRepository,
-        IInvoiceConfigurationRepository invoiceConfigurationRepository,
         IInvoiceRepository invoiceRepository,
         IRepository<InvoiceItem> invoiceItemRepository,
         ICountryRepository countryRepository,
@@ -64,7 +62,6 @@ public class UnitOfWork : IUnitOfWork
         Products = productRepository;
         Customers = customerRepository;
         TaxRates = taxRateRepository;
-        InvoiceConfigurations = invoiceConfigurationRepository;
         Invoices = invoiceRepository;
         InvoiceItems = invoiceItemRepository;
         Countries = countryRepository;

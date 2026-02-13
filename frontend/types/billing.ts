@@ -35,32 +35,6 @@ export interface UpdateTaxRateDto {
   countryId?: string
 }
 
-// Invoice Configuration
-export interface InvoiceConfiguration {
-  id: string
-  tenantId: string
-  establishmentCode: string // Ecuador: 001
-  emissionPointCode: string // Ecuador: 001
-  nextSequentialNumber: number
-  defaultTaxRateId?: string
-  defaultTaxRateName?: string // Included from backend DTO
-  defaultWarehouseId?: string
-  defaultWarehouseName?: string // Included from backend DTO
-  dueDays: number
-  requireCustomerTaxId: boolean
-  createdAt: string
-  updatedAt: string
-}
-
-export interface UpdateInvoiceConfigurationDto {
-  establishmentCode: string
-  emissionPointCode: string
-  defaultTaxRateId?: string
-  defaultWarehouseId?: string
-  dueDays: number
-  requireCustomerTaxId: boolean
-}
-
 // Invoices
 export interface Invoice {
   id: string

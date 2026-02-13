@@ -53,11 +53,6 @@ const menuItems = computed(() => {
           icon: 'pi pi-percentage',
           command: () => navigateTo('/billing/tax-rates'),
         },
-        {
-          label: t('nav.invoice_configuration'),
-          icon: 'pi pi-cog',
-          command: () => navigateTo('/billing/invoice-configuration'),
-        },
         { separator: true },
         {
           label: t('nav.establishments'),

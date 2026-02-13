@@ -205,8 +205,7 @@ builder.Services.AddScoped<IEmailTemplateRepository, SaaS.Infrastructure.Persist
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IPermissionRepository, PermissionRepository>();
 builder.Services.AddScoped<ITaxRateRepository, TaxRateRepository>();
-builder.Services.AddScoped<IInvoiceConfigurationRepository, InvoiceConfigurationRepository>();
-builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
+builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository();
 builder.Services.AddScoped<IRepository<SaaS.Domain.Entities.InvoiceItem>, Repository<SaaS.Domain.Entities.InvoiceItem>>();
 builder.Services.AddScoped<ICountryRepository, CountryRepository>();
 builder.Services.AddScoped<IEstablishmentRepository, EstablishmentRepository>();

@@ -20,7 +20,6 @@ public interface IUnitOfWork : IDisposable
     IRoleRepository Roles { get; }
     IPermissionRepository Permissions { get; }
     ITaxRateRepository TaxRates { get; }
-    IInvoiceConfigurationRepository InvoiceConfigurations { get; }
     IInvoiceRepository Invoices { get; }
     IRepository<InvoiceItem> InvoiceItems { get; }
     ICountryRepository Countries { get; }
