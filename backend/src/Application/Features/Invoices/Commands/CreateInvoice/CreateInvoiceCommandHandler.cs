@@ -46,15 +46,42 @@ public class CreateInvoiceCommandHandler : IRequestHandler<CreateInvoiceCommand,
                 return Result<InvoiceDto>.Failure("Customer not found");
             }
 
+            // Validate emission point exists, is active, and belongs to tenant
+            var emissionPoint = await _unitOfWork.EmissionPoints.GetByIdAsync(request.EmissionPointId, cancellationToken);
+
+            if (emissionPoint == null || emissionPoint.TenantId != tenantId)
+            {
+                return Result<InvoiceDto>.Failure("Emission point not found");
+            }
+
+            if (!emissionPoint.IsActive)
+            {
+                return Result<InvoiceDto>.Failure("Emission point is not active");
+            }
+
+            // Establishment is already loaded by EmissionPointRepository.GetByIdAsync
+            if (emissionPoint.Establishment == null)
+            {
+                return Result<InvoiceDto>.Failure("Establishment not found for emission point");
+            }
+
+            var establishment = emissionPoint.Establishment;
+
+            // Generate invoice number using emission point sequence
+            // Increment sequence atomically (thread-safe)
+            emissionPoint.InvoiceSequence++;
+            var sequentialNumber = emissionPoint.InvoiceSequence;
+            await _unitOfWork.EmissionPoints.UpdateAsync(emissionPoint);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            var invoiceNumber = $"{establishment.EstablishmentCode}-{emissionPoint.EmissionPointCode}-{sequentialNumber:D9}";
+
             // Get configuration
             var config = await _unitOfWork.InvoiceConfigurations.GetByTenantAsync(tenantId, cancellationToken);
             if (config == null)
             {
                 return Result<InvoiceDto>.Failure("Invoice configuration not found");
             }
-
-            // Generate invoice number
-            var invoiceNumber = await _invoiceNumberService.GenerateNextInvoiceNumberAsync(tenantId, cancellationToken);
 
             // Create invoice items and calculate totals
             var invoiceItems = new List<InvoiceItem>();
@@ -127,6 +154,7 @@ public class CreateInvoiceCommandHandler : IRequestHandler<CreateInvoiceCommand,
                 TenantId = tenantId,
                 InvoiceNumber = invoiceNumber,
                 CustomerId = request.CustomerId,
+                EmissionPointId = request.EmissionPointId,
                 IssueDate = issueDate,
                 DueDate = dueDate,
                 Status = InvoiceStatus.Draft,
@@ -187,6 +215,10 @@ public class CreateInvoiceCommandHandler : IRequestHandler<CreateInvoiceCommand,
                 InvoiceNumber = invoice.InvoiceNumber,
                 CustomerId = invoice.CustomerId,
                 CustomerName = customer.Name,
+                EmissionPointId = invoice.EmissionPointId,
+                EmissionPointCode = emissionPoint.EmissionPointCode,
+                EmissionPointName = emissionPoint.Name,
+                EstablishmentCode = establishment.EstablishmentCode,
                 IssueDate = invoice.IssueDate,
                 DueDate = invoice.DueDate,
                 Status = invoice.Status,

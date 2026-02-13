@@ -27,6 +27,16 @@ public class EmissionPointRepository : Repository<EmissionPoint>, IEmissionPoint
             .ToListAsync(cancellationToken);
     }
 
+    public async Task<List<EmissionPoint>> GetAllByTenantAsync(Guid tenantId, CancellationToken cancellationToken = default)
+    {
+        return await _dbSet
+            .Include(e => e.Establishment)
+            .Where(e => e.TenantId == tenantId && !e.IsDeleted)
+            .OrderBy(e => e.Establishment.EstablishmentCode)
+            .ThenBy(e => e.EmissionPointCode)
+            .ToListAsync(cancellationToken);
+    }
+
     public async Task<List<EmissionPoint>> GetByEstablishmentIdAsync(Guid establishmentId, CancellationToken cancellationToken = default)
     {
         return await _dbSet

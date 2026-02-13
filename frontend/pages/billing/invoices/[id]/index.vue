@@ -210,6 +210,19 @@ const canChangeStatus = computed(() => {
             </div>
 
             <div class="field">
+              <label class="font-semibold text-surface-700">{{ t('invoices.emission_point') }}</label>
+              <p v-if="invoice.emissionPointCode && invoice.establishmentCode" class="mt-1">
+                <span class="font-mono">{{ invoice.establishmentCode }}-{{ invoice.emissionPointCode }}</span>
+                <span v-if="invoice.emissionPointName" class="text-surface-600 ml-2">
+                  ({{ invoice.emissionPointName }})
+                </span>
+              </p>
+              <p v-else class="mt-1 text-surface-400">
+                {{ t('common.not_specified') }}
+              </p>
+            </div>
+
+            <div class="field">
               <label class="font-semibold text-surface-700">{{ t('invoices.issue_date') }}</label>
               <p class="mt-1">
                 {{ new Date(invoice.issueDate).toLocaleDateString() }}

@@ -45,6 +45,8 @@ public class InvoiceRepository : Repository<Invoice>, IInvoiceRepository
         return await _dbSet
             .Include(i => i.Customer)
             .Include(i => i.Warehouse)
+            .Include(i => i.EmissionPoint)
+                .ThenInclude(ep => ep!.Establishment)
             .Include(i => i.Items)
                 .ThenInclude(ii => ii.Product)
             .Include(i => i.Items)

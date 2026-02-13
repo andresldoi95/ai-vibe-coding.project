@@ -80,8 +80,13 @@ export interface Invoice {
   status: InvoiceStatus
   notes?: string
 
-  // SRI Ecuador fields
+  // SRI Ecuador fields - Emission Point
   emissionPointId?: string
+  emissionPointCode?: string
+  emissionPointName?: string
+  establishmentCode?: string
+
+  // SRI Ecuador fields - Document
   documentType: number
   accessKey?: string
   paymentMethod: number
@@ -144,6 +149,7 @@ export interface UpdateInvoiceItemDto {
 export interface CreateInvoiceDto {
   customerId: string
   warehouseId?: string
+  emissionPointId: string
   issueDate: string
   notes?: string
   items: CreateInvoiceItemDto[]

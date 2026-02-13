@@ -775,7 +775,6 @@
   },
   "invoices": {
     "title": "Facturas",
-    "description": "Gestionar facturas y facturación de clientes",
     "create": "Crear Factura",
     "edit": "Editar Factura",
     "edit_description": "Actualizar información y líneas de la factura",
@@ -787,6 +786,10 @@
     "select_customer": "Seleccione un cliente",
     "warehouse": "Almacén",
     "select_warehouse": "Seleccione un almacén",
+    "emission_point": "Punto de Emisión",
+    "select_emission_point": "Seleccione un punto de emisión",
+    "emission_point_required": "El punto de emisión es obligatorio para cumplimiento SRI",
+    "emission_point_code": "Código de Punto de Emisión",
     "issue_date": "Fecha de Emisión",
     "due_date": "Fecha de Vencimiento",
     "paid_date": "Fecha de Pago",
@@ -810,7 +813,7 @@
     "no_items": "No hay ítems agregados. Clic en 'Agregar Ítem' para comenzar.",
     "product": "Producto",
     "select_product": "Seleccione un producto",
-
+    "description": "Descripción",
     "description_placeholder": "Descripción del ítem",
     "quantity": "Cantidad",
     "unit_price": "Precio Unitario",

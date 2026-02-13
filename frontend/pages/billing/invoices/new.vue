@@ -3,6 +3,7 @@ import { useVuelidate } from '@vuelidate/core'
 import { required } from '@vuelidate/validators'
 import type { CreateInvoiceDto, CreateInvoiceItemDto, Customer, Product, TaxRate } from '~/types'
 import type { Warehouse } from '~/types/inventory'
+import type { EmissionPoint } from '~/types/emission-point'
 
 definePageMeta({
   middleware: ['auth', 'tenant'],
@@ -17,6 +18,7 @@ const { getAllTaxRates } = useTaxRate()
 const { getAllCustomers } = useCustomer()
 const { getAllProducts } = useProduct()
 const { getAllWarehouses } = useWarehouse()
+const { getAllEmissionPoints } = useEmissionPoint()
 
 const loading = ref(false)
 const initialLoading = ref(true)
@@ -25,10 +27,12 @@ const customers = ref<Customer[]>([])
 const products = ref<Product[]>([])
 const taxRates = ref<TaxRate[]>([])
 const warehouses = ref<Warehouse[]>([])
+const emissionPoints = ref<EmissionPoint[]>([])
 
 const formData = reactive({
   customerId: null as string | null,
   warehouseId: null as string | null,
+  emissionPointId: null as string | null,
   issueDate: new Date().toISOString().split('T')[0],
   notes: '',
   items: [] as CreateInvoiceItemDto[],
@@ -36,17 +40,19 @@ const formData = reactive({
 
 onMounted(async () => {
   try {
-    const [customerList, productList, taxRateList, warehouseList] = await Promise.all([
+    const [customerList, productList, taxRateList, warehouseList, emissionPointList] = await Promise.all([
       getAllCustomers(),
       getAllProducts(),
       getAllTaxRates(),
       getAllWarehouses(),
+      getAllEmissionPoints({ isActive: true }),
     ])
 
     customers.value = customerList
     products.value = productList
     taxRates.value = taxRateList.filter(tr => tr.isActive)
     warehouses.value = warehouseList.filter(w => w.isActive)
+    emissionPoints.value = emissionPointList
   }
   catch {
     toast.showError(t('invoices.load_error'))
@@ -58,6 +64,7 @@ onMounted(async () => {
 
 const rules = computed(() => ({
   customerId: { required },
+  emissionPointId: { required },
   issueDate: { required },
   items: { required },
 }))
@@ -145,6 +152,7 @@ async function handleSubmit() {
     const payload: CreateInvoiceDto = {
       customerId: formData.customerId!,
       warehouseId: formData.warehouseId || undefined,
+      emissionPointId: formData.emissionPointId!,
       issueDate: formData.issueDate,
       notes: formData.notes || undefined,
       items: formData.items,
@@ -227,6 +235,41 @@ function handleCancel() {
                   class="w-full"
                   show-clear
                 />
+              </div>
+
+              <div class="field">
+                <label for="emissionPointId" class="font-semibold">
+                  {{ t('invoices.emission_point') }} <span class="text-red-500">*</span>
+                </label>
+                <Select
+                  id="emissionPointId"
+                  v-model="formData.emissionPointId"
+                  :options="emissionPoints"
+                  option-label="name"
+                  option-value="id"
+                  :placeholder="t('invoices.select_emission_point')"
+                  :class="{ 'p-invalid': v$.emissionPointId.$error }"
+                  class="w-full"
+                >
+                  <template #option="{ option }">
+                    {{ option.establishmentCode }}-{{ option.emissionPointCode }} - {{ option.name }}
+                  </template>
+                  <template #value="{ value }">
+                    <template v-if="value">
+                      <span v-for="ep in emissionPoints" :key="ep.id">
+                        <template v-if="ep.id === value">
+                          {{ ep.establishmentCode }}-{{ ep.emissionPointCode }} - {{ ep.name }}
+                        </template>
+                      </span>
+                    </template>
+                  </template>
+                </Select>
+                <small v-if="v$.emissionPointId.$error" class="p-error">
+                  {{ v$.emissionPointId.$errors[0].$message }}
+                </small>
+                <small class="block mt-1 text-gray-600">
+                  {{ t('invoices.emission_point_required') }}
+                </small>
               </div>
 
               <div class="field">

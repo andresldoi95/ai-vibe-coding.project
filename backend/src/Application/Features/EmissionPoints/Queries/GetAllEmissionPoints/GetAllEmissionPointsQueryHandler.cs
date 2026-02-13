@@ -42,7 +42,7 @@ public class GetAllEmissionPointsQueryHandler : IRequestHandler<GetAllEmissionPo
             }
             else
             {
-                emissionPoints = await _unitOfWork.EmissionPoints.GetAllAsync(cancellationToken);
+                emissionPoints = await _unitOfWork.EmissionPoints.GetAllByTenantAsync(_tenantContext.TenantId.Value, cancellationToken);
             }
 
             var emissionPointDtos = emissionPoints.Select(e => new EmissionPointDto

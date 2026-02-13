@@ -19,6 +19,12 @@ public class InvoiceDto
     public Guid? WarehouseId { get; set; }
     public string? WarehouseName { get; set; }
 
+    // Emission Point (required for SRI Ecuador)
+    public Guid? EmissionPointId { get; set; }
+    public string? EmissionPointCode { get; set; }
+    public string? EmissionPointName { get; set; }
+    public string? EstablishmentCode { get; set; }
+
     // Ecuador SRI fields
     public string? SriAuthorization { get; set; }
     public DateTime? AuthorizationDate { get; set; }

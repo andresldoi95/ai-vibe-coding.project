@@ -110,6 +110,15 @@ function formatCurrency(amount: number): string {
 
           <Column field="customerName" :header="t('invoices.customer')" sortable />
 
+          <Column field="emissionPointCode" :header="t('invoices.emission_point_code')" sortable>
+            <template #body="{ data }">
+              <span v-if="data.emissionPointCode && data.establishmentCode" class="font-mono text-sm">
+                {{ data.establishmentCode }}-{{ data.emissionPointCode }}
+              </span>
+              <span v-else class="text-surface-400">-</span>
+            </template>
+          </Column>
+
           <Column field="issueDate" :header="t('invoices.issue_date')" sortable>
             <template #body="{ data }">
               {{ new Date(data.issueDate).toLocaleDateString() }}

@@ -9,6 +9,9 @@ public class CreateInvoiceCommandValidator : AbstractValidator<CreateInvoiceComm
         RuleFor(x => x.CustomerId)
             .NotEmpty().WithMessage("Customer is required");
 
+        RuleFor(x => x.EmissionPointId)
+            .NotEmpty().WithMessage("Emission point is required");
+
         RuleFor(x => x.Items)
             .NotEmpty().WithMessage("Invoice must have at least one item");
 

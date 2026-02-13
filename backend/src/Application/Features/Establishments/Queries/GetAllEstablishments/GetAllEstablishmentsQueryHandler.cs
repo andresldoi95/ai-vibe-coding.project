@@ -34,7 +34,7 @@ public class GetAllEstablishmentsQueryHandler : IRequestHandler<GetAllEstablishm
                 return Result<List<EstablishmentDto>>.Failure("Tenant context is required");
             }
 
-            var establishments = await _unitOfWork.Establishments.GetAllAsync(cancellationToken);
+            var establishments = await _unitOfWork.Establishments.GetAllByTenantAsync(_tenantContext.TenantId.Value, cancellationToken);
 
             var establishmentDtos = establishments.Select(e => new EstablishmentDto
             {
