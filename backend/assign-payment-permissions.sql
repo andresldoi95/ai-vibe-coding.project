@@ -4,7 +4,7 @@
 -- Then assign them to all Owner and Admin roles
 
 INSERT INTO "RolePermissions" ("Id", "RoleId", "PermissionId")
-SELECT 
+SELECT
     gen_random_uuid(),
     r."Id",
     p."Id"
