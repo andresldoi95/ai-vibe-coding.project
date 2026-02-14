@@ -26,22 +26,29 @@ public class InvoiceNumberService : IInvoiceNumberService
 
         try
         {
-            // Get configuration for the tenant
-            var invoiceConfig = await _unitOfWork.InvoiceConfigurations
-                .GetByTenantAsync(tenantId, cancellationToken);
+            // TODO: Re-implement invoice number service once InvoiceConfiguration entity is created
+            // For now, use a simple sequential number
+            _logger.LogWarning("Using simple sequential number for tenant {TenantId} - InvoiceConfiguration not implemented", tenantId);
 
-            if (invoiceConfig == null)
+            // Get last invoice number for this tenant
+            var lastInvoice = (await _unitOfWork.Invoices.GetAllAsync(cancellationToken))
+                .Where(i => i.TenantId == tenantId)
+                .OrderByDescending(i => i.CreatedAt)
+                .FirstOrDefault();
+
+            int nextNumber = 1;
+            if (lastInvoice != null && !string.IsNullOrEmpty(lastInvoice.InvoiceNumber))
             {
-                _logger.LogError("Invoice configuration not found for tenant {TenantId}", tenantId);
-                throw new InvalidOperationException("Invoice configuration not found for tenant");
+                // Try to extract number from invoice number (format: XXX-XXX-000000001)
+                var parts = lastInvoice.InvoiceNumber.Split('-');
+                if (parts.Length == 3 && int.TryParse(parts[2], out int lastNum))
+                {
+                    nextNumber = lastNum + 1;
+                }
             }
 
-            // Generate invoice number
-            var invoiceNumber = $"{invoiceConfig.EstablishmentCode}-{invoiceConfig.EmissionPointCode}-{invoiceConfig.NextSequentialNumber:D9}";
-
-            // Increment the sequential number
-            invoiceConfig.NextSequentialNumber++;
-            await _unitOfWork.InvoiceConfigurations.UpdateAsync(invoiceConfig);
+            // Generate invoice number with default codes
+            var invoiceNumber = $"001-001-{nextNumber:D9}";
 
             // Save changes (transaction will be managed by the caller)
             await _unitOfWork.SaveChangesAsync(cancellationToken);

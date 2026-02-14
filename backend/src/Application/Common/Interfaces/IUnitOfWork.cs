@@ -22,6 +22,7 @@ public interface IUnitOfWork : IDisposable
     ITaxRateRepository TaxRates { get; }
     IInvoiceRepository Invoices { get; }
     IRepository<InvoiceItem> InvoiceItems { get; }
+    IPaymentRepository Payments { get; }
     ICountryRepository Countries { get; }
     IEstablishmentRepository Establishments { get; }
     IEmissionPointRepository EmissionPoints { get; }

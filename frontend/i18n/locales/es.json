@@ -57,7 +57,11 @@
     "confirm_delete_item": "¿Está seguro de que desea eliminar {name}?",
     "save_changes": "Guardar Cambios",
     "valid": "Válido",
-    "expired": "Expirado"
+    "expired": "Expirado",
+    "notes": "Notas",
+    "metadata": "Metadatos",
+    "created_by": "Creado Por",
+    "updated_by": "Actualizado Por"
   },
   "nav": {
     "dashboard": "Panel",
@@ -842,6 +846,55 @@
     "new_status": "Nuevo Estado",
     "status_change_success": "Estado de factura cambiado exitosamente",
     "status_change_error": "Error al cambiar estado de factura"
+  },
+  "payments": {
+    "title": "Pagos",
+    "create": "Crear Pago",
+    "view_title": "Detalles del Pago",
+    "create_description": "Registrar un nuevo pago para una factura",
+    "payment_details": "Detalles del Pago",
+    "payment_info": "Información del Pago",
+    "payment_for_invoice": "Pago para Factura",
+    "amount": "Monto",
+    "payment_date": "Fecha de Pago",
+    "payment_method": "Forma de Pago",
+    "invoice": "Factura",
+    "invoice_number": "Número de Factura",
+    "customer_name": "Cliente",
+    "transaction_id": "ID de Transacción",
+    "transaction_id_placeholder": "Referencia bancaria (opcional)",
+    "notes_placeholder": "Notas adicionales sobre este pago",
+    "select_invoice": "Seleccione una factura",
+    "status": {
+      "label": "Estado",
+      "pending": "Pendiente",
+      "completed": "Completado",
+      "voided": "Anulado"
+    },
+    "payment_methods": {
+      "cash": "Efectivo",
+      "check": "Cheque",
+      "bank_transfer": "Transferencia Bancaria",
+      "account_deposit": "Depósito en Cuenta",
+      "debit_card": "Tarjeta de Débito",
+      "credit_card": "Tarjeta de Crédito",
+      "electronic_money": "Dinero Electrónico",
+      "prepaid_card": "Tarjeta Prepago",
+      "other": "Otro"
+    },
+    "record_payment": "Registrar Pago",
+    "record_first_payment": "Registrar Primer Pago",
+    "total_paid": "Total Pagado",
+    "remaining_balance": "Saldo Pendiente",
+    "no_payments": "No hay pagos registrados para esta factura aún.",
+    "void_payment": "Anular Pago",
+    "void_confirm": "¿Está seguro que desea anular este pago? Esta acción no se puede deshacer.",
+    "void_reason": "Razón (Opcional)",
+    "void_reason_placeholder": "¿Por qué se está anulando este pago?",
+    "created_successfully": "Pago creado exitosamente",
+    "voided_successfully": "Pago anulado exitosamente",
+    "not_found": "Pago no encontrado",
+    "load_error": "Error al cargar pagos"
   },
   "messages": {
     "success_save": "Guardado exitosamente",

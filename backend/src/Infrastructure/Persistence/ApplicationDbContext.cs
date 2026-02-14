@@ -33,9 +33,10 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<Role> Roles => Set<Role>();
     public DbSet<RolePermission> RolePermissions => Set<RolePermission>();
     public DbSet<TaxRate> TaxRates => Set<TaxRate>();
-    public DbSet<InvoiceConfiguration> InvoiceConfigurations => Set<InvoiceConfiguration>();
+    // public DbSet<InvoiceConfiguration> InvoiceConfigurations => Set<InvoiceConfiguration>(); // TODO: Create InvoiceConfiguration entity or remove
     public DbSet<Invoice> Invoices => Set<Invoice>();
     public DbSet<InvoiceItem> InvoiceItems => Set<InvoiceItem>();
+    public DbSet<Payment> Payments => Set<Payment>();
     public DbSet<Country> Countries => Set<Country>();
 
     // SRI Ecuador entities

@@ -57,7 +57,11 @@
     "confirm_delete_item": "Are you sure you want to delete {name}?",
     "save_changes": "Save Changes",
     "valid": "Valid",
-    "expired": "Expired"
+    "expired": "Expired",
+    "notes": "Notes",
+    "metadata": "Metadata",
+    "created_by": "Created By",
+    "updated_by": "Updated By"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -844,6 +848,55 @@
     "new_status": "New Status",
     "status_change_success": "Invoice status changed successfully",
     "status_change_error": "Failed to change invoice status"
+  },
+  "payments": {
+    "title": "Payments",
+    "create": "Create Payment",
+    "view_title": "Payment Details",
+    "create_description": "Record a new payment for an invoice",
+    "payment_details": "Payment Details",
+    "payment_info": "Payment Information",
+    "payment_for_invoice": "Payment for Invoice",
+    "amount": "Amount",
+    "payment_date": "Payment Date",
+    "payment_method": "Payment Method",
+    "invoice": "Invoice",
+    "invoice_number": "Invoice Number",
+    "customer_name": "Customer",
+    "transaction_id": "Transaction ID",
+    "transaction_id_placeholder": "Bank transaction reference (optional)",
+    "notes_placeholder": "Additional notes about this payment",
+    "select_invoice": "Select an invoice",
+    "status": {
+      "label": "Status",
+      "pending": "Pending",
+      "completed": "Completed",
+      "voided": "Voided"
+    },
+    "payment_methods": {
+      "cash": "Cash",
+      "check": "Check",
+      "bank_transfer": "Bank Transfer",
+      "account_deposit": "Account Deposit",
+      "debit_card": "Debit Card",
+      "credit_card": "Credit Card",
+      "electronic_money": "Electronic Money",
+      "prepaid_card": "Prepaid Card",
+      "other": "Other"
+    },
+    "record_payment": "Record Payment",
+    "record_first_payment": "Record First Payment",
+    "total_paid": "Total Paid",
+    "remaining_balance": "Remaining Balance",
+    "no_payments": "No payments recorded for this invoice yet.",
+    "void_payment": "Void Payment",
+    "void_confirm": "Are you sure you want to void this payment? This action cannot be undone.",
+    "void_reason": "Reason (Optional)",
+    "void_reason_placeholder": "Why is this payment being voided?",
+    "created_successfully": "Payment created successfully",
+    "voided_successfully": "Payment voided successfully",
+    "not_found": "Payment not found",
+    "load_error": "Failed to load payments"
   },
   "messages": {
     "success_save": "Saved successfully",

@@ -196,18 +196,38 @@ export interface Payment {
   id: string
   tenantId: string
   invoiceId: string
+  invoiceNumber: string
+  customerName: string
   amount: number
   paymentDate: string
-  paymentMethod: PaymentMethod
+  paymentMethod: SriPaymentMethod
   status: PaymentStatus
   transactionId?: string
   notes?: string
   createdAt: string
   updatedAt: string
+  createdBy?: string
 }
 
-export type PaymentMethod = 'credit_card' | 'bank_transfer' | 'cash' | 'paypal' | 'stripe'
-export type PaymentStatus = 'pending' | 'completed' | 'failed' | 'refunded'
+// SRI Ecuador Payment Methods
+export enum SriPaymentMethod {
+  Cash = 1,
+  Check = 2,
+  BankTransfer = 3,
+  AccountDeposit = 4,
+  DebitCard = 16,
+  ElectronicMoney = 17,
+  PrepaidCard = 18,
+  CreditCard = 19,
+  Other = 20,
+}
+
+// Payment Status
+export enum PaymentStatus {
+  Pending = 1,
+  Completed = 2,
+  Voided = 3,
+}
 
 export interface Subscription {
   id: string

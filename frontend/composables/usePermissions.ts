@@ -85,6 +85,14 @@ export function usePermissions() {
     updateInvoice: () => hasPermission('invoices.update'),
     deleteInvoice: () => hasPermission('invoices.delete'),
 
+    // Payments
+    viewPayments: () => hasPermission('payments.read'),
+    readPayment: () => hasPermission('payments.read'),
+    createPayment: () => hasPermission('payments.create'),
+    updatePayment: () => hasPermission('payments.update'),
+    voidPayment: () => hasPermission('payments.void'),
+    deletePayment: () => hasPermission('payments.delete'),
+
     // Invoice Configuration
     readInvoiceConfiguration: () => hasPermission('invoice-config.read'),
     updateInvoiceConfiguration: () => hasPermission('invoice-config.update'),

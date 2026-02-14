@@ -125,6 +125,8 @@ builder.Services.AddAuthorization(options =>
         // Invoices
         "invoices.read", "invoices.create", "invoices.update", "invoices.delete",
         "invoices.send", "invoices.void", "invoices.export",
+        // Payments
+        "payments.read", "payments.create", "payments.update", "payments.void", "payments.delete",
         // SRI - Establishments
         "establishments.read", "establishments.create", "establishments.update", "establishments.delete",
         // SRI - Emission Points
@@ -205,8 +207,9 @@ builder.Services.AddScoped<IEmailTemplateRepository, SaaS.Infrastructure.Persist
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IPermissionRepository, PermissionRepository>();
 builder.Services.AddScoped<ITaxRateRepository, TaxRateRepository>();
-builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository();
+builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
 builder.Services.AddScoped<IRepository<SaaS.Domain.Entities.InvoiceItem>, Repository<SaaS.Domain.Entities.InvoiceItem>>();
+builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 builder.Services.AddScoped<ICountryRepository, CountryRepository>();
 builder.Services.AddScoped<IEstablishmentRepository, EstablishmentRepository>();
 builder.Services.AddScoped<IEmissionPointRepository, EmissionPointRepository>();

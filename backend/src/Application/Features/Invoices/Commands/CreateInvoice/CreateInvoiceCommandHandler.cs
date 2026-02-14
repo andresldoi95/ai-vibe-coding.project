@@ -77,7 +77,7 @@ public class CreateInvoiceCommandHandler : IRequestHandler<CreateInvoiceCommand,
             var invoiceNumber = $"{establishment.EstablishmentCode}-{emissionPoint.EmissionPointCode}-{sequentialNumber:D9}";
 
             // Get configuration
-            var config = await _unitOfWork.InvoiceConfigurations.GetByTenantAsync(tenantId, cancellationToken);
+            var config = await _unitOfWork.SriConfigurations.GetByTenantIdAsync(tenantId, cancellationToken);
             if (config == null)
             {
                 return Result<InvoiceDto>.Failure("Invoice configuration not found");
@@ -146,7 +146,7 @@ public class CreateInvoiceCommandHandler : IRequestHandler<CreateInvoiceCommand,
 
             var dueDate = request.DueDate.HasValue
                 ? DateTime.SpecifyKind(request.DueDate.Value, DateTimeKind.Utc)
-                : DateTime.UtcNow.AddDays(config.DueDays);
+                : DateTime.UtcNow.AddDays(30); // TODO: config.DueDays once SriConfiguration has DueDays property
 
             // Create invoice
             var invoice = new Invoice
@@ -162,7 +162,7 @@ public class CreateInvoiceCommandHandler : IRequestHandler<CreateInvoiceCommand,
                 TaxAmount = invoiceTax,
                 TotalAmount = invoiceTotal,
                 Notes = request.Notes,
-                WarehouseId = request.WarehouseId ?? config.DefaultWarehouseId,
+                WarehouseId = request.WarehouseId, // TODO: ?? config.DefaultWarehouseId once SriConfiguration has DefaultWarehouseId
                 SriAuthorization = request.SriAuthorization
             };
 
