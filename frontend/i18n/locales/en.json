@@ -82,6 +82,15 @@
     "roles": "Roles & Permissions",
     "logout": "Logout"
   },
+  "module_descriptions": {
+    "invoices": "Create and manage customer invoices",
+    "payments": "Track and manage invoice payments",
+    "customers": "Manage customer information and contacts",
+    "establishments": "Manage physical business locations for electronic invoicing",
+    "emission_points": "Manage point-of-sale locations within establishments",
+    "tax_rates": "Configure tax rates for invoicing",
+    "sri_configuration": "Configure SRI settings and digital certificates"
+  },
   "auth": {
     "login": "Sign In",
     "logout": "Logout",

@@ -82,6 +82,15 @@
     "roles": "Roles y Permisos",
     "logout": "Cerrar sesión"
   },
+  "module_descriptions": {
+    "invoices": "Crear y gestionar facturas de clientes",
+    "payments": "Rastrear y gestionar pagos de facturas",
+    "customers": "Gestionar información y contactos de clientes",
+    "establishments": "Gestionar ubicaciones físicas del negocio para facturación electrónica",
+    "emission_points": "Gestionar puntos de venta dentro de establecimientos",
+    "tax_rates": "Configurar tasas de impuestos para facturación",
+    "sri_configuration": "Configurar ajustes SRI y certificados digitales"
+  },
   "auth": {
     "login": "Iniciar Sesión",
     "logout": "Cerrar sesión",

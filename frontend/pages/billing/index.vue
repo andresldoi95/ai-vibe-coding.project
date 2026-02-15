@@ -10,42 +10,49 @@ const uiStore = useUiStore()
 const modules = [
   {
     title: 'nav.invoices',
-    description: 'Create and manage customer invoices',
+    description: 'module_descriptions.invoices',
     icon: 'pi pi-file',
     to: '/billing/invoices',
     color: 'bg-blue-500',
   },
   {
+    title: 'nav.payments',
+    description: 'module_descriptions.payments',
+    icon: 'pi pi-money-bill',
+    to: '/billing/payments',
+    color: 'bg-emerald-500',
+  },
+  {
     title: 'nav.customers',
-    description: 'Manage customer information and contacts',
+    description: 'module_descriptions.customers',
     icon: 'pi pi-users',
     to: '/billing/customers',
     color: 'bg-green-500',
   },
   {
     title: 'nav.establishments',
-    description: 'Manage physical business locations for electronic invoicing',
+    description: 'module_descriptions.establishments',
     icon: 'pi pi-building',
     to: '/billing/establishments',
     color: 'bg-purple-500',
   },
   {
     title: 'nav.emission_points',
-    description: 'Manage point-of-sale locations within establishments',
+    description: 'module_descriptions.emission_points',
     icon: 'pi pi-map-marker',
     to: '/billing/emission-points',
     color: 'bg-orange-500',
   },
   {
     title: 'nav.tax_rates',
-    description: 'Configure tax rates for invoicing',
+    description: 'module_descriptions.tax_rates',
     icon: 'pi pi-percentage',
     to: '/billing/tax-rates',
     color: 'bg-teal-500',
   },
   {
     title: 'nav.sri_configuration',
-    description: 'Configure SRI settings and digital certificates',
+    description: 'module_descriptions.sri_configuration',
     icon: 'pi pi-shield',
     to: '/billing/sri-configuration',
     color: 'bg-indigo-500',
@@ -85,7 +92,7 @@ onMounted(() => {
                 {{ t(module.title) }}
               </h3>
               <p class="text-sm text-gray-600 dark:text-gray-400">
-                {{ module.description }}
+                {{ t(module.description) }}
               </p>
             </div>
             <i class="pi pi-chevron-right text-gray-400" />

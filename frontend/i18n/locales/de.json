@@ -78,6 +78,15 @@
     "roles": "Rollen und Berechtigungen",
     "logout": "Abmelden"
   },
+  "module_descriptions": {
+    "invoices": "Kundenrechnungen erstellen und verwalten",
+    "payments": "Rechnungszahlungen verfolgen und verwalten",
+    "customers": "Kundeninformationen und Kontakte verwalten",
+    "establishments": "Physische Geschäftsstandorte für elektronische Rechnungsstellung verwalten",
+    "emission_points": "Verkaufsstellen innerhalb von Niederlassungen verwalten",
+    "tax_rates": "Steuersätze für Rechnungsstellung konfigurieren",
+    "sri_configuration": "SRI-Einstellungen und digitale Zertifikate konfigurieren"
+  },
   "auth": {
     "login": "Anmelden",
     "logout": "Abmelden",

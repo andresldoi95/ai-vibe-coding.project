@@ -78,6 +78,15 @@
     "roles": "Rôles et Permissions",
     "logout": "Déconnexion"
   },
+  "module_descriptions": {
+    "invoices": "Créer et gérer les factures clients",
+    "payments": "Suivre et gérer les paiements de factures",
+    "customers": "Gérer les informations et contacts des clients",
+    "establishments": "Gérer les emplacements physiques de l'entreprise pour la facturation électronique",
+    "emission_points": "Gérer les points de vente au sein des établissements",
+    "tax_rates": "Configurer les taux de taxe pour la facturation",
+    "sri_configuration": "Configurer les paramètres SRI et les certificats numériques"
+  },
   "auth": {
     "login": "Se Connecter",
     "logout": "Déconnexion",
