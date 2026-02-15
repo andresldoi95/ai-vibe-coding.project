@@ -45,7 +45,7 @@ public class StockMovementRepository : Repository<StockMovement>, IStockMovement
             .Include(sm => sm.Product)
             .Include(sm => sm.Warehouse)
             .Include(sm => sm.DestinationWarehouse)
-            .Where(sm => (sm.WarehouseId == warehouseId || sm.DestinationWarehouseId == warehouseId) 
+            .Where(sm => (sm.WarehouseId == warehouseId || sm.DestinationWarehouseId == warehouseId)
                 && sm.TenantId == tenantId)
             .OrderByDescending(sm => sm.MovementDate)
             .ThenByDescending(sm => sm.CreatedAt)
