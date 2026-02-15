@@ -1,4 +1,4 @@
-import type { Payment, SriPaymentMethod, PaymentStatus } from '~/types/billing'
+import type { Payment, PaymentStatus, SriPaymentMethod } from '~/types/billing'
 
 interface CreatePaymentData {
   invoiceId: string

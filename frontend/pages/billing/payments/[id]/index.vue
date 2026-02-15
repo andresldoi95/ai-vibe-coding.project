@@ -32,7 +32,7 @@ onMounted(async () => {
     payment.value = await getPaymentById(paymentId.value)
     updateBreadcrumbs()
   }
-  catch (error) {
+  catch {
     toast.showError(t('common.error'), t('payments.not_found'))
     router.push('/billing/payments')
   }

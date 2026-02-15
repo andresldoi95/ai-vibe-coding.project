@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useVuelidate } from '@vuelidate/core'
-import { helpers, maxLength, minValue, required } from '@vuelidate/validators'
+import { maxLength, minValue, required } from '@vuelidate/validators'
+import type { Invoice } from '~/types/billing'
 import { PaymentStatus, SriPaymentMethod } from '~/types/billing'
 
 definePageMeta({
@@ -18,7 +19,7 @@ const { getAllInvoices } = useInvoice()
 
 const loading = ref(false)
 const loadingInvoices = ref(false)
-const unpaidInvoices = ref<any[]>([])
+const unpaidInvoices = ref<Invoice[]>([])
 
 const formData = reactive({
   invoiceId: '',
