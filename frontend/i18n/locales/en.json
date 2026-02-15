@@ -851,9 +851,11 @@
   },
   "payments": {
     "title": "Payments",
+    "description": "Manage customer payments and track invoice settlements",
     "create": "Create Payment",
     "view_title": "Payment Details",
     "create_description": "Record a new payment for an invoice",
+    "get_started": "Get started by recording your first payment",
     "payment_details": "Payment Details",
     "payment_info": "Payment Information",
     "payment_for_invoice": "Payment for Invoice",
@@ -869,6 +871,9 @@
     "select_invoice": "Select an invoice",
     "status": {
       "label": "Status",
+      "1": "Pending",
+      "2": "Completed",
+      "3": "Voided",
       "pending": "Pending",
       "completed": "Completed",
       "voided": "Voided"
@@ -893,8 +898,13 @@
     "void_confirm": "Are you sure you want to void this payment? This action cannot be undone.",
     "void_reason": "Reason (Optional)",
     "void_reason_placeholder": "Why is this payment being voided?",
+    "mark_as_paid": "Mark as Paid",
+    "complete_payment": "Complete Payment",
+    "complete_confirm": "Are you sure you want to mark this payment as completed?",
+    "complete_notes_placeholder": "Add any notes about this payment completion...",
     "created_successfully": "Payment created successfully",
     "voided_successfully": "Payment voided successfully",
+    "completed_successfully": "Payment marked as paid successfully",
     "not_found": "Payment not found",
     "load_error": "Failed to load payments"
   },

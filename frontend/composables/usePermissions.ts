@@ -91,6 +91,7 @@ export function usePermissions() {
     createPayment: () => hasPermission('payments.create'),
     updatePayment: () => hasPermission('payments.update'),
     voidPayment: () => hasPermission('payments.void'),
+    completePayment: () => hasPermission('payments.complete'),
     deletePayment: () => hasPermission('payments.delete'),
 
     // Invoice Configuration

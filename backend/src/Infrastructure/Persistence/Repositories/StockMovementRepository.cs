@@ -111,4 +111,11 @@ public class StockMovementRepository : Repository<StockMovement>, IStockMovement
             .AsNoTracking()
             .ToListAsync(cancellationToken);
     }
+
+    public async Task<List<StockMovement>> GetByReferenceAsync(string reference, CancellationToken cancellationToken = default)
+    {
+        return await _context.StockMovements
+            .Where(sm => sm.Reference == reference)
+            .ToListAsync(cancellationToken);
+    }
 }

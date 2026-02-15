@@ -25,7 +25,7 @@ const formData = reactive({
   amount: 0,
   paymentDate: new Date().toISOString().split('T')[0],
   paymentMethod: SriPaymentMethod.Cash,
-  status: PaymentStatus.Pending,
+  status: PaymentStatus.Completed,
   transactionId: '',
   notes: '',
 })

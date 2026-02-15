@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SaaS.Application.Features.Payments.Commands.CompletePayment;
 using SaaS.Application.Features.Payments.Commands.CreatePayment;
 using SaaS.Application.Features.Payments.Commands.VoidPayment;
 using SaaS.Application.Features.Payments.Queries.GetAllPayments;
@@ -109,6 +110,24 @@ public class PaymentsController : BaseController
 
         return Ok(new { data = result.Value, success = true });
     }
+
+    /// <summary>
+    /// Complete a pending payment
+    /// </summary>
+    [HttpPut("{id:guid}/complete")]
+    [Authorize(Policy = "payments.complete")]
+    public async Task<IActionResult> Complete(Guid id, [FromBody] CompletePaymentRequest request)
+    {
+        var command = new CompletePaymentCommand { Id = id, Notes = request.Notes };
+        var result = await _mediator.Send(command);
+
+        if (!result.IsSuccess)
+        {
+            return BadRequest(new { message = result.Error, success = false });
+        }
+
+        return Ok(new { data = result.Value, success = true });
+    }
 }
 
 /// <summary>
@@ -117,4 +136,12 @@ public class PaymentsController : BaseController
 public class VoidPaymentRequest
 {
     public string? Reason { get; set; }
+}
+
+/// <summary>
+/// Request model for completing a payment
+/// </summary>
+public class CompletePaymentRequest
+{
+    public string? Notes { get; set; }
 }

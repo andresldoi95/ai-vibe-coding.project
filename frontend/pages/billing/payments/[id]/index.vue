@@ -12,7 +12,7 @@ const uiStore = useUiStore()
 const toast = useNotification()
 const router = useRouter()
 const route = useRoute()
-const { getPaymentById, voidPayment } = usePayment()
+const { getPaymentById, voidPayment, completePayment } = usePayment()
 const { can } = usePermissions()
 
 const payment = ref<Payment | null>(null)
@@ -20,6 +20,9 @@ const loading = ref(false)
 const voidDialog = ref(false)
 const voidReason = ref('')
 const voiding = ref(false)
+const completeDialog = ref(false)
+const completeNotes = ref('')
+const completing = ref(false)
 
 const paymentId = computed(() => route.params.id as string)
 
@@ -115,6 +118,32 @@ async function handleVoid() {
   }
 }
 
+function openCompleteDialog() {
+  completeDialog.value = true
+}
+
+async function handleComplete() {
+  if (!payment.value)
+    return
+
+  completing.value = true
+  try {
+    await completePayment(payment.value.id, { notes: completeNotes.value || undefined })
+    toast.showSuccess(t('messages.success'), t('payments.completed_successfully'))
+    completeDialog.value = false
+    completeNotes.value = ''
+    // Reload payment
+    payment.value = await getPaymentById(paymentId.value)
+  }
+  catch (error) {
+    const errMessage = error instanceof Error ? error.message : 'Unknown error'
+    toast.showError(t('messages.error'), errMessage)
+  }
+  finally {
+    completing.value = false
+  }
+}
+
 function viewInvoice() {
   if (payment.value?.invoiceId) {
     router.push(`/billing/invoices/${payment.value.invoiceId}`)
@@ -129,6 +158,13 @@ function viewInvoice() {
       :description="payment ? `${t('payments.payment_for_invoice')} ${payment.invoiceNumber}` : ''"
     >
       <template #actions>
+        <Button
+          v-if="payment && payment.status === PaymentStatus.Pending && can.completePayment()"
+          :label="t('payments.mark_as_paid')"
+          icon="pi pi-check"
+          severity="success"
+          @click="openCompleteDialog"
+        />
         <Button
           v-if="payment && payment.status !== PaymentStatus.Voided && can.voidPayment()"
           :label="t('payments.void_payment')"
@@ -315,6 +351,45 @@ function viewInvoice() {
           severity="danger"
           :loading="voiding"
           @click="handleVoid"
+        />
+      </template>
+    </Dialog>
+
+    <!-- Complete Payment Dialog -->
+    <Dialog
+      v-model:visible="completeDialog"
+      :header="t('payments.complete_payment')"
+      :modal="true"
+      :style="{ width: '30rem' }"
+    >
+      <div class="flex flex-col gap-4">
+        <p>{{ t('payments.complete_confirm') }}</p>
+
+        <div class="flex flex-col gap-2">
+          <label for="completeNotes" class="font-semibold text-slate-700 dark:text-slate-200">
+            {{ t('common.notes') }} ({{ t('common.optional') }})
+          </label>
+          <Textarea
+            id="completeNotes"
+            v-model="completeNotes"
+            rows="3"
+            :placeholder="t('payments.complete_notes_placeholder')"
+          />
+        </div>
+      </div>
+
+      <template #footer>
+        <Button
+          :label="t('common.cancel')"
+          severity="secondary"
+          outlined
+          @click="completeDialog = false"
+        />
+        <Button
+          :label="t('payments.mark_as_paid')"
+          severity="success"
+          :loading="completing"
+          @click="handleComplete"
         />
       </template>
     </Dialog>

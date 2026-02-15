@@ -14,6 +14,10 @@ interface VoidPaymentData {
   reason?: string
 }
 
+interface CompletePaymentData {
+  notes?: string
+}
+
 interface ApiResponse<T> {
   data: T
   success: boolean
@@ -59,11 +63,20 @@ export function usePayment() {
     return response.data
   }
 
+  async function completePayment(id: string, data: CompletePaymentData = {}): Promise<Payment> {
+    const response = await apiFetch<ApiResponse<Payment>>(`/payments/${id}/complete`, {
+      method: 'PUT',
+      body: data,
+    })
+    return response.data
+  }
+
   return {
     getAllPayments,
     getPaymentById,
     getPaymentsByInvoiceId,
     createPayment,
     voidPayment,
+    completePayment,
   }
 }

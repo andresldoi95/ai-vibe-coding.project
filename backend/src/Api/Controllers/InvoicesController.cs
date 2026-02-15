@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using SaaS.Application.Features.Invoices.Commands.ChangeInvoiceStatus;
 using SaaS.Application.Features.Invoices.Commands.CreateInvoice;
 using SaaS.Application.Features.Invoices.Commands.DeleteInvoice;
+using SaaS.Application.Features.Invoices.Commands.UpdateInvoice;
 using SaaS.Application.Features.Invoices.Queries.GetAllInvoices;
 using SaaS.Application.Features.Invoices.Queries.GetInvoiceById;
 using SaaS.Domain.Enums;
@@ -74,6 +75,23 @@ public class InvoicesController : BaseController
             nameof(GetById),
             new { id = result.Value!.Id },
             new { data = result.Value, success = true });
+    }
+
+    [HttpPut("{id:guid}")]
+    [Authorize(Policy = "invoices.update")]
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateInvoiceCommand command)
+    {
+        // Set ID from route parameter
+        var commandWithId = command with { Id = id };
+
+        var result = await _mediator.Send(commandWithId);
+
+        if (!result.IsSuccess)
+        {
+            return BadRequest(new { message = result.Error, success = false });
+        }
+
+        return Ok(new { data = result.Value, success = true });
     }
 
     [HttpPatch("{id:guid}/status")]

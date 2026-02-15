@@ -849,9 +849,11 @@
   },
   "payments": {
     "title": "Pagos",
+    "description": "Administre los pagos de clientes y rastree liquidaciones de facturas",
     "create": "Crear Pago",
     "view_title": "Detalles del Pago",
     "create_description": "Registrar un nuevo pago para una factura",
+    "get_started": "Comience registrando su primer pago",
     "payment_details": "Detalles del Pago",
     "payment_info": "Información del Pago",
     "payment_for_invoice": "Pago para Factura",
@@ -867,6 +869,9 @@
     "select_invoice": "Seleccione una factura",
     "status": {
       "label": "Estado",
+      "1": "Pendiente",
+      "2": "Completado",
+      "3": "Anulado",
       "pending": "Pendiente",
       "completed": "Completado",
       "voided": "Anulado"
@@ -891,8 +896,13 @@
     "void_confirm": "¿Está seguro que desea anular este pago? Esta acción no se puede deshacer.",
     "void_reason": "Razón (Opcional)",
     "void_reason_placeholder": "¿Por qué se está anulando este pago?",
+    "mark_as_paid": "Marcar como Pagado",
+    "complete_payment": "Completar Pago",
+    "complete_confirm": "¿Está seguro que desea marcar este pago como completado?",
+    "complete_notes_placeholder": "Agregue notas sobre la finalización de este pago...",
     "created_successfully": "Pago creado exitosamente",
     "voided_successfully": "Pago anulado exitosamente",
+    "completed_successfully": "Pago marcado como pagado exitosamente",
     "not_found": "Pago no encontrado",
     "load_error": "Error al cargar pagos"
   },

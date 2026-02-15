@@ -36,6 +36,8 @@ public class CreateInvoiceCommandHandler : IRequestHandler<CreateInvoiceCommand,
         {
             var tenantId = _tenantContext.TenantId ?? throw new UnauthorizedAccessException("Tenant context is not set");
 
+            _logger.LogInformation("Handling CreateInvoiceCommand");
+
             // Start transaction
             await _unitOfWork.BeginTransactionAsync(cancellationToken);
 
@@ -43,6 +45,7 @@ public class CreateInvoiceCommandHandler : IRequestHandler<CreateInvoiceCommand,
             var customer = await _unitOfWork.Customers.GetByIdAsync(request.CustomerId, cancellationToken);
             if (customer == null || customer.TenantId != tenantId)
             {
+                _logger.LogWarning("Customer {CustomerId} not found for tenant {TenantId}", request.CustomerId, tenantId);
                 return Result<InvoiceDto>.Failure("Customer not found");
             }
 
@@ -51,17 +54,20 @@ public class CreateInvoiceCommandHandler : IRequestHandler<CreateInvoiceCommand,
 
             if (emissionPoint == null || emissionPoint.TenantId != tenantId)
             {
+                _logger.LogWarning("Emission point {EmissionPointId} not found for tenant {TenantId}", request.EmissionPointId, tenantId);
                 return Result<InvoiceDto>.Failure("Emission point not found");
             }
 
             if (!emissionPoint.IsActive)
             {
+                _logger.LogWarning("Emission point {EmissionPointId} is not active", request.EmissionPointId);
                 return Result<InvoiceDto>.Failure("Emission point is not active");
             }
 
             // Establishment is already loaded by EmissionPointRepository.GetByIdAsync
             if (emissionPoint.Establishment == null)
             {
+                _logger.LogWarning("Establishment not found for emission point {EmissionPointId}", request.EmissionPointId);
                 return Result<InvoiceDto>.Failure("Establishment not found for emission point");
             }
 
@@ -80,6 +86,7 @@ public class CreateInvoiceCommandHandler : IRequestHandler<CreateInvoiceCommand,
             var config = await _unitOfWork.SriConfigurations.GetByTenantIdAsync(tenantId, cancellationToken);
             if (config == null)
             {
+                _logger.LogWarning("Invoice configuration not found for tenant {TenantId}", tenantId);
                 return Result<InvoiceDto>.Failure("Invoice configuration not found");
             }
 
@@ -94,6 +101,7 @@ public class CreateInvoiceCommandHandler : IRequestHandler<CreateInvoiceCommand,
                 if (product == null || product.TenantId != tenantId)
                 {
                     await _unitOfWork.RollbackTransactionAsync(cancellationToken);
+                    _logger.LogWarning("Product {ProductId} not found for tenant {TenantId}", itemDto.ProductId, tenantId);
                     return Result<InvoiceDto>.Failure($"Product not found");
                 }
 
@@ -102,6 +110,7 @@ public class CreateInvoiceCommandHandler : IRequestHandler<CreateInvoiceCommand,
                 if (taxRate == null || taxRate.TenantId != tenantId)
                 {
                     await _unitOfWork.RollbackTransactionAsync(cancellationToken);
+                    _logger.LogWarning("Tax rate {TaxRateId} not found for tenant {TenantId}", itemDto.TaxRateId, tenantId);
                     return Result<InvoiceDto>.Failure($"Tax rate not found");
                 }
 

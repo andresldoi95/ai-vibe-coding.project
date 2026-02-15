@@ -126,7 +126,7 @@ builder.Services.AddAuthorization(options =>
         "invoices.read", "invoices.create", "invoices.update", "invoices.delete",
         "invoices.send", "invoices.void", "invoices.export",
         // Payments
-        "payments.read", "payments.create", "payments.update", "payments.void", "payments.delete",
+        "payments.read", "payments.create", "payments.update", "payments.void", "payments.complete", "payments.delete",
         // SRI - Establishments
         "establishments.read", "establishments.create", "establishments.update", "establishments.delete",
         // SRI - Emission Points

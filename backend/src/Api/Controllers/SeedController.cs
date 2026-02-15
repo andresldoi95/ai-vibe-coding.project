@@ -387,13 +387,13 @@ public class SeedController : ControllerBase
         await _context.RolePermissions.AddRangeAsync(adminPermissions);
 
         // Manager: Full access to warehouses, products, customers, stock, establishments, emission_points
-        // Read/create/update/send/export for invoices, read/create/update/void for payments, read/update for tax-rates, read for invoice-config, sri_configuration
+        // Read/create/update/send/export for invoices, read/create/update/void/complete for payments, read/update for tax-rates, read for invoice-config, sri_configuration
         // Read-only access to roles
         var managerPermissions = allPermissions
             .Where(p =>
                 new[] { "warehouses", "products", "customers", "stock", "establishments", "emission_points" }.Contains(p.Resource) ||
                 (p.Resource == "invoices" && new[] { "read", "create", "update", "send", "export" }.Contains(p.Action)) ||
-                (p.Resource == "payments" && new[] { "read", "create", "update", "void" }.Contains(p.Action)) ||
+                (p.Resource == "payments" && new[] { "read", "create", "update", "void", "complete" }.Contains(p.Action)) ||
                 (p.Resource == "tax-rates" && new[] { "read", "create", "update" }.Contains(p.Action)) ||
                 (p.Resource == "invoice-config" && new[] { "read", "update" }.Contains(p.Action)) ||
                 (p.Resource == "sri_configuration" && new[] { "read", "update" }.Contains(p.Action)) ||

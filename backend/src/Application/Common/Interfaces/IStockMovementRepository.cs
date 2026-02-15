@@ -38,4 +38,9 @@ public interface IStockMovementRepository : IRepository<StockMovement>
         DateTime? fromDate = null,
         DateTime? toDate = null,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Get stock movements by reference (e.g., invoice number)
+    /// </summary>
+    Task<List<StockMovement>> GetByReferenceAsync(string reference, CancellationToken cancellationToken = default);
 }
