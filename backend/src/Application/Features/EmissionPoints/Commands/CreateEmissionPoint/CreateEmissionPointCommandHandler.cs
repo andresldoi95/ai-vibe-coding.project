@@ -69,6 +69,8 @@ public class CreateEmissionPointCommandHandler : IRequestHandler<CreateEmissionP
             {
                 Id = emissionPoint.Id,
                 EstablishmentId = emissionPoint.EstablishmentId,
+                EstablishmentCode = establishment.EstablishmentCode,
+                EstablishmentName = establishment.Name,
                 EmissionPointCode = emissionPoint.EmissionPointCode,
                 Name = emissionPoint.Name,
                 IsActive = emissionPoint.IsActive,

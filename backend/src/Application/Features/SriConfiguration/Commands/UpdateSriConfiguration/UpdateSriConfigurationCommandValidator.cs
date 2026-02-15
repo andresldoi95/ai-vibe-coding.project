@@ -25,7 +25,20 @@ public class UpdateSriConfigurationCommandValidator : AbstractValidator<UpdateSr
             .NotEmpty().WithMessage("Main address is required")
             .MaximumLength(500).WithMessage("Main address cannot exceed 500 characters");
 
+        RuleFor(x => x.Phone)
+            .NotEmpty().WithMessage("Phone number is required")
+            .MaximumLength(20).WithMessage("Phone cannot exceed 20 characters");
+
+        RuleFor(x => x.Email)
+            .NotEmpty().WithMessage("Email is required")
+            .EmailAddress().WithMessage("Invalid email format")
+            .MaximumLength(256).WithMessage("Email cannot exceed 256 characters");
+
         RuleFor(x => x.Environment)
             .IsInEnum().WithMessage("Invalid SRI environment");
+
+        RuleFor(x => x.SpecialTaxpayerNumber)
+            .MaximumLength(50).WithMessage("Special taxpayer number cannot exceed 50 characters")
+            .When(x => !string.IsNullOrEmpty(x.SpecialTaxpayerNumber));
     }
 }

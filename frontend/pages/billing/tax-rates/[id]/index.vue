@@ -20,7 +20,7 @@ onMounted(async () => {
     const id = route.params.id as string
     taxRate.value = await getTaxRateById(id)
   }
-  catch (error) {
+  catch {
     const toast = useNotification()
     toast.showError(t('taxRates.load_error'))
     router.push('/billing/tax-rates')
@@ -100,7 +100,7 @@ function formatRate(rate: number): string {
           <div class="field">
             <label class="font-semibold text-surface-700">{{ t('taxRates.country') }}</label>
             <p class="mt-1">
-              {{ taxRate.country || t('common.not_specified') }}
+              {{ taxRate.countryName || t('common.not_specified') }}
             </p>
           </div>
 

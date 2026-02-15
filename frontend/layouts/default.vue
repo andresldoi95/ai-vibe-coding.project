@@ -53,11 +53,6 @@ const menuItems = computed(() => {
           icon: 'pi pi-percentage',
           command: () => navigateTo('/billing/tax-rates'),
         },
-        {
-          label: t('nav.invoice_configuration'),
-          icon: 'pi pi-cog',
-          command: () => navigateTo('/billing/invoice-configuration'),
-        },
         { separator: true },
         {
           label: t('nav.establishments'),
@@ -199,13 +194,18 @@ const breadcrumbHome = { icon: 'pi pi-home', to: '/' }
 
             <!-- User Menu -->
             <Button
-              icon="pi pi-user"
               text
-              rounded
+              severity="secondary"
               aria-haspopup="true"
               aria-controls="user_menu"
               @click="toggleUserMenu"
-            />
+            >
+              <div class="flex items-center gap-2">
+                <i class="pi pi-user" />
+                <span class="hidden md:inline">{{ authStore.user?.name }}</span>
+                <i class="pi pi-chevron-down text-xs" />
+              </div>
+            </Button>
             <Menu
               id="user_menu"
               ref="userMenu"

@@ -11,6 +11,11 @@ public class EmissionPointDto
     public int DebitNoteSequence { get; set; }
     public int RetentionSequence { get; set; }
     public Guid EstablishmentId { get; set; }
+
+    // Establishment details
+    public string? EstablishmentCode { get; set; }
+    public string? EstablishmentName { get; set; }
+
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
 }

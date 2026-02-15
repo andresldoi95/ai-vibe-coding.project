@@ -11,17 +11,17 @@ public interface IStockMovementRepository : IRepository<StockMovement>
     /// Get all stock movements for a tenant with product and warehouse details
     /// </summary>
     Task<List<StockMovement>> GetAllForTenantAsync(Guid tenantId);
-    
+
     /// <summary>
     /// Get stock movements by product
     /// </summary>
     Task<List<StockMovement>> GetByProductIdAsync(Guid productId, Guid tenantId);
-    
+
     /// <summary>
     /// Get stock movements by warehouse
     /// </summary>
     Task<List<StockMovement>> GetByWarehouseIdAsync(Guid warehouseId, Guid tenantId);
-    
+
     /// <summary>
     /// Get stock movement by ID with related entities
     /// </summary>
@@ -38,4 +38,9 @@ public interface IStockMovementRepository : IRepository<StockMovement>
         DateTime? fromDate = null,
         DateTime? toDate = null,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Get stock movements by reference (e.g., invoice number)
+    /// </summary>
+    Task<List<StockMovement>> GetByReferenceAsync(string reference, CancellationToken cancellationToken = default);
 }

@@ -67,7 +67,7 @@ function getFullAddress(wh: Warehouse): string {
     wh.city,
     wh.state,
     wh.postalCode,
-    wh.country,
+    wh.countryName,
   ].filter(Boolean)
   return parts.join(', ')
 }

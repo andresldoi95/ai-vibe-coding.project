@@ -72,11 +72,11 @@ export function usePermissions() {
     manageRoles: () => hasPermission('roles.manage'),
 
     // Tax Rates
-    viewTaxRates: () => hasPermission('taxrates.read'),
-    readTaxRate: () => hasPermission('taxrates.read'),
-    createTaxRate: () => hasPermission('taxrates.create'),
-    updateTaxRate: () => hasPermission('taxrates.update'),
-    deleteTaxRate: () => hasPermission('taxrates.delete'),
+    viewTaxRates: () => hasPermission('tax-rates.read'),
+    readTaxRate: () => hasPermission('tax-rates.read'),
+    createTaxRate: () => hasPermission('tax-rates.create'),
+    updateTaxRate: () => hasPermission('tax-rates.update'),
+    deleteTaxRate: () => hasPermission('tax-rates.delete'),
 
     // Invoices
     viewInvoices: () => hasPermission('invoices.read'),
@@ -85,9 +85,18 @@ export function usePermissions() {
     updateInvoice: () => hasPermission('invoices.update'),
     deleteInvoice: () => hasPermission('invoices.delete'),
 
+    // Payments
+    viewPayments: () => hasPermission('payments.read'),
+    readPayment: () => hasPermission('payments.read'),
+    createPayment: () => hasPermission('payments.create'),
+    updatePayment: () => hasPermission('payments.update'),
+    voidPayment: () => hasPermission('payments.void'),
+    completePayment: () => hasPermission('payments.complete'),
+    deletePayment: () => hasPermission('payments.delete'),
+
     // Invoice Configuration
-    readInvoiceConfiguration: () => hasPermission('invoiceconfigurations.read'),
-    updateInvoiceConfiguration: () => hasPermission('invoiceconfigurations.update'),
+    readInvoiceConfiguration: () => hasPermission('invoice-config.read'),
+    updateInvoiceConfiguration: () => hasPermission('invoice-config.update'),
 
     // Establishments
     viewEstablishments: () => hasPermission('establishments.read'),

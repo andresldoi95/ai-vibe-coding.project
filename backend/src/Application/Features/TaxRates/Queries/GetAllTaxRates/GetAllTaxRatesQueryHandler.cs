@@ -40,7 +40,9 @@ public class GetAllTaxRatesQueryHandler : IRequestHandler<GetAllTaxRatesQuery, R
                 IsDefault = tr.IsDefault,
                 IsActive = tr.IsActive,
                 Description = tr.Description,
-                Country = tr.Country,
+                CountryId = tr.CountryId,
+                CountryCode = tr.Country?.Code,
+                CountryName = tr.Country?.Name,
                 CreatedAt = tr.CreatedAt,
                 UpdatedAt = tr.UpdatedAt
             }).ToList();

@@ -35,11 +35,16 @@ public class UploadCertificateCommandHandler : IRequestHandler<UploadCertificate
                 return Result<SriConfigurationDto>.Failure("Tenant context is required");
             }
 
-            // Validate certificate
+            // Validate certificate and extract expiration date
+            X509Certificate2 certificate;
+            DateTime certificateExpiryDate;
             try
             {
-                var certificate = new X509Certificate2(request.CertificateFile, request.CertificatePassword);
-                if (certificate.NotAfter < DateTime.UtcNow)
+                certificate = new X509Certificate2(request.CertificateFile, request.CertificatePassword);
+                // Convert NotAfter to UTC for proper comparison
+                certificateExpiryDate = certificate.NotAfter.ToUniversalTime();
+
+                if (certificateExpiryDate < DateTime.UtcNow)
                 {
                     return Result<SriConfigurationDto>.Failure("Certificate has expired");
                 }
@@ -57,9 +62,10 @@ public class UploadCertificateCommandHandler : IRequestHandler<UploadCertificate
                 return Result<SriConfigurationDto>.Failure("SRI configuration not found. Please configure company information first.");
             }
 
-            // Store certificate and password (password should be encrypted in production)
+            // Store certificate, password, and expiration date (password should be encrypted in production)
             sriConfig.DigitalCertificate = request.CertificateFile;
             sriConfig.CertificatePassword = request.CertificatePassword; // TODO: Encrypt password
+            sriConfig.CertificateExpiryDate = certificateExpiryDate;
 
             await _unitOfWork.SriConfigurations.UpdateAsync(sriConfig, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
@@ -81,6 +87,7 @@ public class UploadCertificateCommandHandler : IRequestHandler<UploadCertificate
                 AccountingRequired = sriConfig.AccountingRequired,
                 IsCertificateConfigured = sriConfig.IsCertificateConfigured,
                 IsCertificateValid = sriConfig.IsCertificateValid,
+                CertificateExpiryDate = sriConfig.CertificateExpiryDate,
                 CreatedAt = sriConfig.CreatedAt,
                 UpdatedAt = sriConfig.UpdatedAt
             };

@@ -3,6 +3,7 @@ import { useVuelidate } from '@vuelidate/core'
 import { required } from '@vuelidate/validators'
 import type { CreateInvoiceDto, CreateInvoiceItemDto, Customer, Product, TaxRate } from '~/types'
 import type { Warehouse } from '~/types/inventory'
+import type { EmissionPoint } from '~/types/emission-point'
 
 definePageMeta({
   middleware: ['auth', 'tenant'],
@@ -17,6 +18,7 @@ const { getAllTaxRates } = useTaxRate()
 const { getAllCustomers } = useCustomer()
 const { getAllProducts } = useProduct()
 const { getAllWarehouses } = useWarehouse()
+const { getAllEmissionPoints } = useEmissionPoint()
 
 const loading = ref(false)
 const initialLoading = ref(true)
@@ -25,10 +27,12 @@ const customers = ref<Customer[]>([])
 const products = ref<Product[]>([])
 const taxRates = ref<TaxRate[]>([])
 const warehouses = ref<Warehouse[]>([])
+const emissionPoints = ref<EmissionPoint[]>([])
 
 const formData = reactive({
   customerId: null as string | null,
   warehouseId: null as string | null,
+  emissionPointId: null as string | null,
   issueDate: new Date().toISOString().split('T')[0],
   notes: '',
   items: [] as CreateInvoiceItemDto[],
@@ -36,19 +40,21 @@ const formData = reactive({
 
 onMounted(async () => {
   try {
-    const [customerList, productList, taxRateList, warehouseList] = await Promise.all([
+    const [customerList, productList, taxRateList, warehouseList, emissionPointList] = await Promise.all([
       getAllCustomers(),
       getAllProducts(),
       getAllTaxRates(),
       getAllWarehouses(),
+      getAllEmissionPoints({ isActive: true }),
     ])
 
     customers.value = customerList
     products.value = productList
     taxRates.value = taxRateList.filter(tr => tr.isActive)
     warehouses.value = warehouseList.filter(w => w.isActive)
+    emissionPoints.value = emissionPointList
   }
-  catch (error) {
+  catch {
     toast.showError(t('invoices.load_error'))
   }
   finally {
@@ -58,6 +64,7 @@ onMounted(async () => {
 
 const rules = computed(() => ({
   customerId: { required },
+  emissionPointId: { required },
   issueDate: { required },
   items: { required },
 }))
@@ -92,6 +99,47 @@ function updateProductDetails(index: number) {
   }
 }
 
+// Calculate line item totals
+function getLineItemTaxRate(taxRateId: string): number {
+  const taxRate = taxRates.value.find(tr => tr.id === taxRateId)
+  return taxRate?.rate || 0
+}
+
+function calculateLineItemSubtotal(item: CreateInvoiceItemDto): number {
+  return item.quantity * item.unitPrice
+}
+
+function calculateLineItemTax(item: CreateInvoiceItemDto): number {
+  const subtotal = calculateLineItemSubtotal(item)
+  const rate = getLineItemTaxRate(item.taxRateId)
+  return subtotal * rate
+}
+
+function calculateLineItemTotal(item: CreateInvoiceItemDto): number {
+  return calculateLineItemSubtotal(item) + calculateLineItemTax(item)
+}
+
+// Calculate invoice totals
+const invoiceSubtotal = computed(() => {
+  return formData.items.reduce((sum, item) => sum + calculateLineItemSubtotal(item), 0)
+})
+
+const invoiceTax = computed(() => {
+  return formData.items.reduce((sum, item) => sum + calculateLineItemTax(item), 0)
+})
+
+const invoiceTotal = computed(() => {
+  return invoiceSubtotal.value + invoiceTax.value
+})
+
+function formatCurrency(amount: number): string {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2,
+  }).format(amount)
+}
+
 async function handleSubmit() {
   const isValid = await v$.value.$validate()
   if (!isValid || formData.items.length === 0) {
@@ -104,6 +152,7 @@ async function handleSubmit() {
     const payload: CreateInvoiceDto = {
       customerId: formData.customerId!,
       warehouseId: formData.warehouseId || undefined,
+      emissionPointId: formData.emissionPointId!,
       issueDate: formData.issueDate,
       notes: formData.notes || undefined,
       items: formData.items,
@@ -189,6 +238,41 @@ function handleCancel() {
               </div>
 
               <div class="field">
+                <label for="emissionPointId" class="font-semibold">
+                  {{ t('invoices.emission_point') }} <span class="text-red-500">*</span>
+                </label>
+                <Select
+                  id="emissionPointId"
+                  v-model="formData.emissionPointId"
+                  :options="emissionPoints"
+                  option-label="name"
+                  option-value="id"
+                  :placeholder="t('invoices.select_emission_point')"
+                  :class="{ 'p-invalid': v$.emissionPointId.$error }"
+                  class="w-full"
+                >
+                  <template #option="{ option }">
+                    {{ option.establishmentCode }}-{{ option.emissionPointCode }} - {{ option.name }}
+                  </template>
+                  <template #value="{ value }">
+                    <template v-if="value">
+                      <span v-for="ep in emissionPoints" :key="ep.id">
+                        <template v-if="ep.id === value">
+                          {{ ep.establishmentCode }}-{{ ep.emissionPointCode }} - {{ ep.name }}
+                        </template>
+                      </span>
+                    </template>
+                  </template>
+                </Select>
+                <small v-if="v$.emissionPointId.$error" class="p-error">
+                  {{ v$.emissionPointId.$errors[0].$message }}
+                </small>
+                <small class="block mt-1 text-gray-600">
+                  {{ t('invoices.emission_point_required') }}
+                </small>
+              </div>
+
+              <div class="field">
                 <label for="issueDate" class="font-semibold">
                   {{ t('invoices.issue_date') }} <span class="text-red-500">*</span>
                 </label>
@@ -243,7 +327,7 @@ function handleCancel() {
                 </div>
               </template>
 
-              <Column :header="t('invoices.product')" style="width: 25%">
+              <Column :header="t('invoices.product')" style="width: 18%">
                 <template #body="{ data, index }">
                   <Select
                     v-model="data.productId"
@@ -258,7 +342,7 @@ function handleCancel() {
                 </template>
               </Column>
 
-              <Column :header="t('invoices.description')" style="width: 20%">
+              <Column :header="t('invoices.description')" style="width: 16%">
                 <template #body="{ data }">
                   <InputText
                     v-model="data.description"
@@ -268,7 +352,7 @@ function handleCancel() {
                 </template>
               </Column>
 
-              <Column :header="t('invoices.quantity')" style="width: 15%">
+              <Column :header="t('invoices.quantity')" style="width: 10%">
                 <template #body="{ data }">
                   <InputNumber
                     v-model="data.quantity"
@@ -278,7 +362,7 @@ function handleCancel() {
                 </template>
               </Column>
 
-              <Column :header="t('invoices.unit_price')" style="width: 15%">
+              <Column :header="t('invoices.unit_price')" style="width: 12%">
                 <template #body="{ data }">
                   <InputNumber
                     v-model="data.unitPrice"
@@ -291,7 +375,7 @@ function handleCancel() {
                 </template>
               </Column>
 
-              <Column :header="t('invoices.tax_rate')" style="width: 15%">
+              <Column :header="t('invoices.tax_rate')" style="width: 12%">
                 <template #body="{ data }">
                   <Select
                     v-model="data.taxRateId"
@@ -303,7 +387,29 @@ function handleCancel() {
                 </template>
               </Column>
 
-              <Column :header="t('common.actions')" style="width: 10%">
+              <Column :header="t('invoices.subtotal')" style="width: 10%">
+                <template #body="{ data }">
+                  <span class="font-semibold">
+                    {{ formatCurrency(calculateLineItemSubtotal(data)) }}
+                  </span>
+                </template>
+              </Column>
+
+              <Column :header="t('invoices.tax')" style="width: 10%">
+                <template #body="{ data }">
+                  <span>{{ formatCurrency(calculateLineItemTax(data)) }}</span>
+                </template>
+              </Column>
+
+              <Column :header="t('invoices.total')" style="width: 12%">
+                <template #body="{ data }">
+                  <span class="font-semibold text-primary-600">
+                    {{ formatCurrency(calculateLineItemTotal(data)) }}
+                  </span>
+                </template>
+              </Column>
+
+              <Column :header="t('common.actions')" style="width: 8%">
                 <template #body="{ index }">
                   <Button
                     icon="pi pi-trash"
@@ -315,6 +421,44 @@ function handleCancel() {
                 </template>
               </Column>
             </DataTable>
+
+            <!-- Invoice Totals Summary -->
+            <div class="flex justify-end mt-6">
+              <Card class="w-full md:w-96">
+                <template #content>
+                  <div class="space-y-3">
+                    <div class="flex justify-between items-center">
+                      <span class="text-surface-600 dark:text-surface-400">
+                        {{ t('invoices.subtotal_amount') }}
+                      </span>
+                      <span class="font-semibold text-lg">
+                        {{ formatCurrency(invoiceSubtotal) }}
+                      </span>
+                    </div>
+
+                    <div class="flex justify-between items-center">
+                      <span class="text-surface-600 dark:text-surface-400">
+                        {{ t('invoices.tax_amount') }}
+                      </span>
+                      <span class="font-semibold text-lg">
+                        {{ formatCurrency(invoiceTax) }}
+                      </span>
+                    </div>
+
+                    <Divider />
+
+                    <div class="flex justify-between items-center">
+                      <span class="text-xl font-semibold text-surface-900 dark:text-surface-50">
+                        {{ t('invoices.total_amount') }}
+                      </span>
+                      <span class="text-2xl font-bold text-primary-600">
+                        {{ formatCurrency(invoiceTotal) }}
+                      </span>
+                    </div>
+                  </div>
+                </template>
+              </Card>
+            </div>
           </div>
 
           <!-- Form Actions -->

@@ -9,7 +9,11 @@ public class SriConfigurationDto
     public string LegalName { get; set; } = string.Empty;
     public string TradeName { get; set; } = string.Empty;
     public string MainAddress { get; set; } = string.Empty;
+    public string Phone { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
     public bool AccountingRequired { get; set; }
+    public string? SpecialTaxpayerNumber { get; set; }
+    public bool IsRiseRegime { get; set; }
     public SriEnvironment Environment { get; set; }
     public bool IsCertificateConfigured { get; set; }
     public DateTime? CertificateExpiryDate { get; set; }
@@ -25,7 +29,11 @@ public class UpdateSriConfigurationDto
     public string LegalName { get; set; } = string.Empty;
     public string TradeName { get; set; } = string.Empty;
     public string MainAddress { get; set; } = string.Empty;
+    public string Phone { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
     public bool AccountingRequired { get; set; }
+    public string? SpecialTaxpayerNumber { get; set; }
+    public bool IsRiseRegime { get; set; }
     public SriEnvironment Environment { get; set; }
 }
 

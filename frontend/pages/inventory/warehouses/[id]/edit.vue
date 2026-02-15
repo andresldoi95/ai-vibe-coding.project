@@ -14,6 +14,7 @@ const toast = useNotification()
 const route = useRoute()
 const router = useRouter()
 const { getWarehouseById, updateWarehouse } = useWarehouse()
+const { getAllCountries, getCountryOptions } = useCountry()
 
 const loading = ref(false)
 const loadingData = ref(false)
@@ -27,7 +28,7 @@ const formData = reactive({
   city: '',
   state: '',
   postalCode: '',
-  country: '',
+  countryId: '',
   phone: '',
   email: '',
   isActive: true,
@@ -66,9 +67,8 @@ const rules = computed(() => ({
     required,
     maxLength: maxLength(20),
   },
-  country: {
+  countryId: {
     required,
-    maxLength: maxLength(100),
   },
   phone: {
     maxLength: maxLength(50),
@@ -87,6 +87,8 @@ async function loadWarehouse() {
   loadingData.value = true
   try {
     const id = route.params.id as string
+    // Load countries and warehouse in parallel
+    await getAllCountries()
     warehouse.value = await getWarehouseById(id)
 
     // Populate form data
@@ -97,7 +99,7 @@ async function loadWarehouse() {
     formData.city = warehouse.value.city
     formData.state = warehouse.value.state || ''
     formData.postalCode = warehouse.value.postalCode
-    formData.country = warehouse.value.country
+    formData.countryId = warehouse.value.countryId
     formData.phone = warehouse.value.phone || ''
     formData.email = warehouse.value.email || ''
     formData.isActive = warehouse.value.isActive
@@ -142,7 +144,7 @@ async function handleSubmit() {
       city: formData.city,
       state: formData.state || undefined,
       postalCode: formData.postalCode,
-      country: formData.country,
+      countryId: formData.countryId,
       phone: formData.phone || undefined,
       email: formData.email || undefined,
       isActive: formData.isActive,
@@ -322,15 +324,20 @@ onMounted(() => {
                   <label for="country" class="font-semibold text-slate-700 dark:text-slate-200">
                     {{ t('common.country') }} *
                   </label>
-                  <InputText
+                  <Dropdown
                     id="country"
-                    v-model="formData.country"
-                    :invalid="v$.country.$error"
-                    :placeholder="t('warehouses.country_placeholder')"
-                    @blur="v$.country.$touch()"
+                    v-model="formData.countryId"
+                    :options="getCountryOptions()"
+                    option-label="label"
+                    option-value="value"
+                    :invalid="v$.countryId.$error"
+                    :placeholder="t('warehouses.select_country')"
+                    filter
+                    class="w-full"
+                    @blur="v$.countryId.$touch()"
                   />
-                  <small v-if="v$.country.$error" class="text-red-600 dark:text-red-400">
-                    {{ v$.country.$errors[0].$message }}
+                  <small v-if="v$.countryId.$error" class="text-red-600 dark:text-red-400">
+                    {{ v$.countryId.$errors[0].$message }}
                   </small>
                 </div>
               </div>

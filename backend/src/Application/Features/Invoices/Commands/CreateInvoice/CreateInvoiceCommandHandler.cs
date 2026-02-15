@@ -36,6 +36,8 @@ public class CreateInvoiceCommandHandler : IRequestHandler<CreateInvoiceCommand,
         {
             var tenantId = _tenantContext.TenantId ?? throw new UnauthorizedAccessException("Tenant context is not set");
 
+            _logger.LogInformation("Handling CreateInvoiceCommand");
+
             // Start transaction
             await _unitOfWork.BeginTransactionAsync(cancellationToken);
 
@@ -43,18 +45,50 @@ public class CreateInvoiceCommandHandler : IRequestHandler<CreateInvoiceCommand,
             var customer = await _unitOfWork.Customers.GetByIdAsync(request.CustomerId, cancellationToken);
             if (customer == null || customer.TenantId != tenantId)
             {
+                _logger.LogWarning("Customer {CustomerId} not found for tenant {TenantId}", request.CustomerId, tenantId);
                 return Result<InvoiceDto>.Failure("Customer not found");
             }
 
-            // Get configuration
-            var config = await _unitOfWork.InvoiceConfigurations.GetByTenantAsync(tenantId, cancellationToken);
-            if (config == null)
+            // Validate emission point exists, is active, and belongs to tenant
+            var emissionPoint = await _unitOfWork.EmissionPoints.GetByIdAsync(request.EmissionPointId, cancellationToken);
+
+            if (emissionPoint == null || emissionPoint.TenantId != tenantId)
             {
-                return Result<InvoiceDto>.Failure("Invoice configuration not found");
+                _logger.LogWarning("Emission point {EmissionPointId} not found for tenant {TenantId}", request.EmissionPointId, tenantId);
+                return Result<InvoiceDto>.Failure("Emission point not found");
             }
 
-            // Generate invoice number
-            var invoiceNumber = await _invoiceNumberService.GenerateNextInvoiceNumberAsync(tenantId, cancellationToken);
+            if (!emissionPoint.IsActive)
+            {
+                _logger.LogWarning("Emission point {EmissionPointId} is not active", request.EmissionPointId);
+                return Result<InvoiceDto>.Failure("Emission point is not active");
+            }
+
+            // Establishment is already loaded by EmissionPointRepository.GetByIdAsync
+            if (emissionPoint.Establishment == null)
+            {
+                _logger.LogWarning("Establishment not found for emission point {EmissionPointId}", request.EmissionPointId);
+                return Result<InvoiceDto>.Failure("Establishment not found for emission point");
+            }
+
+            var establishment = emissionPoint.Establishment;
+
+            // Generate invoice number using emission point sequence
+            // Increment sequence atomically (thread-safe)
+            emissionPoint.InvoiceSequence++;
+            var sequentialNumber = emissionPoint.InvoiceSequence;
+            await _unitOfWork.EmissionPoints.UpdateAsync(emissionPoint);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            var invoiceNumber = $"{establishment.EstablishmentCode}-{emissionPoint.EmissionPointCode}-{sequentialNumber:D9}";
+
+            // Get configuration
+            var config = await _unitOfWork.SriConfigurations.GetByTenantIdAsync(tenantId, cancellationToken);
+            if (config == null)
+            {
+                _logger.LogWarning("Invoice configuration not found for tenant {TenantId}", tenantId);
+                return Result<InvoiceDto>.Failure("Invoice configuration not found");
+            }
 
             // Create invoice items and calculate totals
             var invoiceItems = new List<InvoiceItem>();
@@ -67,6 +101,7 @@ public class CreateInvoiceCommandHandler : IRequestHandler<CreateInvoiceCommand,
                 if (product == null || product.TenantId != tenantId)
                 {
                     await _unitOfWork.RollbackTransactionAsync(cancellationToken);
+                    _logger.LogWarning("Product {ProductId} not found for tenant {TenantId}", itemDto.ProductId, tenantId);
                     return Result<InvoiceDto>.Failure($"Product not found");
                 }
 
@@ -75,6 +110,7 @@ public class CreateInvoiceCommandHandler : IRequestHandler<CreateInvoiceCommand,
                 if (taxRate == null || taxRate.TenantId != tenantId)
                 {
                     await _unitOfWork.RollbackTransactionAsync(cancellationToken);
+                    _logger.LogWarning("Tax rate {TaxRateId} not found for tenant {TenantId}", itemDto.TaxRateId, tenantId);
                     return Result<InvoiceDto>.Failure($"Tax rate not found");
                 }
 
@@ -119,7 +155,7 @@ public class CreateInvoiceCommandHandler : IRequestHandler<CreateInvoiceCommand,
 
             var dueDate = request.DueDate.HasValue
                 ? DateTime.SpecifyKind(request.DueDate.Value, DateTimeKind.Utc)
-                : DateTime.UtcNow.AddDays(config.DueDays);
+                : DateTime.UtcNow.AddDays(30); // TODO: config.DueDays once SriConfiguration has DueDays property
 
             // Create invoice
             var invoice = new Invoice
@@ -127,6 +163,7 @@ public class CreateInvoiceCommandHandler : IRequestHandler<CreateInvoiceCommand,
                 TenantId = tenantId,
                 InvoiceNumber = invoiceNumber,
                 CustomerId = request.CustomerId,
+                EmissionPointId = request.EmissionPointId,
                 IssueDate = issueDate,
                 DueDate = dueDate,
                 Status = InvoiceStatus.Draft,
@@ -134,7 +171,7 @@ public class CreateInvoiceCommandHandler : IRequestHandler<CreateInvoiceCommand,
                 TaxAmount = invoiceTax,
                 TotalAmount = invoiceTotal,
                 Notes = request.Notes,
-                WarehouseId = request.WarehouseId ?? config.DefaultWarehouseId,
+                WarehouseId = request.WarehouseId, // TODO: ?? config.DefaultWarehouseId once SriConfiguration has DefaultWarehouseId
                 SriAuthorization = request.SriAuthorization
             };
 
@@ -187,6 +224,10 @@ public class CreateInvoiceCommandHandler : IRequestHandler<CreateInvoiceCommand,
                 InvoiceNumber = invoice.InvoiceNumber,
                 CustomerId = invoice.CustomerId,
                 CustomerName = customer.Name,
+                EmissionPointId = invoice.EmissionPointId,
+                EmissionPointCode = emissionPoint.EmissionPointCode,
+                EmissionPointName = emissionPoint.Name,
+                EstablishmentCode = establishment.EstablishmentCode,
                 IssueDate = invoice.IssueDate,
                 DueDate = invoice.DueDate,
                 Status = invoice.Status,

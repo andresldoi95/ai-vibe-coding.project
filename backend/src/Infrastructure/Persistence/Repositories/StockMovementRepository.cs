@@ -45,7 +45,7 @@ public class StockMovementRepository : Repository<StockMovement>, IStockMovement
             .Include(sm => sm.Product)
             .Include(sm => sm.Warehouse)
             .Include(sm => sm.DestinationWarehouse)
-            .Where(sm => (sm.WarehouseId == warehouseId || sm.DestinationWarehouseId == warehouseId) 
+            .Where(sm => (sm.WarehouseId == warehouseId || sm.DestinationWarehouseId == warehouseId)
                 && sm.TenantId == tenantId)
             .OrderByDescending(sm => sm.MovementDate)
             .ThenByDescending(sm => sm.CreatedAt)
@@ -109,6 +109,13 @@ public class StockMovementRepository : Repository<StockMovement>, IStockMovement
             .OrderByDescending(sm => sm.MovementDate)
             .ThenByDescending(sm => sm.CreatedAt)
             .AsNoTracking()
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<List<StockMovement>> GetByReferenceAsync(string reference, CancellationToken cancellationToken = default)
+    {
+        return await _context.StockMovements
+            .Where(sm => sm.Reference == reference)
             .ToListAsync(cancellationToken);
     }
 }

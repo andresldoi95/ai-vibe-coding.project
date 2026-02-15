@@ -47,10 +47,6 @@ public class UpdateCustomerCommandValidator : AbstractValidator<UpdateCustomerCo
             .MaximumLength(20).WithMessage("Billing postal code cannot exceed 20 characters")
             .When(x => !string.IsNullOrEmpty(x.BillingPostalCode));
 
-        RuleFor(x => x.BillingCountry)
-            .MaximumLength(100).WithMessage("Billing country cannot exceed 100 characters")
-            .When(x => !string.IsNullOrEmpty(x.BillingCountry));
-
         // Shipping Address Validations
         RuleFor(x => x.ShippingStreet)
             .MaximumLength(512).WithMessage("Shipping street cannot exceed 512 characters")
@@ -67,10 +63,6 @@ public class UpdateCustomerCommandValidator : AbstractValidator<UpdateCustomerCo
         RuleFor(x => x.ShippingPostalCode)
             .MaximumLength(20).WithMessage("Shipping postal code cannot exceed 20 characters")
             .When(x => !string.IsNullOrEmpty(x.ShippingPostalCode));
-
-        RuleFor(x => x.ShippingCountry)
-            .MaximumLength(100).WithMessage("Shipping country cannot exceed 100 characters")
-            .When(x => !string.IsNullOrEmpty(x.ShippingCountry));
 
         // Additional Information
         RuleFor(x => x.Notes)

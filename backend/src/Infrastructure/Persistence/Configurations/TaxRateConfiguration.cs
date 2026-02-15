@@ -25,8 +25,12 @@ public class TaxRateConfiguration : IEntityTypeConfiguration<TaxRate>
         builder.Property(tr => tr.Description)
             .HasMaxLength(500);
 
-        builder.Property(tr => tr.Country)
-            .HasMaxLength(2); // ISO country code
+        // Foreign key relationship to Country (optional)
+        builder.HasOne(tr => tr.Country)
+            .WithMany(c => c.TaxRates)
+            .HasForeignKey(tr => tr.CountryId)
+            .OnDelete(DeleteBehavior.Restrict)
+            .IsRequired(false);
 
         // Indexes
         builder.HasIndex(tr => new { tr.TenantId, tr.Code })
@@ -39,8 +43,8 @@ public class TaxRateConfiguration : IEntityTypeConfiguration<TaxRate>
         builder.HasIndex(tr => tr.IsActive)
             .HasDatabaseName("IX_TaxRates_IsActive");
 
-        builder.HasIndex(tr => tr.Country)
-            .HasDatabaseName("IX_TaxRates_Country");
+        builder.HasIndex(tr => tr.CountryId)
+            .HasDatabaseName("IX_TaxRates_CountryId");
 
         // Query filter for soft delete
         builder.HasQueryFilter(tr => !tr.IsDeleted);

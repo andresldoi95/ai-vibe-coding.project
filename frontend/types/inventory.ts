@@ -1,4 +1,5 @@
 // Inventory module types
+
 export interface Product {
   id: string
   name: string
@@ -38,7 +39,9 @@ export interface Warehouse {
   city: string
   state?: string
   postalCode: string
-  country: string
+  countryId: string
+  countryName: string
+  countryCode: string
   phone?: string
   email?: string
   isActive: boolean

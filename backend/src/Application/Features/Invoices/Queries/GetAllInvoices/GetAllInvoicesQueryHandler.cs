@@ -66,6 +66,28 @@ public class GetAllInvoicesQueryHandler : IRequestHandler<GetAllInvoicesQuery, R
                 }
             }
 
+            // Get emission points for codes and names
+            var emissionPointIds = invoices
+                .Where(i => i.EmissionPointId.HasValue)
+                .Select(i => i.EmissionPointId!.Value)
+                .Distinct()
+                .ToList();
+
+            var emissionPointData = new Dictionary<Guid, (string Code, string Name, string EstablishmentCode)>();
+            foreach (var emissionPointId in emissionPointIds)
+            {
+                var emissionPoint = await _unitOfWork.EmissionPoints.GetByIdAsync(emissionPointId, cancellationToken);
+
+                if (emissionPoint != null && emissionPoint.Establishment != null)
+                {
+                    emissionPointData[emissionPointId] = (
+                        emissionPoint.EmissionPointCode,
+                        emissionPoint.Name,
+                        emissionPoint.Establishment.EstablishmentCode
+                    );
+                }
+            }
+
             var invoiceDtos = invoices.Select(i => new InvoiceDto
             {
                 Id = i.Id,
@@ -73,6 +95,16 @@ public class GetAllInvoicesQueryHandler : IRequestHandler<GetAllInvoicesQuery, R
                 InvoiceNumber = i.InvoiceNumber,
                 CustomerId = i.CustomerId,
                 CustomerName = customers.ContainsKey(i.CustomerId) ? customers[i.CustomerId] : string.Empty,
+                EmissionPointId = i.EmissionPointId,
+                EmissionPointCode = i.EmissionPointId.HasValue && emissionPointData.ContainsKey(i.EmissionPointId.Value)
+                    ? emissionPointData[i.EmissionPointId.Value].Code
+                    : null,
+                EmissionPointName = i.EmissionPointId.HasValue && emissionPointData.ContainsKey(i.EmissionPointId.Value)
+                    ? emissionPointData[i.EmissionPointId.Value].Name
+                    : null,
+                EstablishmentCode = i.EmissionPointId.HasValue && emissionPointData.ContainsKey(i.EmissionPointId.Value)
+                    ? emissionPointData[i.EmissionPointId.Value].EstablishmentCode
+                    : null,
                 IssueDate = i.IssueDate,
                 DueDate = i.DueDate,
                 Status = i.Status,

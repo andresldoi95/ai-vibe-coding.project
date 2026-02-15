@@ -41,9 +41,12 @@ public class WarehouseConfiguration : IEntityTypeConfiguration<Warehouse>
             .IsRequired()
             .HasMaxLength(20);
 
-        builder.Property(w => w.Country)
-            .IsRequired()
-            .HasMaxLength(100);
+        // Foreign key relationship to Country (required)
+        builder.HasOne(w => w.Country)
+            .WithMany(c => c.Warehouses)
+            .HasForeignKey(w => w.CountryId)
+            .OnDelete(DeleteBehavior.Restrict)
+            .IsRequired(true);
 
         builder.Property(w => w.Phone)
             .HasMaxLength(50);
@@ -66,6 +69,8 @@ public class WarehouseConfiguration : IEntityTypeConfiguration<Warehouse>
         builder.HasIndex(w => w.TenantId);
 
         builder.HasIndex(w => w.IsActive);
+
+        builder.HasIndex(w => w.CountryId);
 
         // Global query filter for soft delete
         builder.HasQueryFilter(w => !w.IsDeleted);

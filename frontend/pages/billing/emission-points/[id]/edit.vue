@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useVuelidate } from '@vuelidate/core'
-import { helpers, maxLength, required } from '@vuelidate/validators'
+import { maxLength, required } from '@vuelidate/validators'
 import type { EmissionPoint } from '~/types/emission-point'
 
 definePageMeta({
@@ -132,7 +132,7 @@ onMounted(() => {
                   {{ t('emissionPoints.establishment') }}
                 </label>
                 <p class="text-slate-900 dark:text-white">
-                  {{ emissionPoint.establishmentId }}
+                  {{ emissionPoint.establishmentCode }} - {{ emissionPoint.establishmentName }}
                 </p>
               </div>
             </div>
@@ -146,23 +146,30 @@ onMounted(() => {
 
             <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
               <!-- Emission Point Name -->
-              <FormField
-                v-model="formData.name"
-                name="name"
-                :label="t('emissionPoints.name')"
-                :placeholder="t('emissionPoints.name_placeholder')"
-                :error="v$.name.$errors[0]?.$message"
-                required
-              />
+              <div class="flex flex-col gap-2 md:col-span-2">
+                <label for="name" class="font-semibold text-slate-700 dark:text-slate-200">
+                  {{ t('emissionPoints.name') }} *
+                </label>
+                <InputText
+                  id="name"
+                  v-model="formData.name"
+                  :invalid="v$.name.$error"
+                  :placeholder="t('emissionPoints.name_placeholder')"
+                  @blur="v$.name.$touch()"
+                />
+                <small v-if="v$.name.$error" class="text-red-600 dark:text-red-400">
+                  {{ v$.name.$errors[0].$message }}
+                </small>
+              </div>
 
               <!-- Is Active -->
-              <div class="flex items-center gap-3 pt-6">
+              <div class="flex items-center gap-3 pt-2 md:col-span-2">
                 <InputSwitch
                   id="isActive"
                   v-model="formData.isActive"
                   :aria-label="t('emissionPoints.is_active')"
                 />
-                <label for="isActive" class="cursor-pointer text-sm font-medium text-slate-700 dark:text-slate-300">
+                <label for="isActive" class="cursor-pointer font-semibold text-slate-700 dark:text-slate-200">
                   {{ t('emissionPoints.is_active') }}
                 </label>
               </div>
@@ -202,13 +209,21 @@ onMounted(() => {
             </div>
           </div>
 
-          <!-- Form Actions -->
-          <FormActions
-            :loading="loading"
-            :submit-label="t('common.save_changes')"
-            :cancel-label="t('common.cancel')"
-            @cancel="cancel"
-          />
+          <!-- Action Buttons -->
+          <div class="flex justify-end gap-3 pt-4">
+            <Button
+              :label="t('common.cancel')"
+              severity="secondary"
+              outlined
+              @click="cancel"
+            />
+            <Button
+              type="submit"
+              :label="t('common.save_changes')"
+              :loading="loading"
+              icon="pi pi-check"
+            />
+          </div>
         </form>
       </template>
     </Card>

@@ -30,9 +30,29 @@ public class SriConfiguration : TenantEntity
     public string MainAddress { get; set; } = string.Empty;
 
     /// <summary>
+    /// Contact phone number
+    /// </summary>
+    public string Phone { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Contact email address
+    /// </summary>
+    public string Email { get; set; } = string.Empty;
+
+    /// <summary>
     /// Whether the company is required to keep accounting records
     /// </summary>
     public bool AccountingRequired { get; set; } = true;
+
+    /// <summary>
+    /// Special taxpayer resolution number (Contribuyente Especial)
+    /// </summary>
+    public string? SpecialTaxpayerNumber { get; set; }
+
+    /// <summary>
+    /// Whether the company is in the RISE regime (Régimen Impositivo Simplificado Ecuatoriano)
+    /// </summary>
+    public bool IsRiseRegime { get; set; } = false;
 
     /// <summary>
     /// SRI environment (Test or Production)

@@ -172,7 +172,16 @@ onMounted(() => {
                   </p>
                 </div>
 
-                <div v-if="!establishment.phone" class="text-slate-500 dark:text-slate-400">
+                <div v-if="establishment.email">
+                  <label class="text-sm font-medium text-slate-600 dark:text-slate-400">
+                    {{ t('common.email') }}
+                  </label>
+                  <p class="text-slate-900 dark:text-white">
+                    {{ establishment.email }}
+                  </p>
+                </div>
+
+                <div v-if="!establishment.phone && !establishment.email" class="text-slate-500 dark:text-slate-400">
                   {{ t('common.no_contact_info') }}
                 </div>
               </div>

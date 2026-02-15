@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { Invoice } from '~/types/billing'
-import { InvoiceStatus } from '~/types/billing'
+import type { Invoice, Payment } from '~/types/billing'
+import { InvoiceStatus, PaymentStatus } from '~/types/billing'
 
 definePageMeta({
   middleware: ['auth', 'tenant'],
@@ -12,10 +12,13 @@ const route = useRoute()
 const router = useRouter()
 const toast = useNotification()
 const { getInvoiceById, changeInvoiceStatus } = useInvoice()
+const { getPaymentsByInvoiceId } = usePayment()
 const { can } = usePermissions()
 
 const invoice = ref<Invoice | null>(null)
+const payments = ref<Payment[]>([])
 const loading = ref(true)
+const paymentsLoading = ref(false)
 const statusChangeDialog = ref(false)
 const statusChangeLoading = ref(false)
 const newStatus = ref<InvoiceStatus>(InvoiceStatus.Sent)
@@ -24,8 +27,9 @@ onMounted(async () => {
   try {
     const id = route.params.id as string
     invoice.value = await getInvoiceById(id)
+    await loadPayments(id)
   }
-  catch (error) {
+  catch {
     toast.showError(t('invoices.load_error'))
     router.push('/billing/invoices')
   }
@@ -33,6 +37,19 @@ onMounted(async () => {
     loading.value = false
   }
 })
+
+async function loadPayments(invoiceId: string) {
+  paymentsLoading.value = true
+  try {
+    payments.value = await getPaymentsByInvoiceId(invoiceId)
+  }
+  catch (error) {
+    console.error('Failed to load payments:', error)
+  }
+  finally {
+    paymentsLoading.value = false
+  }
+}
 
 function handleBack() {
   router.push('/billing/invoices')
@@ -79,10 +96,15 @@ async function handleStatusChange() {
 function getStatusLabel(status: InvoiceStatus): string {
   const labels: Record<InvoiceStatus, string> = {
     [InvoiceStatus.Draft]: t('invoices.status_draft'),
+    [InvoiceStatus.PendingSignature]: t('invoices.status_pending_signature'),
+    [InvoiceStatus.PendingAuthorization]: t('invoices.status_pending_authorization'),
+    [InvoiceStatus.Authorized]: t('invoices.status_authorized'),
+    [InvoiceStatus.Rejected]: t('invoices.status_rejected'),
     [InvoiceStatus.Sent]: t('invoices.status_sent'),
     [InvoiceStatus.Paid]: t('invoices.status_paid'),
     [InvoiceStatus.Overdue]: t('invoices.status_overdue'),
     [InvoiceStatus.Cancelled]: t('invoices.status_cancelled'),
+    [InvoiceStatus.Voided]: t('invoices.status_voided'),
   }
   return labels[status] || status.toString()
 }
@@ -90,10 +112,15 @@ function getStatusLabel(status: InvoiceStatus): string {
 function getStatusSeverity(status: InvoiceStatus): string {
   const severities: Record<InvoiceStatus, string> = {
     [InvoiceStatus.Draft]: 'secondary',
+    [InvoiceStatus.PendingSignature]: 'info',
+    [InvoiceStatus.PendingAuthorization]: 'info',
+    [InvoiceStatus.Authorized]: 'success',
+    [InvoiceStatus.Rejected]: 'danger',
     [InvoiceStatus.Sent]: 'info',
     [InvoiceStatus.Paid]: 'success',
     [InvoiceStatus.Overdue]: 'danger',
     [InvoiceStatus.Cancelled]: 'warn',
+    [InvoiceStatus.Voided]: 'warn',
   }
   return severities[status] || 'secondary'
 }
@@ -106,11 +133,67 @@ function formatCurrency(amount: number): string {
 }
 
 const statusOptions = computed(() => [
+  { value: InvoiceStatus.Draft, label: t('invoices.status_draft') },
+  { value: InvoiceStatus.PendingSignature, label: t('invoices.status_pending_signature') },
+  { value: InvoiceStatus.PendingAuthorization, label: t('invoices.status_pending_authorization') },
+  { value: InvoiceStatus.Authorized, label: t('invoices.status_authorized') },
+  { value: InvoiceStatus.Rejected, label: t('invoices.status_rejected') },
   { value: InvoiceStatus.Sent, label: t('invoices.status_sent') },
   { value: InvoiceStatus.Paid, label: t('invoices.status_paid') },
   { value: InvoiceStatus.Overdue, label: t('invoices.status_overdue') },
   { value: InvoiceStatus.Cancelled, label: t('invoices.status_cancelled') },
+  { value: InvoiceStatus.Voided, label: t('invoices.status_voided') },
 ])
+
+const totalPaid = computed(() => {
+  return payments.value
+    .filter(p => p.status === PaymentStatus.Completed)
+    .reduce((sum, p) => sum + p.amount, 0)
+})
+
+const remainingBalance = computed(() => {
+  if (!invoice.value)
+    return 0
+  return invoice.value.totalAmount - totalPaid.value
+})
+
+function getPaymentMethodLabel(method: number): string {
+  const methodMap: Record<number, string> = {
+    1: t('payments.payment_methods.cash'),
+    2: t('payments.payment_methods.check'),
+    3: t('payments.payment_methods.bank_transfer'),
+    4: t('payments.payment_methods.account_deposit'),
+    16: t('payments.payment_methods.debit_card'),
+    17: t('payments.payment_methods.electronic_money'),
+    18: t('payments.payment_methods.prepaid_card'),
+    19: t('payments.payment_methods.credit_card'),
+    20: t('payments.payment_methods.other'),
+  }
+  return methodMap[method] || t('payments.payment_methods.other')
+}
+
+function getPaymentStatusSeverity(status: PaymentStatus): 'success' | 'warning' | 'secondary' {
+  switch (status) {
+    case PaymentStatus.Completed:
+      return 'success'
+    case PaymentStatus.Pending:
+      return 'warning'
+    case PaymentStatus.Voided:
+      return 'secondary'
+    default:
+      return 'secondary'
+  }
+}
+
+function recordPayment() {
+  if (!invoice.value)
+    return
+  router.push(`/billing/payments/new?invoiceId=${invoice.value.id}`)
+}
+
+function viewPayment(paymentId: string) {
+  router.push(`/billing/payments/${paymentId}`)
+}
 
 const canChangeStatus = computed(() => {
   if (!invoice.value)
@@ -190,6 +273,19 @@ const canChangeStatus = computed(() => {
               <label class="font-semibold text-surface-700">{{ t('invoices.warehouse') }}</label>
               <p class="mt-1">
                 {{ invoice.warehouseName || t('common.not_specified') }}
+              </p>
+            </div>
+
+            <div class="field">
+              <label class="font-semibold text-surface-700">{{ t('invoices.emission_point') }}</label>
+              <p v-if="invoice.emissionPointCode && invoice.establishmentCode" class="mt-1">
+                <span class="font-mono">{{ invoice.establishmentCode }}-{{ invoice.emissionPointCode }}</span>
+                <span v-if="invoice.emissionPointName" class="text-surface-600 ml-2">
+                  ({{ invoice.emissionPointName }})
+                </span>
+              </p>
+              <p v-else class="mt-1 text-surface-400">
+                {{ t('common.not_specified') }}
               </p>
             </div>
 
@@ -294,6 +390,107 @@ const canChangeStatus = computed(() => {
                 <span class="text-lg font-bold text-teal-600">{{ formatCurrency(invoice.totalAmount) }}</span>
               </div>
             </div>
+          </div>
+        </template>
+      </Card>
+
+      <!-- Payments Section -->
+      <Card>
+        <template #header>
+          <div class="p-6 pb-0 flex justify-between items-center">
+            <h3 class="text-lg font-semibold">
+              {{ t('payments.title') }}
+            </h3>
+            <Button
+              v-if="can.createPayment() && remainingBalance > 0"
+              :label="t('payments.record_payment')"
+              icon="pi pi-plus"
+              size="small"
+              @click="recordPayment"
+            />
+          </div>
+        </template>
+
+        <template #content>
+          <div v-if="paymentsLoading" class="flex justify-center py-8">
+            <ProgressSpinner />
+          </div>
+
+          <div v-else-if="payments.length > 0">
+            <DataTable :value="payments" striped-rows>
+              <Column field="paymentDate" :header="t('payments.payment_date')">
+                <template #body="{ data }">
+                  {{ new Date(data.paymentDate).toLocaleDateString() }}
+                </template>
+              </Column>
+
+              <Column field="amount" :header="t('payments.amount')">
+                <template #body="{ data }">
+                  {{ formatCurrency(data.amount) }}
+                </template>
+              </Column>
+
+              <Column field="paymentMethod" :header="t('payments.payment_method')">
+                <template #body="{ data }">
+                  {{ getPaymentMethodLabel(data.paymentMethod) }}
+                </template>
+              </Column>
+
+              <Column field="status" :header="t('payments.status.label')">
+                <template #body="{ data }">
+                  <Tag
+                    :value="t(`payments.status.${data.status}`)"
+                    :severity="getPaymentStatusSeverity(data.status)"
+                  />
+                </template>
+              </Column>
+
+              <Column field="transactionId" :header="t('payments.transaction_id')">
+                <template #body="{ data }">
+                  {{ data.transactionId || '—' }}
+                </template>
+              </Column>
+
+              <Column :header="t('common.actions')">
+                <template #body="{ data }">
+                  <Button
+                    icon="pi pi-eye"
+                    severity="secondary"
+                    text
+                    rounded
+                    @click="viewPayment(data.id)"
+                  />
+                </template>
+              </Column>
+            </DataTable>
+
+            <!-- Payment Summary -->
+            <div class="mt-6 flex justify-end">
+              <div class="w-full md:w-1/3 space-y-2">
+                <div class="flex justify-between py-2 border-b">
+                  <span class="font-semibold">{{ t('payments.total_paid') }}:</span>
+                  <span class="text-teal-600">{{ formatCurrency(totalPaid) }}</span>
+                </div>
+                <div class="flex justify-between py-2 border-b">
+                  <span class="font-semibold">{{ t('payments.remaining_balance') }}:</span>
+                  <span :class="remainingBalance > 0 ? 'text-orange-600' : 'text-teal-600'">
+                    {{ formatCurrency(remainingBalance) }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div v-else class="py-8 text-center text-surface-500">
+            <i class="pi pi-wallet text-4xl mb-3 block" />
+            <p>{{ t('payments.no_payments') }}</p>
+            <Button
+              v-if="can.createPayment()"
+              :label="t('payments.record_first_payment')"
+              icon="pi pi-plus"
+              class="mt-4"
+              @click="recordPayment"
+            />
           </div>
         </template>
       </Card>

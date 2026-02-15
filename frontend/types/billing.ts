@@ -6,10 +6,12 @@ export interface TaxRate {
   tenantId: string
   code: string
   name: string
-  rate: number  // Decimal value (e.g., 0.12 for 12%)
+  rate: number // Decimal value (e.g., 0.12 for 12%)
   isDefault: boolean
   isActive: boolean
-  country?: string
+  countryId?: string
+  countryCode?: string
+  countryName?: string
   createdAt: string
   updatedAt: string
 }
@@ -20,7 +22,7 @@ export interface CreateTaxRateDto {
   rate: number
   isDefault: boolean
   isActive: boolean
-  country?: string
+  countryId?: string
 }
 
 export interface UpdateTaxRateDto {
@@ -30,33 +32,7 @@ export interface UpdateTaxRateDto {
   rate: number
   isDefault: boolean
   isActive: boolean
-  country?: string
-}
-
-// Invoice Configuration
-export interface InvoiceConfiguration {
-  id: string
-  tenantId: string
-  establishmentCode: string    // Ecuador: 001
-  emissionPointCode: string     // Ecuador: 001
-  nextSequentialNumber: number
-  defaultTaxRateId?: string
-  defaultTaxRateName?: string  // Included from backend DTO
-  defaultWarehouseId?: string
-  defaultWarehouseName?: string // Included from backend DTO
-  dueDays: number
-  requireCustomerTaxId: boolean
-  createdAt: string
-  updatedAt: string
-}
-
-export interface UpdateInvoiceConfigurationDto {
-  establishmentCode: string
-  emissionPointCode: string
-  defaultTaxRateId?: string
-  defaultWarehouseId?: string
-  dueDays: number
-  requireCustomerTaxId: boolean
+  countryId?: string
 }
 
 // Invoices
@@ -78,16 +54,21 @@ export interface Invoice {
   status: InvoiceStatus
   notes?: string
 
-  // SRI Ecuador fields
+  // SRI Ecuador fields - Emission Point
   emissionPointId?: string
+  emissionPointCode?: string
+  emissionPointName?: string
+  establishmentCode?: string
+
+  // SRI Ecuador fields - Document
   documentType: number
   accessKey?: string
   paymentMethod: number
   xmlFilePath?: string
   signedXmlFilePath?: string
   environment: number
-  sriAuthorization?: string     // Ecuador SRI authorization number
-  authorizationDate?: string    // Ecuador SRI authorization date
+  sriAuthorization?: string // Ecuador SRI authorization number
+  authorizationDate?: string // Ecuador SRI authorization date
   items: InvoiceItem[]
   createdAt: string
   updatedAt: string
@@ -103,23 +84,23 @@ export enum InvoiceStatus {
   Paid = 6,
   Overdue = 7,
   Cancelled = 8,
-  Voided = 9
+  Voided = 9,
 }
 
 export interface InvoiceItem {
   id: string
   invoiceId: string
   productId: string
-  productCode: string       // Denormalized for history
-  productName: string       // Denormalized for history
+  productCode: string // Denormalized for history
+  productName: string // Denormalized for history
   description?: string
   quantity: number
   unitPrice: number
   taxRateId: string
-  taxRate: number           // Denormalized tax rate value for history
-  subtotalAmount: number    // Calculated: quantity * unitPrice
-  taxAmount: number         // Calculated: subtotalAmount * taxRate
-  totalAmount: number       // Calculated: subtotalAmount + taxAmount
+  taxRate: number // Denormalized tax rate value for history
+  subtotalAmount: number // Calculated: quantity * unitPrice
+  taxAmount: number // Calculated: subtotalAmount * taxRate
+  totalAmount: number // Calculated: subtotalAmount + taxAmount
 }
 
 export interface CreateInvoiceItemDto {
@@ -131,7 +112,7 @@ export interface CreateInvoiceItemDto {
 }
 
 export interface UpdateInvoiceItemDto {
-  id?: string              // Present if updating existing item
+  id?: string // Present if updating existing item
   productId: string
   quantity: number
   unitPrice: number
@@ -142,6 +123,7 @@ export interface UpdateInvoiceItemDto {
 export interface CreateInvoiceDto {
   customerId: string
   warehouseId?: string
+  emissionPointId: string
   issueDate: string
   notes?: string
   items: CreateInvoiceItemDto[]
@@ -170,7 +152,7 @@ export interface Customer {
   name: string
   email: string
   phone?: string
-  identificationType: number  // IdentificationType enum
+  identificationType: number // IdentificationType enum
   taxId?: string
   contactPerson?: string
 
@@ -179,14 +161,16 @@ export interface Customer {
   billingCity?: string
   billingState?: string
   billingPostalCode?: string
-  billingCountry?: string
+  billingCountryId?: string
+  billingCountryName?: string
 
   // Shipping Address
   shippingStreet?: string
   shippingCity?: string
   shippingState?: string
   shippingPostalCode?: string
-  shippingCountry?: string
+  shippingCountryId?: string
+  shippingCountryName?: string
 
   // Additional Information
   notes?: string
@@ -212,18 +196,38 @@ export interface Payment {
   id: string
   tenantId: string
   invoiceId: string
+  invoiceNumber: string
+  customerName: string
   amount: number
   paymentDate: string
-  paymentMethod: PaymentMethod
+  paymentMethod: SriPaymentMethod
   status: PaymentStatus
   transactionId?: string
   notes?: string
   createdAt: string
   updatedAt: string
+  createdBy?: string
 }
 
-export type PaymentMethod = 'credit_card' | 'bank_transfer' | 'cash' | 'paypal' | 'stripe'
-export type PaymentStatus = 'pending' | 'completed' | 'failed' | 'refunded'
+// SRI Ecuador Payment Methods
+export enum SriPaymentMethod {
+  Cash = 1,
+  Check = 2,
+  BankTransfer = 3,
+  AccountDeposit = 4,
+  DebitCard = 16,
+  ElectronicMoney = 17,
+  PrepaidCard = 18,
+  CreditCard = 19,
+  Other = 20,
+}
+
+// Payment Status
+export enum PaymentStatus {
+  Pending = 1,
+  Completed = 2,
+  Voided = 3,
+}
 
 export interface Subscription {
   id: string

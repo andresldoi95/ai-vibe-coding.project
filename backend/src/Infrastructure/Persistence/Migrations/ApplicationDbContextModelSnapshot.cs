@@ -22,6 +22,50 @@ namespace SaaS.Infrastructure.Persistence.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("SaaS.Domain.Entities.Country", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Alpha3Code")
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(2)
+                        .HasColumnType("character varying(2)");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("NumericCode")
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique()
+                        .HasDatabaseName("IX_Countries_Code");
+
+                    b.HasIndex("IsActive")
+                        .HasDatabaseName("IX_Countries_IsActive");
+
+                    b.HasIndex("Name")
+                        .HasDatabaseName("IX_Countries_Name");
+
+                    b.ToTable("Countries", (string)null);
+                });
+
             modelBuilder.Entity("SaaS.Domain.Entities.Customer", b =>
                 {
                     b.Property<Guid>("Id")
@@ -32,9 +76,8 @@ namespace SaaS.Infrastructure.Persistence.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
-                    b.Property<string>("BillingCountry")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                    b.Property<Guid?>("BillingCountryId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("BillingPostalCode")
                         .HasMaxLength(20)
@@ -96,9 +139,8 @@ namespace SaaS.Infrastructure.Persistence.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
-                    b.Property<string>("ShippingCountry")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                    b.Property<Guid?>("ShippingCountryId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("ShippingPostalCode")
                         .HasMaxLength(20)
@@ -133,9 +175,11 @@ namespace SaaS.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("BillingCity");
 
-                    b.HasIndex("BillingCountry");
+                    b.HasIndex("BillingCountryId");
 
                     b.HasIndex("IsActive");
+
+                    b.HasIndex("ShippingCountryId");
 
                     b.HasIndex("TenantId");
 
@@ -580,71 +624,6 @@ namespace SaaS.Infrastructure.Persistence.Migrations
                     b.ToTable("Invoices", (string)null);
                 });
 
-            modelBuilder.Entity("SaaS.Domain.Entities.InvoiceConfiguration", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
-
-                    b.Property<Guid?>("DefaultTaxRateId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("DefaultWarehouseId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("DueDays")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("EmissionPointCode")
-                        .IsRequired()
-                        .HasMaxLength(3)
-                        .HasColumnType("character varying(3)");
-
-                    b.Property<string>("EstablishmentCode")
-                        .IsRequired()
-                        .HasMaxLength(3)
-                        .HasColumnType("character varying(3)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<int>("NextSequentialNumber")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("RequireCustomerTaxId")
-                        .HasColumnType("boolean");
-
-                    b.Property<Guid>("TenantId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DefaultTaxRateId");
-
-                    b.HasIndex("DefaultWarehouseId");
-
-                    b.HasIndex("TenantId")
-                        .IsUnique()
-                        .HasDatabaseName("IX_InvoiceConfigurations_TenantId_Unique");
-
-                    b.ToTable("InvoiceConfigurations", (string)null);
-                });
-
             modelBuilder.Entity("SaaS.Domain.Entities.InvoiceItem", b =>
                 {
                     b.Property<Guid>("Id")
@@ -709,6 +688,78 @@ namespace SaaS.Infrastructure.Persistence.Migrations
                     b.HasIndex("TaxRateId");
 
                     b.ToTable("InvoiceItems", (string)null);
+                });
+
+            modelBuilder.Entity("SaaS.Domain.Entities.Payment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Amount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("InvoiceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<DateTime>("PaymentDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("PaymentMethod")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Status")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(1);
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("TransactionId")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InvoiceId");
+
+                    b.HasIndex("TransactionId")
+                        .HasDatabaseName("IX_Payments_TransactionId");
+
+                    b.HasIndex("TenantId", "InvoiceId")
+                        .HasDatabaseName("IX_Payments_TenantId_InvoiceId");
+
+                    b.HasIndex("TenantId", "PaymentDate")
+                        .HasDatabaseName("IX_Payments_TenantId_PaymentDate");
+
+                    b.HasIndex("TenantId", "Status")
+                        .HasDatabaseName("IX_Payments_TenantId_Status");
+
+                    b.ToTable("Payments", (string)null);
                 });
 
             modelBuilder.Entity("SaaS.Domain.Entities.Permission", b =>
@@ -1009,12 +1060,19 @@ namespace SaaS.Infrastructure.Persistence.Migrations
                     b.Property<byte[]>("DigitalCertificate")
                         .HasColumnType("bytea");
 
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<int>("Environment")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasDefaultValue(1);
 
                     b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsRiseRegime")
                         .HasColumnType("boolean");
 
                     b.Property<string>("LegalName")
@@ -1026,6 +1084,13 @@ namespace SaaS.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("SpecialTaxpayerNumber")
+                        .HasColumnType("text");
 
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
@@ -1147,9 +1212,8 @@ namespace SaaS.Infrastructure.Persistence.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
-                    b.Property<string>("Country")
-                        .HasMaxLength(2)
-                        .HasColumnType("character varying(2)");
+                    b.Property<Guid?>("CountryId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -1193,8 +1257,8 @@ namespace SaaS.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Country")
-                        .HasDatabaseName("IX_TaxRates_Country");
+                    b.HasIndex("CountryId")
+                        .HasDatabaseName("IX_TaxRates_CountryId");
 
                     b.HasIndex("IsActive")
                         .HasDatabaseName("IX_TaxRates_IsActive");
@@ -1372,10 +1436,8 @@ namespace SaaS.Infrastructure.Persistence.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
-                    b.Property<string>("Country")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                    b.Property<Guid>("CountryId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -1438,6 +1500,8 @@ namespace SaaS.Infrastructure.Persistence.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CountryId");
 
                     b.HasIndex("IsActive");
 
@@ -1515,6 +1579,23 @@ namespace SaaS.Infrastructure.Persistence.Migrations
                     b.ToTable("WarehouseInventory", (string)null);
                 });
 
+            modelBuilder.Entity("SaaS.Domain.Entities.Customer", b =>
+                {
+                    b.HasOne("SaaS.Domain.Entities.Country", "BillingCountry")
+                        .WithMany()
+                        .HasForeignKey("BillingCountryId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("SaaS.Domain.Entities.Country", "ShippingCountry")
+                        .WithMany()
+                        .HasForeignKey("ShippingCountryId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("BillingCountry");
+
+                    b.Navigation("ShippingCountry");
+                });
+
             modelBuilder.Entity("SaaS.Domain.Entities.EmailLog", b =>
                 {
                     b.HasOne("SaaS.Domain.Entities.User", "User")
@@ -1561,23 +1642,6 @@ namespace SaaS.Infrastructure.Persistence.Migrations
                     b.Navigation("Warehouse");
                 });
 
-            modelBuilder.Entity("SaaS.Domain.Entities.InvoiceConfiguration", b =>
-                {
-                    b.HasOne("SaaS.Domain.Entities.TaxRate", "DefaultTaxRate")
-                        .WithMany()
-                        .HasForeignKey("DefaultTaxRateId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("SaaS.Domain.Entities.Warehouse", "DefaultWarehouse")
-                        .WithMany()
-                        .HasForeignKey("DefaultWarehouseId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("DefaultTaxRate");
-
-                    b.Navigation("DefaultWarehouse");
-                });
-
             modelBuilder.Entity("SaaS.Domain.Entities.InvoiceItem", b =>
                 {
                     b.HasOne("SaaS.Domain.Entities.Invoice", "Invoice")
@@ -1603,6 +1667,17 @@ namespace SaaS.Infrastructure.Persistence.Migrations
                     b.Navigation("Product");
 
                     b.Navigation("TaxRateEntity");
+                });
+
+            modelBuilder.Entity("SaaS.Domain.Entities.Payment", b =>
+                {
+                    b.HasOne("SaaS.Domain.Entities.Invoice", "Invoice")
+                        .WithMany("Payments")
+                        .HasForeignKey("InvoiceId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Invoice");
                 });
 
             modelBuilder.Entity("SaaS.Domain.Entities.RefreshToken", b =>
@@ -1661,6 +1736,16 @@ namespace SaaS.Infrastructure.Persistence.Migrations
                     b.Navigation("Warehouse");
                 });
 
+            modelBuilder.Entity("SaaS.Domain.Entities.TaxRate", b =>
+                {
+                    b.HasOne("SaaS.Domain.Entities.Country", "Country")
+                        .WithMany("TaxRates")
+                        .HasForeignKey("CountryId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Country");
+                });
+
             modelBuilder.Entity("SaaS.Domain.Entities.UserTenant", b =>
                 {
                     b.HasOne("SaaS.Domain.Entities.Role", "Role")
@@ -1687,6 +1772,17 @@ namespace SaaS.Infrastructure.Persistence.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("SaaS.Domain.Entities.Warehouse", b =>
+                {
+                    b.HasOne("SaaS.Domain.Entities.Country", "Country")
+                        .WithMany("Warehouses")
+                        .HasForeignKey("CountryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Country");
+                });
+
             modelBuilder.Entity("SaaS.Domain.Entities.WarehouseInventory", b =>
                 {
                     b.HasOne("SaaS.Domain.Entities.Product", "Product")
@@ -1706,6 +1802,13 @@ namespace SaaS.Infrastructure.Persistence.Migrations
                     b.Navigation("Warehouse");
                 });
 
+            modelBuilder.Entity("SaaS.Domain.Entities.Country", b =>
+                {
+                    b.Navigation("TaxRates");
+
+                    b.Navigation("Warehouses");
+                });
+
             modelBuilder.Entity("SaaS.Domain.Entities.EmissionPoint", b =>
                 {
                     b.Navigation("Invoices");
@@ -1719,6 +1822,8 @@ namespace SaaS.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("SaaS.Domain.Entities.Invoice", b =>
                 {
                     b.Navigation("Items");
+
+                    b.Navigation("Payments");
                 });
 
             modelBuilder.Entity("SaaS.Domain.Entities.Permission", b =>

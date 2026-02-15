@@ -13,6 +13,7 @@ public class TaxRateRepository : Repository<TaxRate>, ITaxRateRepository
     public async Task<TaxRate?> GetByCodeAsync(string code, Guid tenantId, CancellationToken cancellationToken = default)
     {
         return await _dbSet
+            .Include(tr => tr.Country)
             .FirstOrDefaultAsync(
                 tr => tr.Code == code && tr.TenantId == tenantId && !tr.IsDeleted,
                 cancellationToken);
@@ -21,6 +22,7 @@ public class TaxRateRepository : Repository<TaxRate>, ITaxRateRepository
     public async Task<List<TaxRate>> GetActiveByTenantAsync(Guid tenantId, CancellationToken cancellationToken = default)
     {
         return await _dbSet
+            .Include(tr => tr.Country)
             .Where(tr => tr.TenantId == tenantId && tr.IsActive && !tr.IsDeleted)
             .OrderBy(tr => tr.Name)
             .ToListAsync(cancellationToken);
@@ -29,6 +31,7 @@ public class TaxRateRepository : Repository<TaxRate>, ITaxRateRepository
     public async Task<TaxRate?> GetDefaultRateAsync(Guid tenantId, CancellationToken cancellationToken = default)
     {
         return await _dbSet
+            .Include(tr => tr.Country)
             .FirstOrDefaultAsync(
                 tr => tr.TenantId == tenantId && tr.IsDefault && tr.IsActive && !tr.IsDeleted,
                 cancellationToken);

@@ -53,8 +53,12 @@ public class CustomerConfiguration : IEntityTypeConfiguration<Customer>
         builder.Property(c => c.BillingPostalCode)
             .HasMaxLength(20);
 
-        builder.Property(c => c.BillingCountry)
-            .HasMaxLength(100);
+        // Foreign key relationship to BillingCountry (optional)
+        builder.HasOne(c => c.BillingCountry)
+            .WithMany()
+            .HasForeignKey(c => c.BillingCountryId)
+            .OnDelete(DeleteBehavior.Restrict)
+            .IsRequired(false);
 
         // Shipping Address
         builder.Property(c => c.ShippingStreet)
@@ -69,8 +73,12 @@ public class CustomerConfiguration : IEntityTypeConfiguration<Customer>
         builder.Property(c => c.ShippingPostalCode)
             .HasMaxLength(20);
 
-        builder.Property(c => c.ShippingCountry)
-            .HasMaxLength(100);
+        // Foreign key relationship to ShippingCountry (optional)
+        builder.HasOne(c => c.ShippingCountry)
+            .WithMany()
+            .HasForeignKey(c => c.ShippingCountryId)
+            .OnDelete(DeleteBehavior.Restrict)
+            .IsRequired(false);
 
         // Additional Information
         builder.Property(c => c.Notes)
@@ -97,7 +105,8 @@ public class CustomerConfiguration : IEntityTypeConfiguration<Customer>
         builder.HasIndex(c => c.TenantId);
         builder.HasIndex(c => c.IsActive);
         builder.HasIndex(c => c.BillingCity);
-        builder.HasIndex(c => c.BillingCountry);
+        builder.HasIndex(c => c.BillingCountryId);
+        builder.HasIndex(c => c.ShippingCountryId);
 
         // Global query filter for soft delete
         builder.HasQueryFilter(c => !c.IsDeleted);

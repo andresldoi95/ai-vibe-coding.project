@@ -11,6 +11,7 @@ const { t } = useI18n()
 const toast = useNotification()
 const router = useRouter()
 const { createTaxRate } = useTaxRate()
+const { getAllCountries, getCountryOptions } = useCountry()
 
 const loading = ref(false)
 
@@ -20,7 +21,12 @@ const formData = reactive({
   rate: 0,
   isDefault: false,
   isActive: true,
-  country: 'Ecuador',
+  countryId: undefined as string | undefined,
+})
+
+// Load countries on mount
+onMounted(async () => {
+  await getAllCountries()
 })
 
 const codeFormat = helpers.regex(/^[A-Z0-9_]+$/)
@@ -38,9 +44,6 @@ const rules = computed(() => ({
   rate: {
     required,
     between: between(0, 1),
-  },
-  country: {
-    maxLength: maxLength(100),
   },
 }))
 
@@ -147,16 +150,17 @@ function handleCancel() {
               <label for="country" class="font-semibold">
                 {{ t('taxRates.country') }}
               </label>
-              <InputText
+              <Dropdown
                 id="country"
-                v-model="formData.country"
-                :placeholder="t('taxRates.country_placeholder')"
-                :class="{ 'p-invalid': v$.country.$error }"
+                v-model="formData.countryId"
+                :options="getCountryOptions()"
+                option-label="label"
+                option-value="value"
+                :placeholder="t('taxRates.select_country')"
+                show-clear
+                filter
                 class="w-full"
               />
-              <small v-if="v$.country.$error" class="p-error">
-                {{ v$.country.$errors[0].$message }}
-              </small>
             </div>
 
             <!-- Is Default -->

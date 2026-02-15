@@ -36,7 +36,9 @@ public class UpdateSriConfigurationCommandHandler : IRequestHandler<UpdateSriCon
 
             var sriConfig = await _unitOfWork.SriConfigurations.GetByTenantIdAsync(_tenantContext.TenantId.Value, cancellationToken);
 
-            if (sriConfig == null)
+            var isNewConfig = sriConfig == null;
+
+            if (isNewConfig)
             {
                 // Create new configuration if it doesn't exist
                 sriConfig = new Domain.Entities.SriConfiguration
@@ -46,18 +48,20 @@ public class UpdateSriConfigurationCommandHandler : IRequestHandler<UpdateSriCon
                 await _unitOfWork.SriConfigurations.AddAsync(sriConfig, cancellationToken);
             }
 
-            // Update configuration
+            // Update configuration properties
             sriConfig.CompanyRuc = request.CompanyRuc;
             sriConfig.LegalName = request.LegalName;
             sriConfig.TradeName = request.TradeName;
             sriConfig.MainAddress = request.MainAddress;
+            sriConfig.Phone = request.Phone;
+            sriConfig.Email = request.Email;
             sriConfig.Environment = request.Environment;
             sriConfig.AccountingRequired = request.AccountingRequired;
+            sriConfig.SpecialTaxpayerNumber = request.SpecialTaxpayerNumber;
+            sriConfig.IsRiseRegime = request.IsRiseRegime;
 
-            if (sriConfig.Id != Guid.Empty)
-            {
-                await _unitOfWork.SriConfigurations.UpdateAsync(sriConfig, cancellationToken);
-            }
+            // No need to call UpdateAsync - entity is already tracked by EF Core when retrieved
+            // Only AddAsync was needed for new entities above
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
@@ -74,9 +78,14 @@ public class UpdateSriConfigurationCommandHandler : IRequestHandler<UpdateSriCon
                 LegalName = sriConfig.LegalName,
                 TradeName = sriConfig.TradeName,
                 MainAddress = sriConfig.MainAddress,
+                Phone = sriConfig.Phone,
+                Email = sriConfig.Email,
                 Environment = sriConfig.Environment,
                 AccountingRequired = sriConfig.AccountingRequired,
+                SpecialTaxpayerNumber = sriConfig.SpecialTaxpayerNumber,
+                IsRiseRegime = sriConfig.IsRiseRegime,
                 IsCertificateConfigured = sriConfig.IsCertificateConfigured,
+                CertificateExpiryDate = sriConfig.CertificateExpiryDate,
                 IsCertificateValid = sriConfig.IsCertificateValid,
                 CreatedAt = sriConfig.CreatedAt,
                 UpdatedAt = sriConfig.UpdatedAt

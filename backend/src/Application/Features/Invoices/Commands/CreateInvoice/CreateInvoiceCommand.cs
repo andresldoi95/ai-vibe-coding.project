@@ -8,6 +8,7 @@ public record CreateInvoiceCommand : IRequest<Result<InvoiceDto>>
 {
     public Guid CustomerId { get; init; }
     public Guid? WarehouseId { get; init; }
+    public Guid EmissionPointId { get; init; }
     public DateTime? IssueDate { get; init; }
     public DateTime? DueDate { get; init; }
     public string? Notes { get; init; }

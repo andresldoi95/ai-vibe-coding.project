@@ -41,11 +41,23 @@ public class GetEmissionPointByIdQueryHandlerTests
         var establishmentId = Guid.NewGuid();
         _tenantContextMock.Setup(t => t.TenantId).Returns(tenantId);
 
+        var establishment = new Establishment
+        {
+            Id = establishmentId,
+            TenantId = tenantId,
+            EstablishmentCode = "001",
+            Name = "Main Office",
+            Address = "123 Main St",
+            IsActive = true,
+            CreatedAt = DateTime.UtcNow.AddDays(-60)
+        };
+
         var emissionPoint = new EmissionPoint
         {
             Id = emissionPointId,
             TenantId = tenantId,
             EstablishmentId = establishmentId,
+            Establishment = establishment,
             EmissionPointCode = "001",
             Name = "POS 1",
             IsActive = true,
@@ -71,6 +83,8 @@ public class GetEmissionPointByIdQueryHandlerTests
         result.Value.Should().NotBeNull();
         result.Value!.Id.Should().Be(emissionPointId);
         result.Value.EstablishmentId.Should().Be(establishmentId);
+        result.Value.EstablishmentCode.Should().Be("001");
+        result.Value.EstablishmentName.Should().Be("Main Office");
         result.Value.EmissionPointCode.Should().Be("001");
         result.Value.Name.Should().Be("POS 1");
         result.Value.IsActive.Should().BeTrue();

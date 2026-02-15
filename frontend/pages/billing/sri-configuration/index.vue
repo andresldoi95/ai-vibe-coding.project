@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useVuelidate } from '@vuelidate/core'
-import { helpers, maxLength, required } from '@vuelidate/validators'
+import { email, helpers, maxLength, required } from '@vuelidate/validators'
 import type { SriConfiguration } from '~/types/sri-configuration'
 import { SriEnvironment } from '~/types/sri-enums'
 
@@ -28,7 +28,11 @@ const formData = reactive({
   legalName: '',
   tradeName: '',
   mainAddress: '',
+  phone: '',
+  email: '',
   accountingRequired: false,
+  specialTaxpayerNumber: '',
+  isRiseRegime: false,
   environment: SriEnvironment.Test,
 })
 
@@ -54,6 +58,23 @@ const rules = computed(() => ({
     required,
     maxLength: maxLength(500),
   },
+  phone: {
+    required,
+    maxLength: maxLength(20),
+  },
+  email: {
+    required,
+    email,
+    maxLength: maxLength(256),
+  },
+  specialTaxpayerNumber: {
+    maxLength: maxLength(50),
+  },
+  accountingRequired: {},
+  isRiseRegime: {},
+  environment: {
+    required,
+  },
 }))
 
 const v$ = useVuelidate(rules, formData)
@@ -75,13 +96,16 @@ async function loadConfiguration() {
       formData.legalName = configuration.value.legalName
       formData.tradeName = configuration.value.tradeName
       formData.mainAddress = configuration.value.mainAddress
+      formData.phone = configuration.value.phone
+      formData.email = configuration.value.email
       formData.accountingRequired = configuration.value.accountingRequired
+      formData.specialTaxpayerNumber = configuration.value.specialTaxpayerNumber || ''
+      formData.isRiseRegime = configuration.value.isRiseRegime
       formData.environment = configuration.value.environment
     }
   }
-  catch (error) {
+  catch {
     // If no configuration exists yet, that's okay - form will be empty
-    console.log('No SRI configuration found yet')
   }
   finally {
     loadingData.value = false
@@ -102,7 +126,11 @@ async function handleSubmit() {
       legalName: formData.legalName,
       tradeName: formData.tradeName,
       mainAddress: formData.mainAddress,
+      phone: formData.phone,
+      email: formData.email,
       accountingRequired: formData.accountingRequired,
+      specialTaxpayerNumber: formData.specialTaxpayerNumber || undefined,
+      isRiseRegime: formData.isRiseRegime,
       environment: formData.environment,
     })
 
@@ -209,52 +237,141 @@ onMounted(() => {
           <form class="flex flex-col gap-6" @submit.prevent="handleSubmit">
             <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
               <!-- Company RUC -->
-              <FormField
-                v-model="formData.companyRuc"
-                name="companyRuc"
-                :label="t('sriConfiguration.company_ruc')"
-                :placeholder="t('sriConfiguration.company_ruc_placeholder')"
-                :error="v$.companyRuc.$errors[0]?.$message"
-                :help-text="t('sriConfiguration.company_ruc_helper')"
-                required
-                maxlength="13"
-              />
+              <div class="flex flex-col gap-2">
+                <label for="companyRuc" class="font-semibold text-slate-700 dark:text-slate-200">
+                  {{ t('sriConfiguration.company_ruc') }} *
+                </label>
+                <InputText
+                  id="companyRuc"
+                  v-model="formData.companyRuc"
+                  :invalid="v$.companyRuc.$error"
+                  :placeholder="t('sriConfiguration.company_ruc_placeholder')"
+                  maxlength="13"
+                  @blur="v$.companyRuc.$touch()"
+                />
+                <small v-if="v$.companyRuc.$error" class="text-red-600 dark:text-red-400">
+                  {{ v$.companyRuc.$errors[0].$message }}
+                </small>
+                <small v-else class="text-slate-500 dark:text-slate-400">
+                  {{ t('sriConfiguration.company_ruc_helper') }}
+                </small>
+              </div>
 
               <!-- Legal Name -->
-              <FormField
-                v-model="formData.legalName"
-                name="legalName"
-                :label="t('sriConfiguration.legal_name')"
-                :placeholder="t('sriConfiguration.legal_name_placeholder')"
-                :error="v$.legalName.$errors[0]?.$message"
-                required
-              />
+              <div class="flex flex-col gap-2">
+                <label for="legalName" class="font-semibold text-slate-700 dark:text-slate-200">
+                  {{ t('sriConfiguration.legal_name') }} *
+                </label>
+                <InputText
+                  id="legalName"
+                  v-model="formData.legalName"
+                  :invalid="v$.legalName.$error"
+                  :placeholder="t('sriConfiguration.legal_name_placeholder')"
+                  @blur="v$.legalName.$touch()"
+                />
+                <small v-if="v$.legalName.$error" class="text-red-600 dark:text-red-400">
+                  {{ v$.legalName.$errors[0].$message }}
+                </small>
+              </div>
 
               <!-- Trade Name -->
-              <FormField
-                v-model="formData.tradeName"
-                name="tradeName"
-                :label="t('sriConfiguration.trade_name')"
-                :placeholder="t('sriConfiguration.trade_name_placeholder')"
-                :error="v$.tradeName.$errors[0]?.$message"
-              />
+              <div class="flex flex-col gap-2">
+                <label for="tradeName" class="font-semibold text-slate-700 dark:text-slate-200">
+                  {{ t('sriConfiguration.trade_name') }}
+                </label>
+                <InputText
+                  id="tradeName"
+                  v-model="formData.tradeName"
+                  :invalid="v$.tradeName.$error"
+                  :placeholder="t('sriConfiguration.trade_name_placeholder')"
+                  @blur="v$.tradeName.$touch()"
+                />
+                <small v-if="v$.tradeName.$error" class="text-red-600 dark:text-red-400">
+                  {{ v$.tradeName.$errors[0].$message }}
+                </small>
+              </div>
 
               <!-- Main Address -->
-              <FormField
-                v-model="formData.mainAddress"
-                name="mainAddress"
-                :label="t('sriConfiguration.main_address')"
-                :placeholder="t('sriConfiguration.main_address_placeholder')"
-                :error="v$.mainAddress.$errors[0]?.$message"
-                required
-              />
+              <div class="flex flex-col gap-2">
+                <label for="mainAddress" class="font-semibold text-slate-700 dark:text-slate-200">
+                  {{ t('sriConfiguration.main_address') }} *
+                </label>
+                <InputText
+                  id="mainAddress"
+                  v-model="formData.mainAddress"
+                  :invalid="v$.mainAddress.$error"
+                  :placeholder="t('sriConfiguration.main_address_placeholder')"
+                  @blur="v$.mainAddress.$touch()"
+                />
+                <small v-if="v$.mainAddress.$error" class="text-red-600 dark:text-red-400">
+                  {{ v$.mainAddress.$errors[0].$message }}
+                </small>
+              </div>
+
+              <!-- Phone -->
+              <div class="flex flex-col gap-2">
+                <label for="phone" class="font-semibold text-slate-700 dark:text-slate-200">
+                  {{ t('sriConfiguration.phone') }} *
+                </label>
+                <InputText
+                  id="phone"
+                  v-model="formData.phone"
+                  :invalid="v$.phone.$error"
+                  :placeholder="t('sriConfiguration.phone_placeholder')"
+                  maxlength="20"
+                  @blur="v$.phone.$touch()"
+                />
+                <small v-if="v$.phone.$error" class="text-red-600 dark:text-red-400">
+                  {{ v$.phone.$errors[0].$message }}
+                </small>
+              </div>
+
+              <!-- Email -->
+              <div class="flex flex-col gap-2">
+                <label for="email" class="font-semibold text-slate-700 dark:text-slate-200">
+                  {{ t('sriConfiguration.email') }} *
+                </label>
+                <InputText
+                  id="email"
+                  v-model="formData.email"
+                  type="email"
+                  :invalid="v$.email.$error"
+                  :placeholder="t('sriConfiguration.email_placeholder')"
+                  maxlength="256"
+                  @blur="v$.email.$touch()"
+                />
+                <small v-if="v$.email.$error" class="text-red-600 dark:text-red-400">
+                  {{ v$.email.$errors[0].$message }}
+                </small>
+              </div>
+
+              <!-- Special Taxpayer Number -->
+              <div class="flex flex-col gap-2">
+                <label for="specialTaxpayerNumber" class="font-semibold text-slate-700 dark:text-slate-200">
+                  {{ t('sriConfiguration.special_taxpayer_number') }}
+                </label>
+                <InputText
+                  id="specialTaxpayerNumber"
+                  v-model="formData.specialTaxpayerNumber"
+                  :invalid="v$.specialTaxpayerNumber.$error"
+                  :placeholder="t('sriConfiguration.special_taxpayer_number_placeholder')"
+                  maxlength="50"
+                  @blur="v$.specialTaxpayerNumber.$touch()"
+                />
+                <small v-if="v$.specialTaxpayerNumber.$error" class="text-red-600 dark:text-red-400">
+                  {{ v$.specialTaxpayerNumber.$errors[0].$message }}
+                </small>
+                <small v-else class="text-slate-500 dark:text-slate-400">
+                  {{ t('sriConfiguration.special_taxpayer_number_helper') }}
+                </small>
+              </div>
 
               <!-- Environment -->
               <div>
                 <label for="environment" class="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">
                   {{ t('sriConfiguration.environment') }} <span class="text-red-500">*</span>
                 </label>
-                <Dropdown
+                <Select
                   id="environment"
                   v-model="formData.environment"
                   :options="environmentOptions"
@@ -269,7 +386,7 @@ onMounted(() => {
 
               <!-- Accounting Required -->
               <div class="flex items-center gap-3 pt-6">
-                <InputSwitch
+                <ToggleSwitch
                   id="accountingRequired"
                   v-model="formData.accountingRequired"
                   :aria-label="t('sriConfiguration.accounting_required')"
@@ -277,6 +394,21 @@ onMounted(() => {
                 <label for="accountingRequired" class="cursor-pointer text-sm font-medium text-slate-700 dark:text-slate-300">
                   {{ t('sriConfiguration.accounting_required') }}
                 </label>
+              </div>
+
+              <!-- RISE Regime -->
+              <div class="flex items-center gap-3 pt-6">
+                <ToggleSwitch
+                  id="isRiseRegime"
+                  v-model="formData.isRiseRegime"
+                  :aria-label="t('sriConfiguration.is_rise_regime')"
+                />
+                <label for="isRiseRegime" class="cursor-pointer text-sm font-medium text-slate-700 dark:text-slate-300">
+                  {{ t('sriConfiguration.is_rise_regime') }}
+                </label>
+                <small class="block w-full text-slate-500 dark:text-slate-400">
+                  {{ t('sriConfiguration.is_rise_regime_helper') }}
+                </small>
               </div>
             </div>
 
@@ -320,13 +452,21 @@ onMounted(() => {
                 </p>
               </div>
 
-              <div v-if="configuration.certificateExpiryDate">
+              <div>
                 <label class="text-sm font-medium text-slate-600 dark:text-slate-400">
                   {{ t('sriConfiguration.certificate_expiry') }}
                 </label>
                 <p class="text-slate-900 dark:text-white">
-                  {{ $d(new Date(configuration.certificateExpiryDate), 'long') }}
+                  <span v-if="configuration.certificateExpiryDate">
+                    {{ new Date(configuration.certificateExpiryDate).toLocaleDateString() }}
+                  </span>
+                  <span v-else class="text-slate-500">
+                    Not available
+                  </span>
                 </p>
+                <small class="text-xs text-slate-400">
+                  Raw: {{ configuration.certificateExpiryDate }}
+                </small>
               </div>
             </div>
           </div>

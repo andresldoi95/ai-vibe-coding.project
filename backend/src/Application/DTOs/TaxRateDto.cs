@@ -10,7 +10,11 @@ public class TaxRateDto
     public bool IsDefault { get; set; }
     public bool IsActive { get; set; }
     public string? Description { get; set; }
-    public string? Country { get; set; }
+
+    // Country information
+    public Guid? CountryId { get; set; }
+    public string? CountryCode { get; set; }
+    public string? CountryName { get; set; }
 
     // Audit fields
     public DateTime CreatedAt { get; set; }

@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import type { TaxRate } from '~/types/billing'
-
 definePageMeta({
   middleware: ['auth', 'tenant'],
   layout: 'default',
@@ -78,7 +76,7 @@ function formatRate(rate: number): string {
             </template>
           </Column>
 
-          <Column field="country" :header="t('taxRates.country')" sortable />
+          <Column field="countryName" :header="t('taxRates.country')" sortable />
 
           <Column field="isDefault" :header="t('taxRates.default')" sortable>
             <template #body="{ data }">

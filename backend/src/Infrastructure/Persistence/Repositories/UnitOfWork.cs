@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore.Storage;
 using SaaS.Application.Common.Interfaces;
 using SaaS.Domain.Entities;
+using SaaS.Domain.Interfaces;
 
 namespace SaaS.Infrastructure.Persistence.Repositories;
 
@@ -24,9 +25,10 @@ public class UnitOfWork : IUnitOfWork
     public IRoleRepository Roles { get; }
     public IPermissionRepository Permissions { get; }
     public ITaxRateRepository TaxRates { get; }
-    public IInvoiceConfigurationRepository InvoiceConfigurations { get; }
     public IInvoiceRepository Invoices { get; }
     public IRepository<InvoiceItem> InvoiceItems { get; }
+    public IPaymentRepository Payments { get; }
+    public ICountryRepository Countries { get; }
     public IEstablishmentRepository Establishments { get; }
     public IEmissionPointRepository EmissionPoints { get; }
     public ISriConfigurationRepository SriConfigurations { get; }
@@ -45,9 +47,10 @@ public class UnitOfWork : IUnitOfWork
         IRoleRepository roleRepository,
         IPermissionRepository permissionRepository,
         ITaxRateRepository taxRateRepository,
-        IInvoiceConfigurationRepository invoiceConfigurationRepository,
         IInvoiceRepository invoiceRepository,
         IRepository<InvoiceItem> invoiceItemRepository,
+        IPaymentRepository paymentRepository,
+        ICountryRepository countryRepository,
         IEstablishmentRepository establishmentRepository,
         IEmissionPointRepository emissionPointRepository,
         ISriConfigurationRepository sriConfigurationRepository)
@@ -61,9 +64,10 @@ public class UnitOfWork : IUnitOfWork
         Products = productRepository;
         Customers = customerRepository;
         TaxRates = taxRateRepository;
-        InvoiceConfigurations = invoiceConfigurationRepository;
         Invoices = invoiceRepository;
         InvoiceItems = invoiceItemRepository;
+        Payments = paymentRepository;
+        Countries = countryRepository;
         StockMovements = stockMovementRepository;
         WarehouseInventory = warehouseInventoryRepository;
         Roles = roleRepository;

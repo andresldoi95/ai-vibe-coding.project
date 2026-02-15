@@ -14,6 +14,7 @@ const toast = useNotification()
 const route = useRoute()
 const router = useRouter()
 const { getCustomerById, updateCustomer } = useCustomer()
+const { getAllCountries, getCountryOptions } = useCountry()
 
 const loading = ref(false)
 const loadingData = ref(false)
@@ -31,14 +32,14 @@ const formData = reactive({
   billingCity: '',
   billingState: '',
   billingPostalCode: '',
-  billingCountry: '',
+  billingCountryId: undefined as string | undefined,
 
   // Shipping Address
   shippingStreet: '',
   shippingCity: '',
   shippingState: '',
   shippingPostalCode: '',
-  shippingCountry: '',
+  shippingCountryId: undefined as string | undefined,
 
   // Additional Information
   notes: '',
@@ -78,9 +79,6 @@ const rules = computed(() => ({
   billingPostalCode: {
     maxLength: maxLength(20),
   },
-  billingCountry: {
-    maxLength: maxLength(100),
-  },
   shippingStreet: {
     maxLength: maxLength(512),
   },
@@ -92,9 +90,6 @@ const rules = computed(() => ({
   },
   shippingPostalCode: {
     maxLength: maxLength(20),
-  },
-  shippingCountry: {
-    maxLength: maxLength(100),
   },
   notes: {
     maxLength: maxLength(1000),
@@ -110,6 +105,8 @@ async function loadCustomer() {
   loadingData.value = true
   try {
     const id = route.params.id as string
+    // Load countries and customer in parallel
+    await getAllCountries()
     customer.value = await getCustomerById(id)
 
     // Populate form data
@@ -123,13 +120,13 @@ async function loadCustomer() {
     formData.billingCity = customer.value.billingCity || ''
     formData.billingState = customer.value.billingState || ''
     formData.billingPostalCode = customer.value.billingPostalCode || ''
-    formData.billingCountry = customer.value.billingCountry || ''
+    formData.billingCountryId = customer.value.billingCountryId
 
     formData.shippingStreet = customer.value.shippingStreet || ''
     formData.shippingCity = customer.value.shippingCity || ''
     formData.shippingState = customer.value.shippingState || ''
     formData.shippingPostalCode = customer.value.shippingPostalCode || ''
-    formData.shippingCountry = customer.value.shippingCountry || ''
+    formData.shippingCountryId = customer.value.shippingCountryId
 
     formData.notes = customer.value.notes || ''
     formData.website = customer.value.website || ''
@@ -176,13 +173,13 @@ async function handleSubmit() {
       billingCity: formData.billingCity || undefined,
       billingState: formData.billingState || undefined,
       billingPostalCode: formData.billingPostalCode || undefined,
-      billingCountry: formData.billingCountry || undefined,
+      billingCountryId: formData.billingCountryId || undefined,
 
       shippingStreet: formData.shippingStreet || undefined,
       shippingCity: formData.shippingCity || undefined,
       shippingState: formData.shippingState || undefined,
       shippingPostalCode: formData.shippingPostalCode || undefined,
-      shippingCountry: formData.shippingCountry || undefined,
+      shippingCountryId: formData.shippingCountryId || undefined,
 
       notes: formData.notes || undefined,
       website: formData.website || undefined,
@@ -365,10 +362,16 @@ onMounted(() => {
                     <label for="billingCountry" class="font-semibold text-slate-700 dark:text-slate-200">
                       {{ t('common.country') }}
                     </label>
-                    <InputText
+                    <Dropdown
                       id="billingCountry"
-                      v-model="formData.billingCountry"
-                      :placeholder="t('customers.country_placeholder')"
+                      v-model="formData.billingCountryId"
+                      :options="getCountryOptions()"
+                      option-label="label"
+                      option-value="value"
+                      :placeholder="t('customers.select_country')"
+                      show-clear
+                      filter
+                      class="w-full"
                     />
                   </div>
                 </div>
@@ -436,10 +439,16 @@ onMounted(() => {
                     <label for="shippingCountry" class="font-semibold text-slate-700 dark:text-slate-200">
                       {{ t('common.country') }}
                     </label>
-                    <InputText
+                    <Dropdown
                       id="shippingCountry"
-                      v-model="formData.shippingCountry"
-                      :placeholder="t('customers.country_placeholder')"
+                      v-model="formData.shippingCountryId"
+                      :options="getCountryOptions()"
+                      option-label="label"
+                      option-value="value"
+                      :placeholder="t('customers.select_country')"
+                      show-clear
+                      filter
+                      class="w-full"
                     />
                   </div>
                 </div>

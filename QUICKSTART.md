@@ -80,6 +80,8 @@ Password: password
 
 ### Reset Database with Demo Data
 
+**⚠️ When to use this**: After any database schema changes (new entities, migrations) or when demo data becomes inconsistent.
+
 Use the **reset-demo-data.ps1** script to completely reset your database and seed it with demo data:
 
 ```powershell
@@ -96,12 +98,18 @@ This will:
 - Create a demo company: **Demo Company** (`demo-company`)
 - Create 4 demo users with different roles
 - Create 3 sample warehouses
+- Seed all sample data from `SeedController.cs`
 
 **Demo Users** (all passwords are `password`):
 - **Owner**: owner@demo.com
 - **Admin**: admin@demo.com
 - **Manager**: manager@demo.com
 - **User**: user@demo.com
+
+**Important Notes**:
+- **Container requirement**: The script uses `docker-compose exec` to connect to the `db` container. The database host is only resolvable within the Docker network.
+- **After schema changes**: Always run this after modifying entities or migrations to ensure demo data reflects the new schema.
+- **SeedController dependency**: If the script fails, check that `backend/src/Api/Controllers/SeedController.cs` has been updated with seed data for all entities.
 
 **Use Case**: Perfect for:
 - Starting fresh with clean test data

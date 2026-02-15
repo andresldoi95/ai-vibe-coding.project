@@ -20,8 +20,5 @@ public class CreateTaxRateCommandValidator : AbstractValidator<CreateTaxRateComm
 
         RuleFor(x => x.Description)
             .MaximumLength(500).WithMessage("Description must not exceed 500 characters");
-
-        RuleFor(x => x.Country)
-            .MaximumLength(2).WithMessage("Country must be a 2-character ISO code");
     }
 }

@@ -90,6 +90,8 @@ public class UpdateEmissionPointCommandHandlerTests
         result.Value.Should().NotBeNull();
         result.Value!.EmissionPointCode.Should().Be("002");
         result.Value.Name.Should().Be("Updated Name");
+        result.Value.EstablishmentCode.Should().Be("001");
+        result.Value.EstablishmentName.Should().Be("Main Office");
         result.Value.IsActive.Should().BeFalse();
         result.Value.InvoiceSequence.Should().Be(5, "Sequences should not change on update");
 

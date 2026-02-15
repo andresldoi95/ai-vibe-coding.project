@@ -10,6 +10,14 @@ public class EstablishmentRepository : Repository<Establishment>, IEstablishment
     {
     }
 
+    public async Task<List<Establishment>> GetAllByTenantAsync(Guid tenantId, CancellationToken cancellationToken = default)
+    {
+        return await _dbSet
+            .Where(e => e.TenantId == tenantId && !e.IsDeleted)
+            .OrderBy(e => e.EstablishmentCode)
+            .ToListAsync(cancellationToken);
+    }
+
     public async Task<Establishment?> GetByCodeAsync(string code, Guid tenantId, CancellationToken cancellationToken = default)
     {
         return await _dbSet

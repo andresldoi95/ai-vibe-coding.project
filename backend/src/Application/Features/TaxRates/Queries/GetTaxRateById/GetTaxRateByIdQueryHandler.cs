@@ -44,7 +44,9 @@ public class GetTaxRateByIdQueryHandler : IRequestHandler<GetTaxRateByIdQuery, R
                 IsDefault = taxRate.IsDefault,
                 IsActive = taxRate.IsActive,
                 Description = taxRate.Description,
-                Country = taxRate.Country,
+                CountryId = taxRate.CountryId,
+                CountryCode = taxRate.Country?.Code,
+                CountryName = taxRate.Country?.Name,
                 CreatedAt = taxRate.CreatedAt,
                 UpdatedAt = taxRate.UpdatedAt
             };

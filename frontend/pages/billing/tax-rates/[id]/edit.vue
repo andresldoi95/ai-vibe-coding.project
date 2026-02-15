@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useVuelidate } from '@vuelidate/core'
 import { between, helpers, maxLength, required } from '@vuelidate/validators'
-import type { TaxRate } from '~/types/billing'
 
 definePageMeta({
   middleware: ['auth', 'tenant'],
@@ -13,6 +12,7 @@ const route = useRoute()
 const toast = useNotification()
 const router = useRouter()
 const { getTaxRateById, updateTaxRate } = useTaxRate()
+const { getAllCountries, getCountryOptions } = useCountry()
 
 const loading = ref(false)
 const initialLoading = ref(true)
@@ -24,7 +24,7 @@ const formData = reactive({
   rate: 0,
   isDefault: false,
   isActive: true,
-  country: '',
+  countryId: undefined as string | undefined,
 })
 
 const codeFormat = helpers.regex(/^[A-Z0-9_]+$/)
@@ -43,16 +43,15 @@ const rules = computed(() => ({
     required,
     between: between(0, 1),
   },
-  country: {
-    maxLength: maxLength(100),
-  },
 }))
 
 const v$ = useVuelidate(rules, formData)
 
 onMounted(async () => {
   try {
-    const id = route.params.id as string
+    // Load countries and tax rate in parallel
+    const [id] = [route.params.id as string]
+    await getAllCountries()
     const taxRate = await getTaxRateById(id)
 
     formData.id = taxRate.id
@@ -61,9 +60,9 @@ onMounted(async () => {
     formData.rate = taxRate.rate
     formData.isDefault = taxRate.isDefault
     formData.isActive = taxRate.isActive
-    formData.country = taxRate.country || ''
+    formData.countryId = taxRate.countryId
   }
-  catch (error) {
+  catch {
     toast.showError(t('taxRates.load_error'))
     router.push('/billing/tax-rates')
   }
@@ -181,16 +180,17 @@ function handleCancel() {
               <label for="country" class="font-semibold">
                 {{ t('taxRates.country') }}
               </label>
-              <InputText
+              <Dropdown
                 id="country"
-                v-model="formData.country"
-                :placeholder="t('taxRates.country_placeholder')"
-                :class="{ 'p-invalid': v$.country.$error }"
+                v-model="formData.countryId"
+                :options="getCountryOptions()"
+                option-label="label"
+                option-value="value"
+                :placeholder="t('taxRates.select_country')"
+                show-clear
+                filter
                 class="w-full"
               />
-              <small v-if="v$.country.$error" class="p-error">
-                {{ v$.country.$errors[0].$message }}
-              </small>
             </div>
 
             <!-- Is Default -->

@@ -16,7 +16,8 @@ public class Warehouse : TenantEntity
     public string City { get; set; } = string.Empty;
     public string? State { get; set; }
     public string PostalCode { get; set; } = string.Empty;
-    public string Country { get; set; } = string.Empty;
+    public Guid CountryId { get; set; }
+    public Country Country { get; set; } = null!;
 
     // Contact information
     public string? Phone { get; set; }

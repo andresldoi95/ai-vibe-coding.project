@@ -50,13 +50,6 @@ const modules = [
     to: '/billing/sri-configuration',
     color: 'bg-indigo-500',
   },
-  {
-    title: 'nav.invoice_configuration',
-    description: 'Configure invoice numbering and default settings',
-    icon: 'pi pi-cog',
-    to: '/billing/invoice-configuration',
-    color: 'bg-pink-500',
-  },
 ]
 
 onMounted(() => {

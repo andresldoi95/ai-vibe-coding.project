@@ -38,9 +38,8 @@ public class UpdateWarehouseCommandValidator : AbstractValidator<UpdateWarehouse
             .NotEmpty().WithMessage("Postal code is required")
             .MaximumLength(20).WithMessage("Postal code cannot exceed 20 characters");
 
-        RuleFor(x => x.Country)
-            .NotEmpty().WithMessage("Country is required")
-            .MaximumLength(100).WithMessage("Country cannot exceed 100 characters");
+        RuleFor(x => x.CountryId)
+            .NotEmpty().WithMessage("Country is required");
 
         RuleFor(x => x.Phone)
             .MaximumLength(50).WithMessage("Phone cannot exceed 50 characters")

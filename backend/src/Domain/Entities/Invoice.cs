@@ -33,6 +33,7 @@ public class Invoice : TenantEntity
     public virtual Warehouse? Warehouse { get; set; }
     public virtual EmissionPoint? EmissionPoint { get; set; }
     public virtual ICollection<InvoiceItem> Items { get; set; } = new List<InvoiceItem>();
+    public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
 
     // Computed property
     public bool IsEditable => Status == InvoiceStatus.Draft && !IsDeleted;

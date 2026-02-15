@@ -12,5 +12,5 @@ public record CreateTaxRateCommand : IRequest<Result<TaxRateDto>>
     public bool IsDefault { get; init; }
     public bool IsActive { get; init; } = true;
     public string? Description { get; init; }
-    public string? Country { get; init; }
+    public Guid? CountryId { get; init; }
 }
