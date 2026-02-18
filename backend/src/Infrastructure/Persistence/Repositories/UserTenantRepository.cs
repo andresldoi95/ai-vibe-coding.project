@@ -20,4 +20,23 @@ public class UserTenantRepository : Repository<UserTenant>, IUserTenantRepositor
                 ut => ut.UserId == userId && ut.TenantId == tenantId && ut.IsActive,
                 cancellationToken);
     }
+
+    public async Task<List<UserTenant>> GetByTenantIdWithDetailsAsync(Guid tenantId, CancellationToken cancellationToken = default)
+    {
+        return await _context.UserTenants
+            .Include(ut => ut.User)
+            .Include(ut => ut.Role)
+            .Where(ut => ut.TenantId == tenantId && ut.IsActive)
+            .OrderBy(ut => ut.JoinedAt)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<UserTenant?> GetByUserAndTenantAsync(Guid userId, Guid tenantId, CancellationToken cancellationToken = default)
+    {
+        return await _context.UserTenants
+            .Include(ut => ut.Role)
+            .FirstOrDefaultAsync(
+                ut => ut.UserId == userId && ut.TenantId == tenantId,
+                cancellationToken);
+    }
 }

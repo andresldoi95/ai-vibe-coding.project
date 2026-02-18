@@ -70,8 +70,9 @@ public class TenantResolutionMiddleware
 
         // Set tenant context
         tenantContext.SetTenant(tenantId, tenant.SchemaName ?? $"tenant_{tenant.Slug}");
+        tenantContext.SetUser(userId);
 
-        _logger.LogDebug("Tenant context set: {TenantId} - {TenantName}", tenantId, tenant.Name);
+        _logger.LogDebug("Tenant context set: {TenantId} - {TenantName}, User: {UserId}", tenantId, tenant.Name, userId);
 
         await _next(context);
     }

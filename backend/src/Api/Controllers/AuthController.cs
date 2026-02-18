@@ -8,6 +8,8 @@ using SaaS.Application.Features.Auth.Commands.Register;
 using SaaS.Application.Features.Auth.Commands.ResetPassword;
 using SaaS.Application.Features.Auth.Commands.SelectTenant;
 using SaaS.Application.Features.Auth.Queries.GetCurrentUser;
+using SaaS.Application.Features.Users.Commands.AcceptInvitation;
+using SaaS.Application.DTOs;
 
 namespace SaaS.Api.Controllers;
 
@@ -170,6 +172,30 @@ public class AuthController : BaseController
         }
 
         return Ok(new { message = "Password reset successfully", success = true });
+    }
+
+    /// <summary>
+    /// Accept an invitation to join a company
+    /// </summary>
+    [HttpPost("accept-invitation")]
+    [AllowAnonymous]
+    public async Task<IActionResult> AcceptInvitation([FromBody] AcceptInvitationDto dto)
+    {
+        var command = new AcceptInvitationCommand
+        {
+            InvitationToken = dto.InvitationToken,
+            Name = dto.Name,
+            Password = dto.Password
+        };
+
+        var result = await _mediator.Send(command);
+
+        if (!result.IsSuccess)
+        {
+            return BadRequest(new { message = result.Error, errors = result.Errors });
+        }
+
+        return Ok(new { data = result.Value, message = "Invitation accepted successfully", success = true });
     }
 }
 

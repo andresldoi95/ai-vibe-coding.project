@@ -3,6 +3,8 @@
     "title": "SaaS Billing & Inventory"
   },
   "common": {
+    "success": "Success",
+    "error": "Error",
     "save": "Save",
     "cancel": "Cancel",
     "yes": "Yes",
@@ -665,6 +667,8 @@
   "roles": {
     "title": "Roles & Permissions",
     "subtitle": "Manage roles and assign permissions",
+    "name": "Name",
+    "description": "Description",
     "role_name": "Role Name",
     "role_description": "Role Description",
     "priority": "Priority",
@@ -695,40 +699,6 @@
     "delete": "Delete"
   },
   "taxRates": {
-    "title": "Tax Rates",
-    "description": "Manage tax rates for invoicing",
-    "create": "Create Tax Rate",
-    "edit": "Edit Tax Rate",
-    "view_title": "Tax Rate Details",
-    "view_description": "View tax rate information",
-    "create_description": "Add a new tax rate to your system",
-    "edit_description": "Update tax rate information",
-    "code": "Tax Code",
-    "code_placeholder": "IVA_15",
-    "code_hint": "Uppercase letters, numbers, and underscores only",
-    "name": "Tax Name",
-    "name_placeholder": "IVA 15%",
-    "rate": "Tax Rate",
-    "rate_placeholder": "0.15",
-    "rate_hint": "Enter as decimal (e.g., 0.15 for 15%)",
-    "country": "Country",
-    "country_placeholder": "Ecuador",
-    "select_country": "Select a country",
-    "default": "Default",
-    "is_default": "Set as default tax rate",
-    "is_active": "Active",
-    "no_records": "No tax rates found",
-    "delete_confirm_title": "Delete Tax Rate",
-    "delete_confirm_message": "Are you sure you want to delete this tax rate?",
-    "create_success": "Tax rate created successfully",
-    "update_success": "Tax rate updated successfully",
-    "delete_success": "Tax rate deleted successfully",
-    "create_error": "Failed to create tax rate",
-    "update_error": "Failed to update tax rate",
-    "delete_error": "Failed to delete tax rate",
-    "load_error": "Failed to load tax rate"
-  },
-  "taxrates": {
     "title": "Tax Rates",
     "description": "Manage tax rates for invoicing",
     "create": "Create Tax Rate",
@@ -916,6 +886,78 @@
     "completed_successfully": "Payment marked as paid successfully",
     "not_found": "Payment not found",
     "load_error": "Failed to load payments"
+  },
+  "users": {
+    "title": "Users",
+    "invite_user": "Invite User",
+    "list": {
+      "title": "Company Users",
+      "name": "Name",
+      "email": "Email",
+      "role": "Role",
+      "joined_at": "Joined At",
+      "actions": "Actions",
+      "no_users": "No users found in your company"
+    },
+    "invite": {
+      "title": "Invite User",
+      "email": "Email",
+      "email_placeholder": "user{'@'}example.com",
+      "role": "Role",
+      "role_placeholder": "Select a role",
+      "personal_message": "Personal Message (Optional)",
+      "personal_message_placeholder": "Add a personal note to the invitation...",
+      "send_invitation": "Send Invitation",
+      "cancel": "Cancel"
+    },
+    "accept": {
+      "title": "Accept Invitation",
+      "welcome": "You've been invited to join {companyName}",
+      "existing_user": "Click below to accept the invitation:",
+      "new_user": "Complete your profile to join:",
+      "first_name": "First Name",
+      "last_name": "Last Name",
+      "password": "Password",
+      "confirm_password": "Confirm Password",
+      "accept_invitation": "Accept Invitation",
+      "token_invalid": "Invalid or expired invitation token",
+      "token_expired": "This invitation has expired",
+      "accepting": "Accepting invitation..."
+    },
+    "update_role": {
+      "title": "Update User Role",
+      "role": "Role",
+      "save": "Save",
+      "cancel": "Cancel"
+    },
+    "remove": {
+      "confirm_title": "Remove User",
+      "confirm_message": "Are you sure you want to remove {userName} from your company?",
+      "confirm": "Remove",
+      "cancel": "Cancel"
+    },
+    "messages": {
+      "invitation_sent": "Invitation sent successfully",
+      "invitation_accepted": "Invitation accepted! Welcome aboard.",
+      "role_updated": "User role updated successfully",
+      "user_removed": "User removed from company successfully",
+      "error_loading_users": "Error loading users",
+      "error_sending_invitation": "Error sending invitation",
+      "error_accepting_invitation": "Error accepting invitation",
+      "error_updating_role": "Error updating user role",
+      "error_removing_user": "Error removing user"
+    },
+    "validation": {
+      "email_required": "Email is required",
+      "email_invalid": "Invalid email format",
+      "role_required": "Role is required",
+      "first_name_required": "First name is required",
+      "last_name_required": "Last name is required",
+      "password_required": "Password is required",
+      "password_min_length": "Password must be at least 8 characters",
+      "passwords_must_match": "Passwords must match",
+      "personal_message_max_length": "Personal message must not exceed 500 characters"
+    }
   },
   "messages": {
     "success_save": "Saved successfully",

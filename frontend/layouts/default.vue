@@ -95,8 +95,15 @@ const menuItems = computed(() => {
     },
   ]
 
-  // Add Settings menu only if user has roles.read permission
+  // Add Settings menu only if user has required permissions
   const settingsItems = []
+  if (hasPermission('users.read')) {
+    settingsItems.push({
+      label: t('users.title'),
+      icon: 'pi pi-users',
+      command: () => navigateTo('/settings/users'),
+    })
+  }
   if (hasPermission('roles.read')) {
     settingsItems.push({
       label: t('nav.roles'),

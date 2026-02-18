@@ -16,6 +16,7 @@ public class UnitOfWork : IUnitOfWork
     public IUserRepository Users { get; }
     public ITenantRepository Tenants { get; }
     public IUserTenantRepository UserTenants { get; }
+    public IUserInvitationRepository UserInvitations { get; }
     public IRefreshTokenRepository RefreshTokens { get; }
     public IWarehouseRepository Warehouses { get; }
     public IProductRepository Products { get; }
@@ -38,6 +39,7 @@ public class UnitOfWork : IUnitOfWork
         IUserRepository userRepository,
         ITenantRepository tenantRepository,
         IUserTenantRepository userTenantRepository,
+        IUserInvitationRepository userInvitationRepository,
         IRefreshTokenRepository refreshTokenRepository,
         IWarehouseRepository warehouseRepository,
         IProductRepository productRepository,
@@ -58,6 +60,7 @@ public class UnitOfWork : IUnitOfWork
         _context = context;
         Users = userRepository;
         Tenants = tenantRepository;
+        UserInvitations = userInvitationRepository;
         UserTenants = userTenantRepository;
         RefreshTokens = refreshTokenRepository;
         Warehouses = warehouseRepository;

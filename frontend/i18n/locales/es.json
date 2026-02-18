@@ -3,6 +3,8 @@
     "title": "SaaS Facturación e Inventario"
   },
   "common": {
+    "success": "Éxito",
+    "error": "Error",
     "save": "Guardar",
     "cancel": "Cancelar",
     "yes": "Sí",
@@ -663,6 +665,8 @@
   "roles": {
     "title": "Roles y Permisos",
     "subtitle": "Gestionar roles y asignar permisos",
+    "name": "Nombre",
+    "description": "Descripción",
     "role_name": "Nombre del Rol",
     "role_description": "Descripción del Rol",
     "priority": "Prioridad",
@@ -693,40 +697,6 @@
     "delete": "Eliminar"
   },
   "taxRates": {
-    "title": "Tasas de Impuesto",
-    "description": "Gestionar tasas de impuesto para facturación",
-    "create": "Crear Tasa de Impuesto",
-    "edit": "Editar Tasa de Impuesto",
-    "view_title": "Detalles de Tasa de Impuesto",
-    "view_description": "Ver información de tasa de impuesto",
-    "create_description": "Agregar una nueva tasa de impuesto al sistema",
-    "edit_description": "Actualizar información de tasa de impuesto",
-    "code": "Código de Impuesto",
-    "code_placeholder": "IVA_15",
-    "code_hint": "Solo letras mayúsculas, números y guiones bajos",
-    "name": "Nombre del Impuesto",
-    "name_placeholder": "IVA 15%",
-    "rate": "Tasa de Impuesto",
-    "rate_placeholder": "0.15",
-    "rate_hint": "Ingrese como decimal (ej. 0.15 para 15%)",
-    "country": "País",
-    "country_placeholder": "Ecuador",
-    "select_country": "Seleccionar un país",
-    "default": "Predeterminado",
-    "is_default": "Establecer como tasa predeterminada",
-    "is_active": "Activo",
-    "no_records": "No se encontraron tasas de impuesto",
-    "delete_confirm_title": "Eliminar Tasa de Impuesto",
-    "delete_confirm_message": "¿Está seguro que desea eliminar esta tasa de impuesto?",
-    "create_success": "Tasa de impuesto creada exitosamente",
-    "update_success": "Tasa de impuesto actualizada exitosamente",
-    "delete_success": "Tasa de impuesto eliminada exitosamente",
-    "create_error": "Error al crear tasa de impuesto",
-    "update_error": "Error al actualizar tasa de impuesto",
-    "delete_error": "Error al eliminar tasa de impuesto",
-    "load_error": "Error al cargar tasa de impuesto"
-  },
-  "taxrates": {
     "title": "Tasas de Impuesto",
     "description": "Gestionar tasas de impuesto para facturación",
     "create": "Crear Tasa de Impuesto",
@@ -914,6 +884,78 @@
     "completed_successfully": "Pago marcado como pagado exitosamente",
     "not_found": "Pago no encontrado",
     "load_error": "Error al cargar pagos"
+  },
+  "users": {
+    "title": "Usuarios",
+    "invite_user": "Invitar Usuario",
+    "list": {
+      "title": "Usuarios de la Empresa",
+      "name": "Nombre",
+      "email": "Correo Electrónico",
+      "role": "Rol",
+      "joined_at": "Unido el",
+      "actions": "Acciones",
+      "no_users": "No se encontraron usuarios en su empresa"
+    },
+    "invite": {
+      "title": "Invitar Usuario",
+      "email": "Correo Electrónico",
+      "email_placeholder": "usuario{'@'}ejemplo.com",
+      "role": "Rol",
+      "role_placeholder": "Seleccione un rol",
+      "personal_message": "Mensaje Personal (Opcional)",
+      "personal_message_placeholder": "Agregue una nota personal a la invitación...",
+      "send_invitation": "Enviar Invitación",
+      "cancel": "Cancelar"
+    },
+    "accept": {
+      "title": "Aceptar Invitación",
+      "welcome": "Has sido invitado a unirte a {companyName}",
+      "existing_user": "Haz clic a continuación para aceptar la invitación:",
+      "new_user": "Completa tu perfil para unirte:",
+      "first_name": "Nombre",
+      "last_name": "Apellido",
+      "password": "Contraseña",
+      "confirm_password": "Confirmar Contraseña",
+      "accept_invitation": "Aceptar Invitación",
+      "token_invalid": "Token de invitación inválido o expirado",
+      "token_expired": "Esta invitación ha expirado",
+      "accepting": "Aceptando invitación..."
+    },
+    "update_role": {
+      "title": "Actualizar Rol de Usuario",
+      "role": "Rol",
+      "save": "Guardar",
+      "cancel": "Cancelar"
+    },
+    "remove": {
+      "confirm_title": "Eliminar Usuario",
+      "confirm_message": "¿Está seguro de que desea eliminar a {userName} de su empresa?",
+      "confirm": "Eliminar",
+      "cancel": "Cancelar"
+    },
+    "messages": {
+      "invitation_sent": "Invitación enviada exitosamente",
+      "invitation_accepted": "¡Invitación aceptada! Bienvenido a bordo.",
+      "role_updated": "Rol de usuario actualizado exitosamente",
+      "user_removed": "Usuario eliminado de la empresa exitosamente",
+      "error_loading_users": "Error al cargar usuarios",
+      "error_sending_invitation": "Error al enviar invitación",
+      "error_accepting_invitation": "Error al aceptar invitación",
+      "error_updating_role": "Error al actualizar rol de usuario",
+      "error_removing_user": "Error al eliminar usuario"
+    },
+    "validation": {
+      "email_required": "El correo electrónico es requerido",
+      "email_invalid": "Formato de correo electrónico inválido",
+      "role_required": "El rol es requerido",
+      "first_name_required": "El nombre es requerido",
+      "last_name_required": "El apellido es requerido",
+      "password_required": "La contraseña es requerida",
+      "password_min_length": "La contraseña debe tener al menos 8 caracteres",
+      "passwords_must_match": "Las contraseñas deben coincidir",
+      "personal_message_max_length": "El mensaje personal no debe exceder 500 caracteres"
+    }
   },
   "messages": {
     "success_save": "Guardado exitosamente",

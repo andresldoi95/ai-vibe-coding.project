@@ -16,6 +16,17 @@ const breadcrumbs = [
 const settingsSections = computed(() => {
   const sections = []
 
+  if (hasPermission('users.read')) {
+    sections.push({
+      title: t('users.title'),
+      description: 'Manage users and invitations for your company',
+      icon: 'pi pi-users',
+      route: '/settings/users',
+      color: 'text-green-500',
+      bgColor: 'bg-green-50 dark:bg-green-900/20',
+    })
+  }
+
   if (hasPermission('roles.read')) {
     sections.push({
       title: t('nav.roles'),

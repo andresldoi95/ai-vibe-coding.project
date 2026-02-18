@@ -11,6 +11,7 @@ public interface IUnitOfWork : IDisposable
     IUserRepository Users { get; }
     ITenantRepository Tenants { get; }
     IUserTenantRepository UserTenants { get; }
+    IUserInvitationRepository UserInvitations { get; }
     IRefreshTokenRepository RefreshTokens { get; }
     IWarehouseRepository Warehouses { get; }
     IProductRepository Products { get; }

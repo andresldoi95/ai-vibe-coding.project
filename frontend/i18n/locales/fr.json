@@ -3,6 +3,8 @@
     "title": "SaaS Facturation et Inventaire"
   },
   "common": {
+    "success": "Succès",
+    "error": "Erreur",
     "save": "Enregistrer",
     "cancel": "Annuler",
     "yes": "Oui",
@@ -440,6 +442,8 @@
   "roles": {
     "title": "Rôles et Permissions",
     "subtitle": "Gérer les rôles et attribuer des permissions",
+    "name": "Nom",
+    "description": "Description",
     "role_name": "Nom du Rôle",
     "role_description": "Description du Rôle",
     "priority": "Priorité",
@@ -711,40 +715,6 @@
     "delete_error": "Échec de la suppression du taux de taxe",
     "load_error": "Échec du chargement du taux de taxe"
   },
-  "taxrates": {
-    "title": "Taux de Taxe",
-    "description": "Gérer les taux de taxe pour la facturation",
-    "create": "Créer un Taux de Taxe",
-    "edit": "Modifier le Taux de Taxe",
-    "view_title": "Détails du Taux de Taxe",
-    "view_description": "Voir les informations du taux de taxe",
-    "create_description": "Ajouter un nouveau taux de taxe à votre système",
-    "edit_description": "Mettre à jour les informations du taux de taxe",
-    "code": "Code de Taxe",
-    "code_placeholder": "TVA_20",
-    "code_hint": "Lettres majuscules, chiffres et underscores uniquement",
-    "name": "Nom de la Taxe",
-    "name_placeholder": "TVA 20%",
-    "rate": "Taux de Taxe",
-    "rate_placeholder": "0.20",
-    "rate_hint": "Entrer en décimal (ex., 0.20 pour 20%)",
-    "country": "Pays",
-    "country_placeholder": "France",
-    "select_country": "Sélectionner un pays",
-    "default": "Par Défaut",
-    "is_default": "Définir comme taux de taxe par défaut",
-    "is_active": "Actif",
-    "no_records": "Aucun taux de taxe trouvé",
-    "delete_confirm_title": "Supprimer le Taux de Taxe",
-    "delete_confirm_message": "Êtes-vous sûr de vouloir supprimer ce taux de taxe?",
-    "create_success": "Taux de taxe créé avec succès",
-    "update_success": "Taux de taxe mis à jour avec succès",
-    "delete_success": "Taux de taxe supprimé avec succès",
-    "create_error": "Échec de la création du taux de taxe",
-    "update_error": "Échec de la mise à jour du taux de taxe",
-    "delete_error": "Échec de la suppression du taux de taxe",
-    "load_error": "Échec du chargement du taux de taxe"
-  },
   "invoiceConfig": {
     "title": "Configuration des Factures",
     "description": "Configurer la numérotation des factures et les paramètres par défaut",
@@ -894,6 +864,78 @@
     "voided_successfully": "Paiement annulé avec succès",
     "not_found": "Paiement introuvable",
     "load_error": "Échec du chargement des paiements"
+  },
+  "users": {
+    "title": "Utilisateurs",
+    "invite_user": "Inviter un Utilisateur",
+    "list": {
+      "title": "Utilisateurs de l'Entreprise",
+      "name": "Nom",
+      "email": "Email",
+      "role": "Rôle",
+      "joined_at": "Rejoint le",
+      "actions": "Actions",
+      "no_users": "Aucun utilisateur trouvé dans votre entreprise"
+    },
+    "invite": {
+      "title": "Inviter un Utilisateur",
+      "email": "Email",
+      "email_placeholder": "utilisateur{'@'}exemple.com",
+      "role": "Rôle",
+      "role_placeholder": "Sélectionnez un rôle",
+      "personal_message": "Message Personnel (Optionnel)",
+      "personal_message_placeholder": "Ajoutez une note personnelle à l'invitation...",
+      "send_invitation": "Envoyer l'Invitation",
+      "cancel": "Annuler"
+    },
+    "accept": {
+      "title": "Accepter l'Invitation",
+      "welcome": "Vous avez été invité à rejoindre {companyName}",
+      "existing_user": "Cliquez ci-dessous pour accepter l'invitation:",
+      "new_user": "Complétez votre profil pour rejoindre:",
+      "first_name": "Prénom",
+      "last_name": "Nom",
+      "password": "Mot de passe",
+      "confirm_password": "Confirmer le Mot de passe",
+      "accept_invitation": "Accepter l'Invitation",
+      "token_invalid": "Jeton d'invitation invalide ou expiré",
+      "token_expired": "Cette invitation a expiré",
+      "accepting": "Acceptation de l'invitation..."
+    },
+    "update_role": {
+      "title": "Mettre à Jour le Rôle de l'Utilisateur",
+      "role": "Rôle",
+      "save": "Enregistrer",
+      "cancel": "Annuler"
+    },
+    "remove": {
+      "confirm_title": "Supprimer l'Utilisateur",
+      "confirm_message": "Êtes-vous sûr de vouloir supprimer {userName} de votre entreprise?",
+      "confirm": "Supprimer",
+      "cancel": "Annuler"
+    },
+    "messages": {
+      "invitation_sent": "Invitation envoyée avec succès",
+      "invitation_accepted": "Invitation acceptée! Bienvenue à bord.",
+      "role_updated": "Rôle de l'utilisateur mis à jour avec succès",
+      "user_removed": "Utilisateur supprimé de l'entreprise avec succès",
+      "error_loading_users": "Erreur lors du chargement des utilisateurs",
+      "error_sending_invitation": "Erreur lors de l'envoi de l'invitation",
+      "error_accepting_invitation": "Erreur lors de l'acceptation de l'invitation",
+      "error_updating_role": "Erreur lors de la mise à jour du rôle de l'utilisateur",
+      "error_removing_user": "Erreur lors de la suppression de l'utilisateur"
+    },
+    "validation": {
+      "email_required": "L'email est requis",
+      "email_invalid": "Format d'email invalide",
+      "role_required": "Le rôle est requis",
+      "first_name_required": "Le prénom est requis",
+      "last_name_required": "Le nom est requis",
+      "password_required": "Le mot de passe est requis",
+      "password_min_length": "Le mot de passe doit contenir au moins 8 caractères",
+      "passwords_must_match": "Les mots de passe doivent correspondre",
+      "personal_message_max_length": "Le message personnel ne doit pas dépasser 500 caractères"
+    }
   },
   "messages": {
     "success_save": "Enregistré avec succès",

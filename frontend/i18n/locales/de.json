@@ -3,6 +3,8 @@
     "title": "SaaS Abrechnung & Inventar"
   },
   "common": {
+    "success": "Erfolg",
+    "error": "Fehler",
     "save": "Speichern",
     "cancel": "Abbrechen",
     "yes": "Ja",
@@ -440,6 +442,8 @@
   "roles": {
     "title": "Rollen und Berechtigungen",
     "subtitle": "Rollen verwalten und Berechtigungen zuweisen",
+    "name": "Name",
+    "description": "Beschreibung",
     "role_name": "Rollenname",
     "role_description": "Rollenbeschreibung",
     "priority": "Priorität",
@@ -711,40 +715,6 @@
     "delete_error": "Fehler beim Löschen des Steuersatzes",
     "load_error": "Fehler beim Laden des Steuersatzes"
   },
-  "taxrates": {
-    "title": "Steuersätze",
-    "description": "Steuersätze für die Rechnungsstellung verwalten",
-    "create": "Steuersatz Erstellen",
-    "edit": "Steuersatz Bearbeiten",
-    "view_title": "Steuersatzdetails",
-    "view_description": "Steuersatzinformationen ansehen",
-    "create_description": "Neuen Steuersatz zu Ihrem System hinzufügen",
-    "edit_description": "Steuersatzinformationen aktualisieren",
-    "code": "Steuercode",
-    "code_placeholder": "MWST_19",
-    "code_hint": "Nur Großbuchstaben, Zahlen und Unterstriche",
-    "name": "Steuername",
-    "name_placeholder": "MwSt 19%",
-    "rate": "Steuersatz",
-    "rate_placeholder": "0.19",
-    "rate_hint": "Als Dezimalzahl eingeben (z.B. 0.19 für 19%)",
-    "country": "Land",
-    "country_placeholder": "Deutschland",
-    "select_country": "Wählen Sie ein Land",
-    "default": "Standard",
-    "is_default": "Als Standard-Steuersatz festlegen",
-    "is_active": "Aktiv",
-    "no_records": "Keine Steuersätze gefunden",
-    "delete_confirm_title": "Steuersatz Löschen",
-    "delete_confirm_message": "Möchten Sie diesen Steuersatz wirklich löschen?",
-    "create_success": "Steuersatz erfolgreich erstellt",
-    "update_success": "Steuersatz erfolgreich aktualisiert",
-    "delete_success": "Steuersatz erfolgreich gelöscht",
-    "create_error": "Fehler beim Erstellen des Steuersatzes",
-    "update_error": "Fehler beim Aktualisieren des Steuersatzes",
-    "delete_error": "Fehler beim Löschen des Steuersatzes",
-    "load_error": "Fehler beim Laden des Steuersatzes"
-  },
   "invoiceConfig": {
     "title": "Rechnungskonfiguration",
     "description": "Rechnungsnummerierung und Standardeinstellungen konfigurieren",
@@ -890,6 +860,78 @@
     "voided_successfully": "Zahlung erfolgreich storniert",
     "not_found": "Zahlung nicht gefunden",
     "load_error": "Fehler beim Laden der Zahlungen"
+  },
+  "users": {
+    "title": "Benutzer",
+    "invite_user": "Benutzer Einladen",
+    "list": {
+      "title": "Firmenbenutzer",
+      "name": "Name",
+      "email": "E-Mail",
+      "role": "Rolle",
+      "joined_at": "Beigetreten am",
+      "actions": "Aktionen",
+      "no_users": "Keine Benutzer in Ihrem Unternehmen gefunden"
+    },
+    "invite": {
+      "title": "Benutzer Einladen",
+      "email": "E-Mail",
+      "email_placeholder": "benutzer{'@'}beispiel.de",
+      "role": "Rolle",
+      "role_placeholder": "Wählen Sie eine Rolle",
+      "personal_message": "Persönliche Nachricht (Optional)",
+      "personal_message_placeholder": "Fügen Sie der Einladung eine persönliche Nachricht hinzu...",
+      "send_invitation": "Einladung Senden",
+      "cancel": "Abbrechen"
+    },
+    "accept": {
+      "title": "Einladung Annehmen",
+      "welcome": "Sie wurden eingeladen, {companyName} beizutreten",
+      "existing_user": "Klicken Sie unten, um die Einladung anzunehmen:",
+      "new_user": "Vervollständigen Sie Ihr Profil, um beizutreten:",
+      "first_name": "Vorname",
+      "last_name": "Nachname",
+      "password": "Passwort",
+      "confirm_password": "Passwort Bestätigen",
+      "accept_invitation": "Einladung Annehmen",
+      "token_invalid": "Ungültiger oder abgelaufener Einladungstoken",
+      "token_expired": "Diese Einladung ist abgelaufen",
+      "accepting": "Einladung wird angenommen..."
+    },
+    "update_role": {
+      "title": "Benutzerrolle Aktualisieren",
+      "role": "Rolle",
+      "save": "Speichern",
+      "cancel": "Abbrechen"
+    },
+    "remove": {
+      "confirm_title": "Benutzer Entfernen",
+      "confirm_message": "Sind Sie sicher, dass Sie {userName} aus Ihrem Unternehmen entfernen möchten?",
+      "confirm": "Entfernen",
+      "cancel": "Abbrechen"
+    },
+    "messages": {
+      "invitation_sent": "Einladung erfolgreich gesendet",
+      "invitation_accepted": "Einladung angenommen! Willkommen an Bord.",
+      "role_updated": "Benutzerrolle erfolgreich aktualisiert",
+      "user_removed": "Benutzer erfolgreich aus Unternehmen entfernt",
+      "error_loading_users": "Fehler beim Laden der Benutzer",
+      "error_sending_invitation": "Fehler beim Senden der Einladung",
+      "error_accepting_invitation": "Fehler beim Annehmen der Einladung",
+      "error_updating_role": "Fehler beim Aktualisieren der Benutzerrolle",
+      "error_removing_user": "Fehler beim Entfernen des Benutzers"
+    },
+    "validation": {
+      "email_required": "E-Mail ist erforderlich",
+      "email_invalid": "Ungültiges E-Mail-Format",
+      "role_required": "Rolle ist erforderlich",
+      "first_name_required": "Vorname ist erforderlich",
+      "last_name_required": "Nachname ist erforderlich",
+      "password_required": "Passwort ist erforderlich",
+      "password_min_length": "Passwort muss mindestens 8 Zeichen lang sein",
+      "passwords_must_match": "Passwörter müssen übereinstimmen",
+      "personal_message_max_length": "Persönliche Nachricht darf 500 Zeichen nicht überschreiten"
+    }
   },
   "messages": {
     "success_save": "Erfolgreich gespeichert",

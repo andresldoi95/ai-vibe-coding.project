@@ -1056,49 +1056,6 @@ public class SeedController : ControllerBase
     }
     */
 
-    private List<Establishment> CreateEstablishmentsForTenant(Guid tenantId, string slug, DateTime now)
-    {
-        var locations = slug switch
-        {
-            "demo-company" => new[]
-            {
-                ("Main Office", "001", "123 Industrial Blvd, New York, NY 10001", "+1 (555) 100-1000"),
-                ("West Coast Branch", "002", "456 Commerce Way, Los Angeles, CA 90001", "+1 (555) 200-2000")
-            },
-            "tech-startup" => new[]
-            {
-                ("Headquarters", "001", "100 Tech Plaza, San Francisco, CA 94105", "+1 (555) 400-4000"),
-                ("Seattle Office", "002", "200 Innovation Way, Seattle, WA 98101", "+1 (555) 500-5000")
-            },
-            "manufacturing-corp" => new[]
-            {
-                ("Main Plant", "001", "400 Factory Road, Chicago, IL 60601", "+1 (555) 700-7000"),
-                ("Assembly Center", "002", "500 Manufacturing Dr, Detroit, MI 48201", "+1 (555) 800-8000")
-            },
-            _ => throw new ArgumentException($"Unknown tenant slug: {slug}")
-        };
-
-        var establishments = new List<Establishment>();
-        foreach (var loc in locations)
-        {
-            establishments.Add(new Establishment
-            {
-                Id = Guid.NewGuid(),
-                TenantId = tenantId,
-                EstablishmentCode = loc.Item2,
-                Name = loc.Item1,
-                Address = loc.Item3,
-                Phone = loc.Item4,
-                IsActive = true,
-                CreatedAt = now,
-                UpdatedAt = now,
-                IsDeleted = false
-            });
-        }
-
-        return establishments;
-    }
-
     private List<EmissionPoint> CreateEmissionPointsForTenant(
         Guid tenantId,
         List<Establishment> establishments,

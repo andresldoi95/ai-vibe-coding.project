@@ -66,6 +66,35 @@ export default defineNuxtPlugin(() => {
         const { showPermissionError } = useNotification()
         showPermissionError()
       }
+
+      // Extract error message from API response and throw it
+      const errorData = response._data
+      let errorMessage = 'An error occurred'
+
+      if (errorData) {
+        if (typeof errorData === 'string') {
+          errorMessage = errorData
+        }
+        else if (errorData.message) {
+          errorMessage = errorData.message
+        }
+        else if (errorData.error) {
+          errorMessage = errorData.error
+        }
+        else if (errorData.errors && Array.isArray(errorData.errors) && errorData.errors.length > 0) {
+          errorMessage = errorData.errors.join(', ')
+        }
+        else if (errorData.errors && typeof errorData.errors === 'object') {
+          // Handle validation errors object { fieldName: ["error1", "error2"] }
+          const validationErrors = Object.values(errorData.errors).flat()
+          if (validationErrors.length > 0) {
+            errorMessage = validationErrors.join(', ')
+          }
+        }
+      }
+
+      // Throw error with extracted message so it can be caught by try/catch
+      throw new Error(errorMessage)
     },
   })
 
