@@ -117,7 +117,7 @@ async function handlePasswordSubmit() {
   }
   catch (error) {
     const errMessage = error instanceof Error ? error.message : 'Unknown error'
-    
+
     // Show specific error for invalid current password
     if (errMessage.includes('incorrect') || errMessage.includes('Current password')) {
       toast.showError(t('profile.error_change_password'), t('profile.invalid_current_password'))
