@@ -1,5 +1,6 @@
 import type { AcceptInvitationData, AcceptInvitationResponse, CompanyUser, InviteUserData } from '~/types/user'
 import type { ApiResponse } from '~/types/api'
+import type { ChangePasswordData, UpdateProfileData, User } from '~/types/auth'
 
 export function useUser() {
   const { apiFetch } = useApi()
@@ -42,6 +43,24 @@ export function useUser() {
     return response.data
   }
 
+  const updateCurrentUser = async (data: UpdateProfileData): Promise<User> => {
+    const authStore = useAuthStore()
+    const response = await apiFetch<ApiResponse<User>>('/auth/profile', {
+      method: 'PUT',
+      body: data,
+    })
+    // Update auth store with new user data
+    authStore.user = response.data
+    return response.data
+  }
+
+  const changePassword = async (data: ChangePasswordData): Promise<void> => {
+    await apiFetch<ApiResponse<void>>('/auth/change-password', {
+      method: 'PUT',
+      body: data,
+    })
+  }
+
   return {
     getAllUsers,
     getUserById,
@@ -49,5 +68,7 @@ export function useUser() {
     updateUserRole,
     removeUser,
     acceptInvitation,
+    updateCurrentUser,
+    changePassword,
   }
 }

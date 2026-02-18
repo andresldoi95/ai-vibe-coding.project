@@ -9,6 +9,8 @@ using SaaS.Application.Features.Auth.Commands.ResetPassword;
 using SaaS.Application.Features.Auth.Commands.SelectTenant;
 using SaaS.Application.Features.Auth.Queries.GetCurrentUser;
 using SaaS.Application.Features.Users.Commands.AcceptInvitation;
+using SaaS.Application.Features.Users.Commands.ChangePassword;
+using SaaS.Application.Features.Users.Commands.UpdateCurrentUser;
 using SaaS.Application.DTOs;
 
 namespace SaaS.Api.Controllers;
@@ -102,6 +104,44 @@ public class AuthController : BaseController
         }
 
         return Ok(new { data = result.Value, success = true });
+    }
+
+    /// <summary>
+    /// Update current user's profile
+    /// </summary>
+    [HttpPut("profile")]
+    [Authorize]
+    public async Task<IActionResult> UpdateProfile([FromBody] UpdateCurrentUserCommand command)
+    {
+        var userId = GetUserId();
+        var commandWithUserId = command with { UserId = userId };
+        var result = await _mediator.Send(commandWithUserId);
+
+        if (!result.IsSuccess)
+        {
+            return BadRequest(new { message = result.Error, errors = result.Errors });
+        }
+
+        return Ok(new { data = result.Value, message = "Profile updated successfully", success = true });
+    }
+
+    /// <summary>
+    /// Change current user's password
+    /// </summary>
+    [HttpPut("change-password")]
+    [Authorize]
+    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordCommand command)
+    {
+        var userId = GetUserId();
+        var commandWithUserId = command with { UserId = userId };
+        var result = await _mediator.Send(commandWithUserId);
+
+        if (!result.IsSuccess)
+        {
+            return BadRequest(new { message = result.Error, errors = result.Errors });
+        }
+
+        return Ok(new { message = "Password changed successfully", success = true });
     }
 
     /// <summary>

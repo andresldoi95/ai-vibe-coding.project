@@ -71,3 +71,13 @@ export interface RegisterData {
   password: string
   confirmPassword: string
 }
+
+export interface UpdateProfileData {
+  name: string
+}
+
+export interface ChangePasswordData {
+  currentPassword: string
+  newPassword: string
+  confirmPassword: string
+}
