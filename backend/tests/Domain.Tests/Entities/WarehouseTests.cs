@@ -20,7 +20,7 @@ public class WarehouseTests
         warehouse.City.Should().BeEmpty();
         warehouse.State.Should().BeNull();
         warehouse.PostalCode.Should().BeEmpty();
-        warehouse.Country.Should().BeEmpty();
+        warehouse.CountryId.Should().BeEmpty();
         warehouse.Phone.Should().BeNull();
         warehouse.Email.Should().BeNull();
         warehouse.IsActive.Should().BeTrue();
@@ -42,7 +42,7 @@ public class WarehouseTests
             City = "New York",
             State = "NY",
             PostalCode = "10001",
-            Country = "USA",
+            CountryId = Guid.NewGuid(),
             Phone = "+1-555-0100",
             Email = "warehouse@example.com",
             IsActive = true,
@@ -59,7 +59,7 @@ public class WarehouseTests
         warehouse.City.Should().Be("New York");
         warehouse.State.Should().Be("NY");
         warehouse.PostalCode.Should().Be("10001");
-        warehouse.Country.Should().Be("USA");
+        warehouse.CountryId.Should().NotBeEmpty();
         warehouse.Phone.Should().Be("+1-555-0100");
         warehouse.Email.Should().Be("warehouse@example.com");
         warehouse.IsActive.Should().BeTrue();
@@ -80,7 +80,7 @@ public class WarehouseTests
             City = "Boston",
             State = null,
             PostalCode = "02101",
-            Country = "USA",
+            CountryId = Guid.NewGuid(),
             Phone = null,
             Email = null,
             SquareFootage = null,
