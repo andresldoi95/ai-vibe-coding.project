@@ -201,6 +201,24 @@ describe('themeSwitcher component', () => {
       // Assert
       expect(mockColorModePreference.value).toBe(initialPreference)
     })
+
+    it('should render fallback when value is undefined', () => {
+      // Arrange
+      mockColorModePreference.value = undefined as unknown as string
+
+      // Act
+      const wrapper = mount(ThemeSwitcher, {
+        global: {
+          stubs: {
+            Select: SelectStub,
+          },
+        },
+      })
+
+      // Assert - The fallback span should be rendered
+      const valueSlot = wrapper.find('.select-value')
+      expect(valueSlot.exists()).toBe(true)
+    })
   })
 
   describe('theme options', () => {

@@ -169,6 +169,132 @@ describe('usePermissions', () => {
     })
   })
 
+  describe('can - customers', () => {
+    it('should check viewCustomers permission', () => {
+      mockAuthStore.hasPermission.mockReturnValue(true)
+
+      const { can } = usePermissions()
+      const result = can.viewCustomers()
+
+      expect(result).toBe(true)
+      expect(mockAuthStore.hasPermission).toHaveBeenCalledWith('customers.read')
+    })
+
+    it('should check createCustomer permission', () => {
+      mockAuthStore.hasPermission.mockReturnValue(false)
+
+      const { can } = usePermissions()
+      const result = can.createCustomer()
+
+      expect(result).toBe(false)
+      expect(mockAuthStore.hasPermission).toHaveBeenCalledWith('customers.create')
+    })
+
+    it('should check editCustomer permission', () => {
+      mockAuthStore.hasPermission.mockReturnValue(true)
+
+      const { can } = usePermissions()
+      const result = can.editCustomer()
+
+      expect(result).toBe(true)
+      expect(mockAuthStore.hasPermission).toHaveBeenCalledWith('customers.update')
+    })
+
+    it('should check deleteCustomer permission', () => {
+      mockAuthStore.hasPermission.mockReturnValue(false)
+
+      const { can } = usePermissions()
+      const result = can.deleteCustomer()
+
+      expect(result).toBe(false)
+      expect(mockAuthStore.hasPermission).toHaveBeenCalledWith('customers.delete')
+    })
+  })
+
+  describe('can - stock', () => {
+    it('should check viewStock permission', () => {
+      mockAuthStore.hasPermission.mockReturnValue(true)
+
+      const { can } = usePermissions()
+      const result = can.viewStock()
+
+      expect(result).toBe(true)
+      expect(mockAuthStore.hasPermission).toHaveBeenCalledWith('stock.read')
+    })
+
+    it('should check createStock permission', () => {
+      mockAuthStore.hasPermission.mockReturnValue(false)
+
+      const { can } = usePermissions()
+      const result = can.createStock()
+
+      expect(result).toBe(false)
+      expect(mockAuthStore.hasPermission).toHaveBeenCalledWith('stock.create')
+    })
+
+    it('should check editStock permission', () => {
+      mockAuthStore.hasPermission.mockReturnValue(true)
+
+      const { can } = usePermissions()
+      const result = can.editStock()
+
+      expect(result).toBe(true)
+      expect(mockAuthStore.hasPermission).toHaveBeenCalledWith('stock.update')
+    })
+
+    it('should check deleteStock permission', () => {
+      mockAuthStore.hasPermission.mockReturnValue(false)
+
+      const { can } = usePermissions()
+      const result = can.deleteStock()
+
+      expect(result).toBe(false)
+      expect(mockAuthStore.hasPermission).toHaveBeenCalledWith('stock.delete')
+    })
+  })
+
+  describe('can - tenants', () => {
+    it('should check viewTenants permission', () => {
+      mockAuthStore.hasPermission.mockReturnValue(true)
+
+      const { can } = usePermissions()
+      const result = can.viewTenants()
+
+      expect(result).toBe(true)
+      expect(mockAuthStore.hasPermission).toHaveBeenCalledWith('tenants.read')
+    })
+
+    it('should check createTenant permission', () => {
+      mockAuthStore.hasPermission.mockReturnValue(false)
+
+      const { can } = usePermissions()
+      const result = can.createTenant()
+
+      expect(result).toBe(false)
+      expect(mockAuthStore.hasPermission).toHaveBeenCalledWith('tenants.create')
+    })
+
+    it('should check editTenant permission', () => {
+      mockAuthStore.hasPermission.mockReturnValue(true)
+
+      const { can } = usePermissions()
+      const result = can.editTenant()
+
+      expect(result).toBe(true)
+      expect(mockAuthStore.hasPermission).toHaveBeenCalledWith('tenants.update')
+    })
+
+    it('should check deleteTenant permission', () => {
+      mockAuthStore.hasPermission.mockReturnValue(false)
+
+      const { can } = usePermissions()
+      const result = can.deleteTenant()
+
+      expect(result).toBe(false)
+      expect(mockAuthStore.hasPermission).toHaveBeenCalledWith('tenants.delete')
+    })
+  })
+
   describe('can - users', () => {
     it('should check viewUsers permission', () => {
       mockAuthStore.hasPermission.mockReturnValue(true)
@@ -188,6 +314,26 @@ describe('usePermissions', () => {
 
       expect(result).toBe(true)
       expect(mockAuthStore.hasPermission).toHaveBeenCalledWith('users.create')
+    })
+
+    it('should check editUser permission', () => {
+      mockAuthStore.hasPermission.mockReturnValue(false)
+
+      const { can } = usePermissions()
+      const result = can.editUser()
+
+      expect(result).toBe(false)
+      expect(mockAuthStore.hasPermission).toHaveBeenCalledWith('users.update')
+    })
+
+    it('should check deleteUser permission', () => {
+      mockAuthStore.hasPermission.mockReturnValue(true)
+
+      const { can } = usePermissions()
+      const result = can.deleteUser()
+
+      expect(result).toBe(true)
+      expect(mockAuthStore.hasPermission).toHaveBeenCalledWith('users.delete')
     })
 
     it('should check inviteUser permission', () => {
@@ -211,6 +357,80 @@ describe('usePermissions', () => {
     })
   })
 
+  describe('can - roles', () => {
+    it('should check viewRoles permission', () => {
+      mockAuthStore.hasPermission.mockReturnValue(true)
+
+      const { can } = usePermissions()
+      const result = can.viewRoles()
+
+      expect(result).toBe(true)
+      expect(mockAuthStore.hasPermission).toHaveBeenCalledWith('roles.read')
+    })
+
+    it('should check manageRoles permission', () => {
+      mockAuthStore.hasPermission.mockReturnValue(false)
+
+      const { can } = usePermissions()
+      const result = can.manageRoles()
+
+      expect(result).toBe(false)
+      expect(mockAuthStore.hasPermission).toHaveBeenCalledWith('roles.manage')
+    })
+  })
+
+  describe('can - tax rates', () => {
+    it('should check viewTaxRates permission', () => {
+      mockAuthStore.hasPermission.mockReturnValue(true)
+
+      const { can } = usePermissions()
+      const result = can.viewTaxRates()
+
+      expect(result).toBe(true)
+      expect(mockAuthStore.hasPermission).toHaveBeenCalledWith('tax-rates.read')
+    })
+
+    it('should check readTaxRate permission', () => {
+      mockAuthStore.hasPermission.mockReturnValue(false)
+
+      const { can } = usePermissions()
+      const result = can.readTaxRate()
+
+      expect(result).toBe(false)
+      expect(mockAuthStore.hasPermission).toHaveBeenCalledWith('tax-rates.read')
+    })
+
+    it('should check createTaxRate permission', () => {
+      mockAuthStore.hasPermission.mockReturnValue(true)
+
+      const { can } = usePermissions()
+      const result = can.createTaxRate()
+
+      expect(result).toBe(true)
+      expect(mockAuthStore.hasPermission).toHaveBeenCalledWith('tax-rates.create')
+    })
+
+    it('should check updateTaxRate permission', () => {
+      mockAuthStore.hasPermission.mockReturnValue(false)
+
+      const { can } = usePermissions()
+      const result = can.updateTaxRate()
+
+      expect(result).toBe(false)
+      expect(mockAuthStore.hasPermission).toHaveBeenCalledWith('tax-rates.update')
+    })
+
+    it('should check deleteTaxRate permission', () => {
+      mockAuthStore.hasPermission.mockReturnValue(true)
+
+      const { can } = usePermissions()
+      const result = can.deleteTaxRate()
+
+      expect(result).toBe(true)
+      expect(mockAuthStore.hasPermission).toHaveBeenCalledWith('tax-rates.delete')
+    })
+  })
+
   describe('can - invoices', () => {
     it('should check viewInvoices permission', () => {
       mockAuthStore.hasPermission.mockReturnValue(true)
@@ -219,6 +439,16 @@ describe('usePermissions', () => {
       const result = can.viewInvoices()
 
       expect(result).toBe(true)
+      expect(mockAuthStore.hasPermission).toHaveBeenCalledWith('invoices.read')
+    })
+
+    it('should check readInvoice permission', () => {
+      mockAuthStore.hasPermission.mockReturnValue(false)
+
+      const { can } = usePermissions()
+      const result = can.readInvoice()
+
+      expect(result).toBe(false)
       expect(mockAuthStore.hasPermission).toHaveBeenCalledWith('invoices.read')
     })
 
@@ -241,6 +471,16 @@ describe('usePermissions', () => {
       expect(result).toBe(true)
       expect(mockAuthStore.hasPermission).toHaveBeenCalledWith('invoices.update')
     })
+
+    it('should check deleteInvoice permission', () => {
+      mockAuthStore.hasPermission.mockReturnValue(false)
+
+      const { can } = usePermissions()
+      const result = can.deleteInvoice()
+
+      expect(result).toBe(false)
+      expect(mockAuthStore.hasPermission).toHaveBeenCalledWith('invoices.delete')
+    })
   })
 
   describe('can - payments', () => {
@@ -252,6 +492,36 @@ describe('usePermissions', () => {
 
       expect(result).toBe(true)
       expect(mockAuthStore.hasPermission).toHaveBeenCalledWith('payments.read')
+    })
+
+    it('should check readPayment permission', () => {
+      mockAuthStore.hasPermission.mockReturnValue(false)
+
+      const { can } = usePermissions()
+      const result = can.readPayment()
+
+      expect(result).toBe(false)
+      expect(mockAuthStore.hasPermission).toHaveBeenCalledWith('payments.read')
+    })
+
+    it('should check createPayment permission', () => {
+      mockAuthStore.hasPermission.mockReturnValue(true)
+
+      const { can } = usePermissions()
+      const result = can.createPayment()
+
+      expect(result).toBe(true)
+      expect(mockAuthStore.hasPermission).toHaveBeenCalledWith('payments.create')
+    })
+
+    it('should check updatePayment permission', () => {
+      mockAuthStore.hasPermission.mockReturnValue(false)
+
+      const { can } = usePermissions()
+      const result = can.updatePayment()
+
+      expect(result).toBe(false)
+      expect(mockAuthStore.hasPermission).toHaveBeenCalledWith('payments.update')
     })
 
     it('should check voidPayment permission', () => {
@@ -273,6 +543,38 @@ describe('usePermissions', () => {
       expect(result).toBe(true)
       expect(mockAuthStore.hasPermission).toHaveBeenCalledWith('payments.complete')
     })
+
+    it('should check deletePayment permission', () => {
+      mockAuthStore.hasPermission.mockReturnValue(true)
+
+      const { can } = usePermissions()
+      const result = can.deletePayment()
+
+      expect(result).toBe(true)
+      expect(mockAuthStore.hasPermission).toHaveBeenCalledWith('payments.delete')
+    })
+  })
+
+  describe('can - invoice configuration', () => {
+    it('should check readInvoiceConfiguration permission', () => {
+      mockAuthStore.hasPermission.mockReturnValue(true)
+
+      const { can } = usePermissions()
+      const result = can.readInvoiceConfiguration()
+
+      expect(result).toBe(true)
+      expect(mockAuthStore.hasPermission).toHaveBeenCalledWith('invoice-config.read')
+    })
+
+    it('should check updateInvoiceConfiguration permission', () => {
+      mockAuthStore.hasPermission.mockReturnValue(false)
+
+      const { can } = usePermissions()
+      const result = can.updateInvoiceConfiguration()
+
+      expect(result).toBe(false)
+      expect(mockAuthStore.hasPermission).toHaveBeenCalledWith('invoice-config.update')
+    })
   })
 
   describe('can - SRI Ecuador', () => {
@@ -286,6 +588,36 @@ describe('usePermissions', () => {
       expect(mockAuthStore.hasPermission).toHaveBeenCalledWith('establishments.read')
     })
 
+    it('should check createEstablishment permission', () => {
+      mockAuthStore.hasPermission.mockReturnValue(true)
+
+      const { can } = usePermissions()
+      const result = can.createEstablishment()
+
+      expect(result).toBe(true)
+      expect(mockAuthStore.hasPermission).toHaveBeenCalledWith('establishments.create')
+    })
+
+    it('should check editEstablishment permission', () => {
+      mockAuthStore.hasPermission.mockReturnValue(false)
+
+      const { can } = usePermissions()
+      const result = can.editEstablishment()
+
+      expect(result).toBe(false)
+      expect(mockAuthStore.hasPermission).toHaveBeenCalledWith('establishments.update')
+    })
+
+    it('should check deleteEstablishment permission', () => {
+      mockAuthStore.hasPermission.mockReturnValue(true)
+
+      const { can } = usePermissions()
+      const result = can.deleteEstablishment()
+
+      expect(result).toBe(true)
+      expect(mockAuthStore.hasPermission).toHaveBeenCalledWith('establishments.delete')
+    })
+
     it('should check viewEmissionPoints permission', () => {
       mockAuthStore.hasPermission.mockReturnValue(false)
 
@@ -294,6 +626,36 @@ describe('usePermissions', () => {
 
       expect(result).toBe(false)
       expect(mockAuthStore.hasPermission).toHaveBeenCalledWith('emission_points.read')
+    })
+
+    it('should check createEmissionPoint permission', () => {
+      mockAuthStore.hasPermission.mockReturnValue(true)
+
+      const { can } = usePermissions()
+      const result = can.createEmissionPoint()
+
+      expect(result).toBe(true)
+      expect(mockAuthStore.hasPermission).toHaveBeenCalledWith('emission_points.create')
+    })
+
+    it('should check editEmissionPoint permission', () => {
+      mockAuthStore.hasPermission.mockReturnValue(false)
+
+      const { can } = usePermissions()
+      const result = can.editEmissionPoint()
+
+      expect(result).toBe(false)
+      expect(mockAuthStore.hasPermission).toHaveBeenCalledWith('emission_points.update')
+    })
+
+    it('should check deleteEmissionPoint permission', () => {
+      mockAuthStore.hasPermission.mockReturnValue(true)
+
+      const { can } = usePermissions()
+      const result = can.deleteEmissionPoint()
+
+      expect(result).toBe(true)
+      expect(mockAuthStore.hasPermission).toHaveBeenCalledWith('emission_points.delete')
     })
 
     it('should check viewSriConfiguration permission', () => {

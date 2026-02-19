@@ -107,6 +107,45 @@ describe('useCustomer', () => {
       expect(result).toEqual([])
       expect(result).toHaveLength(0)
     })
+
+    it('should fetch customers with all filter options', async () => {
+      const mockCustomers: Customer[] = [
+        {
+          id: '1',
+          tenantId: 'tenant-1',
+          name: 'Tech Corp',
+          email: 'tech@example.com',
+          phone: '555-1234',
+          identificationType: 1,
+          taxId: '1234567890',
+          billingCountry: 'USA',
+          isActive: true,
+          createdAt: '2024-01-01T00:00:00Z',
+          updatedAt: '2024-01-01T00:00:00Z',
+        },
+      ]
+
+      mockApiFetch.mockResolvedValue({ data: mockCustomers, success: true })
+
+      const filters: CustomerFilters = {
+        name: 'Tech Corp',
+        email: 'tech@example.com',
+        phone: '555-1234',
+        taxId: '1234567890',
+        country: 'USA',
+      }
+
+      const { getAllCustomers } = useCustomer()
+      const result = await getAllCustomers(filters)
+
+      expect(mockApiFetch).toHaveBeenCalledWith(
+        '/customers?name=Tech+Corp&email=tech%40example.com&phone=555-1234&taxId=1234567890&country=USA',
+        {
+          method: 'GET',
+        },
+      )
+      expect(result).toEqual(mockCustomers)
+    })
   })
 
   describe('getCustomerById', () => {

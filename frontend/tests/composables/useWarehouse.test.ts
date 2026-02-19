@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { mockApiFetch } from '../setup'
 import { useWarehouse } from '~/composables/useWarehouse'
 import type { Warehouse } from '~/types/inventory'
@@ -198,6 +198,187 @@ describe('useWarehouse', () => {
       expect(mockApiFetch).toHaveBeenCalledWith('/warehouses/1', {
         method: 'DELETE',
       })
+    })
+  })
+
+  describe('exportWarehouseStockSummary', () => {
+    let mockFetch: any
+    let mockBlob: any
+    let mockCreateElement: any
+    let mockAppendChild: any
+    let mockRemoveChild: any
+    let mockCreateObjectURL: any
+    let mockRevokeObjectURL: any
+
+    beforeEach(() => {
+      // Mock fetch
+      mockBlob = new Blob(['test data'])
+      mockFetch = vi.fn().mockResolvedValue({
+        ok: true,
+        headers: {
+          get: vi.fn((header: string) => {
+            if (header === 'Content-Disposition')
+              return 'attachment; filename="warehouse-report.xlsx"'
+            return null
+          }),
+        },
+        blob: vi.fn().mockResolvedValue(mockBlob),
+      })
+      global.fetch = mockFetch
+
+      // Mock DOM APIs
+      mockCreateObjectURL = vi.fn().mockReturnValue('blob:mock-url')
+      mockRevokeObjectURL = vi.fn()
+      global.URL.createObjectURL = mockCreateObjectURL
+      global.URL.revokeObjectURL = mockRevokeObjectURL
+
+      const mockAnchor = {
+        href: '',
+        download: '',
+        click: vi.fn(),
+      }
+      mockCreateElement = vi.spyOn(document, 'createElement').mockReturnValue(mockAnchor as any)
+      mockAppendChild = vi.spyOn(document.body, 'appendChild').mockImplementation(() => mockAnchor as any)
+      mockRemoveChild = vi.spyOn(document.body, 'removeChild').mockImplementation(() => mockAnchor as any)
+    })
+
+    it('should export warehouse stock summary with default format', async () => {
+      const { exportWarehouseStockSummary } = useWarehouse()
+
+      await exportWarehouseStockSummary()
+
+      expect(mockFetch).toHaveBeenCalledWith(
+        expect.stringContaining('/warehouses/export/stock-summary'),
+        expect.objectContaining({
+          headers: expect.objectContaining({
+            'Authorization': expect.any(String),
+            'X-Tenant-Id': expect.any(String),
+          }),
+        }),
+      )
+      expect(mockCreateObjectURL).toHaveBeenCalledWith(mockBlob)
+      expect(mockCreateElement).toHaveBeenCalledWith('a')
+      expect(mockRevokeObjectURL).toHaveBeenCalledWith('blob:mock-url')
+    })
+
+    it('should export with excel format', async () => {
+      const { exportWarehouseStockSummary } = useWarehouse()
+
+      await exportWarehouseStockSummary({ format: 'excel' })
+
+      expect(mockFetch).toHaveBeenCalledWith(
+        expect.stringContaining('?format=excel'),
+        expect.any(Object),
+      )
+    })
+
+    it('should export with csv format', async () => {
+      const { exportWarehouseStockSummary } = useWarehouse()
+
+      await exportWarehouseStockSummary({ format: 'csv' })
+
+      expect(mockFetch).toHaveBeenCalledWith(
+        expect.stringContaining('?format=csv'),
+        expect.any(Object),
+      )
+    })
+
+    it('should use filename from Content-Disposition header', async () => {
+      const { exportWarehouseStockSummary } = useWarehouse()
+
+      await exportWarehouseStockSummary()
+
+      const anchor = mockCreateElement.mock.results[0].value
+      expect(anchor.download).toBe('warehouse-report.xlsx')
+    })
+
+    it('should generate default filename when Content-Disposition is missing', async () => {
+      mockCreateElement.mockClear()
+      mockFetch.mockResolvedValue({
+        ok: true,
+        headers: {
+          get: vi.fn().mockReturnValue(null),
+        },
+        blob: vi.fn().mockResolvedValue(mockBlob),
+      })
+
+      const { exportWarehouseStockSummary } = useWarehouse()
+
+      await exportWarehouseStockSummary()
+
+      const anchor = mockCreateElement.mock.results[0].value
+      expect(anchor.download).toMatch(/warehouse-stock-summary-.*\.xlsx/)
+    })
+
+    it('should use correct file extension for CSV format', async () => {
+      mockCreateElement.mockClear()
+      mockFetch.mockResolvedValue({
+        ok: true,
+        headers: {
+          get: vi.fn().mockReturnValue(null),
+        },
+        blob: vi.fn().mockResolvedValue(mockBlob),
+      })
+
+      const { exportWarehouseStockSummary } = useWarehouse()
+
+      await exportWarehouseStockSummary({ format: 'csv' })
+
+      const anchor = mockCreateElement.mock.results[0].value
+      expect(anchor.download).toMatch(/\.csv$/)
+    })
+
+    it('should throw error when no tenant selected', async () => {
+      const mockTenantStore = useTenantStore()
+      const originalTenantId = mockTenantStore.currentTenantId
+      mockTenantStore.currentTenantId = null
+
+      const { exportWarehouseStockSummary } = useWarehouse()
+
+      await expect(exportWarehouseStockSummary()).rejects.toThrow('No tenant selected')
+
+      mockTenantStore.currentTenantId = originalTenantId
+    })
+
+    it('should throw error when not authenticated', async () => {
+      const mockAuthStore = useAuthStore()
+      const originalToken = mockAuthStore.token
+      mockAuthStore.token = null
+
+      const { exportWarehouseStockSummary } = useWarehouse()
+
+      await expect(exportWarehouseStockSummary()).rejects.toThrow('Not authenticated')
+
+      mockAuthStore.token = originalToken
+    })
+
+    it('should throw error when export fails', async () => {
+      mockFetch.mockResolvedValue({
+        ok: false,
+        status: 500,
+        statusText: 'Internal Server Error',
+      })
+
+      const { exportWarehouseStockSummary } = useWarehouse()
+
+      await expect(exportWarehouseStockSummary()).rejects.toThrow('Export failed')
+    })
+
+    it('should clean up blob URL after download', async () => {
+      const { exportWarehouseStockSummary } = useWarehouse()
+
+      await exportWarehouseStockSummary()
+
+      expect(mockRevokeObjectURL).toHaveBeenCalledWith('blob:mock-url')
+    })
+
+    it('should append and remove anchor element from DOM', async () => {
+      const { exportWarehouseStockSummary } = useWarehouse()
+
+      await exportWarehouseStockSummary()
+
+      expect(mockAppendChild).toHaveBeenCalled()
+      expect(mockRemoveChild).toHaveBeenCalled()
     })
   })
 

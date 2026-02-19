@@ -35,6 +35,11 @@ Thumbs.db
 coverage/
 .nyc_output/
 
+# E2E Testing (Playwright)
+test-results/
+playwright-report/
+playwright/.cache/
+
 # Cache
 .cache/
 .temp/
