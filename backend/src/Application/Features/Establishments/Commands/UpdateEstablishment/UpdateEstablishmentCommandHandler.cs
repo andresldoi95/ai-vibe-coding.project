@@ -49,7 +49,7 @@ public class UpdateEstablishmentCommandHandler : IRequestHandler<UpdateEstablish
             // Update establishment
             establishment.EstablishmentCode = request.EstablishmentCode;
             establishment.Name = request.Name;
-            establishment.Address = request.Address;
+            establishment.Address = request.Address ?? string.Empty;
             establishment.Phone = request.Phone;
             establishment.IsActive = request.IsActive;
 

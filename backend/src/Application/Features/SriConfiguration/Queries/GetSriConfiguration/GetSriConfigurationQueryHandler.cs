@@ -45,7 +45,7 @@ public class GetSriConfigurationQueryHandler : IRequestHandler<GetSriConfigurati
                     TenantId = _tenantContext.TenantId.Value,
                     CompanyRuc = string.Empty,
                     LegalName = string.Empty,
-                    TradeName = null,
+                    TradeName = string.Empty,
                     MainAddress = string.Empty,
                     Phone = string.Empty,
                     Email = string.Empty,

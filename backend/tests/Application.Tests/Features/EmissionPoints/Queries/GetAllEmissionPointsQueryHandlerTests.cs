@@ -89,7 +89,7 @@ public class GetAllEmissionPointsQueryHandlerTests
         };
 
         _emissionPointRepositoryMock
-            .Setup(r => r.GetAllAsync(It.IsAny<CancellationToken>()))
+            .Setup(r => r.GetAllByTenantAsync(tenantId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(emissionPoints);
 
         var query = new GetAllEmissionPointsQuery();
@@ -106,7 +106,8 @@ public class GetAllEmissionPointsQueryHandlerTests
         result.Value.Should().Contain(ep => ep.EmissionPointCode == "003" && ep.Name == "POS 3");
         result.Value.Should().OnlyContain(ep => ep.EstablishmentCode == "001" && ep.EstablishmentName == "Main Office");
 
-        _emissionPointRepositoryMock.Verify(r => r.GetAllAsync(
+        _emissionPointRepositoryMock.Verify(r => r.GetAllByTenantAsync(
+            tenantId,
             It.IsAny<CancellationToken>()),
             Times.Once);
     }
@@ -121,7 +122,7 @@ public class GetAllEmissionPointsQueryHandlerTests
         var emissionPoints = new List<EmissionPoint>();
 
         _emissionPointRepositoryMock
-            .Setup(r => r.GetAllAsync(It.IsAny<CancellationToken>()))
+            .Setup(r => r.GetAllByTenantAsync(tenantId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(emissionPoints);
 
         var query = new GetAllEmissionPointsQuery();
@@ -150,7 +151,8 @@ public class GetAllEmissionPointsQueryHandlerTests
         result.IsSuccess.Should().BeFalse();
         result.Error.Should().Contain("Tenant context is required");
 
-        _emissionPointRepositoryMock.Verify(r => r.GetAllAsync(
+        _emissionPointRepositoryMock.Verify(r => r.GetAllByTenantAsync(
+            It.IsAny<Guid>(),
             It.IsAny<CancellationToken>()),
             Times.Never);
     }
@@ -197,7 +199,7 @@ public class GetAllEmissionPointsQueryHandlerTests
         };
 
         _emissionPointRepositoryMock
-            .Setup(r => r.GetAllAsync(It.IsAny<CancellationToken>()))
+            .Setup(r => r.GetAllByTenantAsync(tenantId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(emissionPoints);
 
         var query = new GetAllEmissionPointsQuery();
@@ -248,7 +250,7 @@ public class GetAllEmissionPointsQueryHandlerTests
         };
 
         _emissionPointRepositoryMock
-            .Setup(r => r.GetAllAsync(It.IsAny<CancellationToken>()))
+            .Setup(r => r.GetAllByTenantAsync(tenantId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(emissionPoints);
 
         var query = new GetAllEmissionPointsQuery();

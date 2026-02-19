@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using SaaS.Application.Features.Warehouses.Commands.UpdateWarehouse;
 using SaaS.Application.Common.Interfaces;
 using SaaS.Domain.Entities;
+using SaaS.Domain.Interfaces;
 
 namespace Application.Tests.Features.Warehouses.Commands;
 
@@ -14,6 +15,7 @@ public class UpdateWarehouseCommandHandlerTests
     private readonly Mock<ITenantContext> _tenantContextMock;
     private readonly Mock<ILogger<UpdateWarehouseCommandHandler>> _loggerMock;
     private readonly Mock<IWarehouseRepository> _warehouseRepositoryMock;
+    private readonly Mock<ICountryRepository> _countryRepositoryMock;
     private readonly UpdateWarehouseCommandHandler _handler;
 
     public UpdateWarehouseCommandHandlerTests()
@@ -22,8 +24,10 @@ public class UpdateWarehouseCommandHandlerTests
         _tenantContextMock = new Mock<ITenantContext>();
         _loggerMock = new Mock<ILogger<UpdateWarehouseCommandHandler>>();
         _warehouseRepositoryMock = new Mock<IWarehouseRepository>();
+        _countryRepositoryMock = new Mock<ICountryRepository>();
 
         _unitOfWorkMock.Setup(u => u.Warehouses).Returns(_warehouseRepositoryMock.Object);
+        _unitOfWorkMock.Setup(u => u.Countries).Returns(_countryRepositoryMock.Object);
 
         _handler = new UpdateWarehouseCommandHandler(
             _unitOfWorkMock.Object,
@@ -37,6 +41,7 @@ public class UpdateWarehouseCommandHandlerTests
         // Arrange
         var tenantId = Guid.NewGuid();
         var warehouseId = Guid.NewGuid();
+        var countryId = Guid.NewGuid();
         _tenantContextMock.Setup(t => t.TenantId).Returns(tenantId);
 
         var existingWarehouse = new Warehouse
@@ -48,13 +53,18 @@ public class UpdateWarehouseCommandHandlerTests
             StreetAddress = "Old Address",
             City = "Old City",
             PostalCode = "00000",
-            Country = "USA",
+            CountryId = countryId,
+            Country = new Country { Id = countryId, Name = "United States", Code = "US" },
             IsDeleted = false
         };
 
         _warehouseRepositoryMock
             .Setup(r => r.GetByIdAsync(warehouseId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(existingWarehouse);
+
+        _countryRepositoryMock
+            .Setup(r => r.GetByIdAsync(countryId))
+            .ReturnsAsync(new Country { Id = countryId, Name = "United States", Code = "US" });
 
         var command = new UpdateWarehouseCommand
         {
@@ -66,7 +76,7 @@ public class UpdateWarehouseCommandHandlerTests
             City = "New York",
             State = "NY",
             PostalCode = "10001",
-            Country = "USA",
+            CountryId = countryId,
             Phone = "+1-555-0100",
             Email = "updated@example.com",
             IsActive = true,
@@ -105,7 +115,7 @@ public class UpdateWarehouseCommandHandlerTests
             StreetAddress = "123 Test St",
             City = "Test",
             PostalCode = "12345",
-            Country = "USA"
+            CountryId = Guid.NewGuid()
         };
 
         // Act
@@ -136,7 +146,7 @@ public class UpdateWarehouseCommandHandlerTests
             StreetAddress = "123 Test St",
             City = "Test",
             PostalCode = "12345",
-            Country = "USA"
+            CountryId = Guid.NewGuid()
         };
 
         // Act
@@ -176,7 +186,7 @@ public class UpdateWarehouseCommandHandlerTests
             StreetAddress = "123 Test St",
             City = "Test",
             PostalCode = "12345",
-            Country = "USA"
+            CountryId = Guid.NewGuid()
         };
 
         // Act
@@ -218,7 +228,7 @@ public class UpdateWarehouseCommandHandlerTests
             StreetAddress = "123 Test St",
             City = "Test",
             PostalCode = "12345",
-            Country = "USA"
+            CountryId = Guid.NewGuid()
         };
 
         // Act
@@ -271,7 +281,7 @@ public class UpdateWarehouseCommandHandlerTests
             StreetAddress = "123 Test St",
             City = "Test",
             PostalCode = "12345",
-            Country = "USA"
+            CountryId = Guid.NewGuid()
         };
 
         // Act
@@ -289,6 +299,7 @@ public class UpdateWarehouseCommandHandlerTests
         // Arrange
         var tenantId = Guid.NewGuid();
         var warehouseId = Guid.NewGuid();
+        var countryId = Guid.NewGuid();
         _tenantContextMock.Setup(t => t.TenantId).Returns(tenantId);
 
         var existingWarehouse = new Warehouse
@@ -300,13 +311,18 @@ public class UpdateWarehouseCommandHandlerTests
             StreetAddress = "Old Addr",
             City = "Old City",
             PostalCode = "00000",
-            Country = "USA",
+            CountryId = countryId,
+            Country = new Country { Id = countryId, Name = "United States", Code = "US" },
             IsDeleted = false
         };
 
         _warehouseRepositoryMock
             .Setup(r => r.GetByIdAsync(warehouseId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(existingWarehouse);
+
+        _countryRepositoryMock
+            .Setup(r => r.GetByIdAsync(countryId))
+            .ReturnsAsync(new Country { Id = countryId, Name = "United States", Code = "US" });
 
         var command = new UpdateWarehouseCommand
         {
@@ -316,7 +332,7 @@ public class UpdateWarehouseCommandHandlerTests
             StreetAddress = "New Addr",
             City = "New City",
             PostalCode = "11111",
-            Country = "USA"
+            CountryId = countryId
         };
 
         // Act

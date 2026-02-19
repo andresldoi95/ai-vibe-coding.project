@@ -49,9 +49,9 @@ public class UpdateSriConfigurationCommandHandler : IRequestHandler<UpdateSriCon
             }
 
             // Update configuration properties
-            sriConfig.CompanyRuc = request.CompanyRuc;
+            sriConfig!.CompanyRuc = request.CompanyRuc;
             sriConfig.LegalName = request.LegalName;
-            sriConfig.TradeName = request.TradeName;
+            sriConfig.TradeName = request.TradeName ?? string.Empty;
             sriConfig.MainAddress = request.MainAddress;
             sriConfig.Phone = request.Phone;
             sriConfig.Email = request.Email;
@@ -60,8 +60,11 @@ public class UpdateSriConfigurationCommandHandler : IRequestHandler<UpdateSriCon
             sriConfig.SpecialTaxpayerNumber = request.SpecialTaxpayerNumber;
             sriConfig.IsRiseRegime = request.IsRiseRegime;
 
-            // No need to call UpdateAsync - entity is already tracked by EF Core when retrieved
-            // Only AddAsync was needed for new entities above
+            if (!isNewConfig)
+            {
+                // Call UpdateAsync for existing configurations to ensure repository tracking
+                await _unitOfWork.SriConfigurations.UpdateAsync(sriConfig, cancellationToken);
+            }
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 

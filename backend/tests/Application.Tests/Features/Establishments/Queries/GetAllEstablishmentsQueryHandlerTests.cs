@@ -74,7 +74,7 @@ public class GetAllEstablishmentsQueryHandlerTests
         };
 
         _establishmentRepositoryMock
-            .Setup(r => r.GetAllAsync(It.IsAny<CancellationToken>()))
+            .Setup(r => r.GetAllByTenantAsync(tenantId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(establishments);
 
         var query = new GetAllEstablishmentsQuery();
@@ -90,7 +90,8 @@ public class GetAllEstablishmentsQueryHandlerTests
         result.Value.Should().Contain(e => e.EstablishmentCode == "002" && e.Name == "Branch Office");
         result.Value.Should().Contain(e => e.EstablishmentCode == "003" && e.Name == "Warehouse");
 
-        _establishmentRepositoryMock.Verify(r => r.GetAllAsync(
+        _establishmentRepositoryMock.Verify(r => r.GetAllByTenantAsync(
+            tenantId,
             It.IsAny<CancellationToken>()),
             Times.Once);
     }
@@ -105,7 +106,7 @@ public class GetAllEstablishmentsQueryHandlerTests
         var establishments = new List<Establishment>();
 
         _establishmentRepositoryMock
-            .Setup(r => r.GetAllAsync(It.IsAny<CancellationToken>()))
+            .Setup(r => r.GetAllByTenantAsync(tenantId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(establishments);
 
         var query = new GetAllEstablishmentsQuery();
@@ -134,7 +135,8 @@ public class GetAllEstablishmentsQueryHandlerTests
         result.IsSuccess.Should().BeFalse();
         result.Error.Should().Contain("Tenant context is required");
 
-        _establishmentRepositoryMock.Verify(r => r.GetAllAsync(
+        _establishmentRepositoryMock.Verify(r => r.GetAllByTenantAsync(
+            It.IsAny<Guid>(),
             It.IsAny<CancellationToken>()),
             Times.Never);
     }
@@ -169,7 +171,7 @@ public class GetAllEstablishmentsQueryHandlerTests
         };
 
         _establishmentRepositoryMock
-            .Setup(r => r.GetAllAsync(It.IsAny<CancellationToken>()))
+            .Setup(r => r.GetAllByTenantAsync(tenantId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(establishments);
 
         var query = new GetAllEstablishmentsQuery();
@@ -206,7 +208,7 @@ public class GetAllEstablishmentsQueryHandlerTests
         };
 
         _establishmentRepositoryMock
-            .Setup(r => r.GetAllAsync(It.IsAny<CancellationToken>()))
+            .Setup(r => r.GetAllByTenantAsync(tenantId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(establishments);
 
         var query = new GetAllEstablishmentsQuery();

@@ -26,7 +26,7 @@ public class CreateWarehouseCommandValidatorTests
             City = "New York",
             State = "NY",
             PostalCode = "10001",
-            Country = "USA",
+            CountryId = Guid.NewGuid(),
             Phone = "+1-555-0100",
             Email = "warehouse@example.com",
             IsActive = true,
@@ -56,7 +56,7 @@ public class CreateWarehouseCommandValidatorTests
             StreetAddress = "123 Storage St",
             City = "New York",
             PostalCode = "10001",
-            Country = "USA"
+            CountryId = Guid.NewGuid()
         };
 
         // Act
@@ -78,7 +78,7 @@ public class CreateWarehouseCommandValidatorTests
             StreetAddress = "123 Storage St",
             City = "New York",
             PostalCode = "10001",
-            Country = "USA"
+            CountryId = Guid.NewGuid()
         };
 
         // Act
@@ -103,7 +103,7 @@ public class CreateWarehouseCommandValidatorTests
             StreetAddress = "123 Storage St",
             City = "New York",
             PostalCode = "10001",
-            Country = "USA"
+            CountryId = Guid.NewGuid()
         };
 
         // Act
@@ -125,7 +125,7 @@ public class CreateWarehouseCommandValidatorTests
             StreetAddress = "123 Storage St",
             City = "New York",
             PostalCode = "10001",
-            Country = "USA"
+            CountryId = Guid.NewGuid()
         };
 
         // Act
@@ -151,7 +151,7 @@ public class CreateWarehouseCommandValidatorTests
             StreetAddress = "123 Storage St",
             City = "New York",
             PostalCode = "10001",
-            Country = "USA"
+            CountryId = Guid.NewGuid()
         };
 
         // Act
@@ -177,7 +177,7 @@ public class CreateWarehouseCommandValidatorTests
             StreetAddress = "123 Storage St",
             City = "New York",
             PostalCode = "10001",
-            Country = "USA"
+            CountryId = Guid.NewGuid()
         };
 
         // Act
@@ -199,7 +199,7 @@ public class CreateWarehouseCommandValidatorTests
             StreetAddress = "123 Storage St",
             City = "New York",
             PostalCode = "10001",
-            Country = "USA"
+            CountryId = Guid.NewGuid()
         };
 
         // Act
@@ -223,7 +223,7 @@ public class CreateWarehouseCommandValidatorTests
             StreetAddress = streetAddress,
             City = "New York",
             PostalCode = "10001",
-            Country = "USA"
+            CountryId = Guid.NewGuid()
         };
 
         // Act
@@ -247,7 +247,7 @@ public class CreateWarehouseCommandValidatorTests
             StreetAddress = "123 Storage St",
             City = city,
             PostalCode = "10001",
-            Country = "USA"
+            CountryId = Guid.NewGuid()
         };
 
         // Act
@@ -271,7 +271,7 @@ public class CreateWarehouseCommandValidatorTests
             StreetAddress = "123 Storage St",
             City = "New York",
             PostalCode = postalCode,
-            Country = "USA"
+            CountryId = Guid.NewGuid()
         };
 
         // Act
@@ -282,10 +282,8 @@ public class CreateWarehouseCommandValidatorTests
         result.Errors.Should().Contain(e => e.PropertyName == "PostalCode" && e.ErrorMessage.Contains("required"));
     }
 
-    [Theory]
-    [InlineData("")]
-    [InlineData(null)]
-    public void Validate_EmptyCountry_ShouldFail(string country)
+    [Fact]
+    public void Validate_EmptyCountryId_ShouldFail()
     {
         // Arrange
         var command = new CreateWarehouseCommand
@@ -295,7 +293,7 @@ public class CreateWarehouseCommandValidatorTests
             StreetAddress = "123 Storage St",
             City = "New York",
             PostalCode = "10001",
-            Country = country
+            CountryId = Guid.Empty
         };
 
         // Act
@@ -303,7 +301,7 @@ public class CreateWarehouseCommandValidatorTests
 
         // Assert
         result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.PropertyName == "Country" && e.ErrorMessage.Contains("required"));
+        result.Errors.Should().Contain(e => e.PropertyName == "CountryId" && e.ErrorMessage.Contains("required"));
     }
 
     [Theory]
@@ -320,7 +318,7 @@ public class CreateWarehouseCommandValidatorTests
             StreetAddress = "123 Storage St",
             City = "New York",
             PostalCode = "10001",
-            Country = "USA",
+            CountryId = Guid.NewGuid(),
             Email = email
         };
 
@@ -343,7 +341,7 @@ public class CreateWarehouseCommandValidatorTests
             StreetAddress = "123 Storage St",
             City = "New York",
             PostalCode = "10001",
-            Country = "USA",
+            CountryId = Guid.NewGuid(),
             Email = "warehouse@example.com"
         };
 
@@ -367,7 +365,7 @@ public class CreateWarehouseCommandValidatorTests
             City = "New York",
             State = null,
             PostalCode = "10001",
-            Country = "USA",
+            CountryId = Guid.NewGuid(),
             Phone = null,
             Email = null,
             SquareFootage = null,

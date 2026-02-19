@@ -217,7 +217,7 @@ public class GetSriConfigurationQueryHandlerTests
             TenantId = tenantId,
             CompanyRuc = "1234567890001",
             LegalName = "Test Company S.A.",
-            TradeName = null,  // Nullable field
+            TradeName = string.Empty,
             MainAddress = "Test Address",
             Environment = SriEnvironment.Production,
             AccountingRequired = false
@@ -234,6 +234,6 @@ public class GetSriConfigurationQueryHandlerTests
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        result.Value!.TradeName.Should().BeNull();
+        result.Value!.TradeName.Should().BeEmpty();
     }
 }

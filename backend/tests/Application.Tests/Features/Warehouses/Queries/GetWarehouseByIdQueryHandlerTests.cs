@@ -37,6 +37,7 @@ public class GetWarehouseByIdQueryHandlerTests
         // Arrange
         var tenantId = Guid.NewGuid();
         var warehouseId = Guid.NewGuid();
+        var countryId = Guid.NewGuid();
         _tenantContextMock.Setup(t => t.TenantId).Returns(tenantId);
 
         var warehouse = new Warehouse
@@ -50,7 +51,8 @@ public class GetWarehouseByIdQueryHandlerTests
             City = "New York",
             State = "NY",
             PostalCode = "10001",
-            Country = "USA",
+            CountryId = countryId,
+            Country = new Country { Id = countryId, Name = "United States", Code = "US" },
             Phone = "+1-555-0100",
             Email = "warehouse@example.com",
             IsActive = true,
@@ -82,7 +84,7 @@ public class GetWarehouseByIdQueryHandlerTests
         result.Value.City.Should().Be("New York");
         result.Value.State.Should().Be("NY");
         result.Value.PostalCode.Should().Be("10001");
-        result.Value.Country.Should().Be("USA");
+        result.Value.CountryName.Should().Be("United States");
         result.Value.Phone.Should().Be("+1-555-0100");
         result.Value.Email.Should().Be("warehouse@example.com");
         result.Value.IsActive.Should().BeTrue();
@@ -198,6 +200,7 @@ public class GetWarehouseByIdQueryHandlerTests
         // Arrange
         var tenantId = Guid.NewGuid();
         var warehouseId = Guid.NewGuid();
+        var countryId = Guid.NewGuid();
         _tenantContextMock.Setup(t => t.TenantId).Returns(tenantId);
 
         var warehouse = new Warehouse
@@ -211,7 +214,8 @@ public class GetWarehouseByIdQueryHandlerTests
             City = "Boston",
             State = null,
             PostalCode = "02101",
-            Country = "USA",
+            CountryId = countryId,
+            Country = new Country { Id = countryId, Name = "United States", Code = "US" },
             Phone = null,
             Email = null,
             IsActive = true,
@@ -246,6 +250,7 @@ public class GetWarehouseByIdQueryHandlerTests
         // Arrange
         var tenantId = Guid.NewGuid();
         var warehouseId = Guid.NewGuid();
+        var countryId = Guid.NewGuid();
         _tenantContextMock.Setup(t => t.TenantId).Returns(tenantId);
 
         var warehouse = new Warehouse
@@ -257,7 +262,8 @@ public class GetWarehouseByIdQueryHandlerTests
             StreetAddress = "123 Test St",
             City = "Test City",
             PostalCode = "12345",
-            Country = "USA",
+            CountryId = countryId,
+            Country = new Country { Id = countryId, Name = "United States", Code = "US" },
             IsDeleted = false
         };
 

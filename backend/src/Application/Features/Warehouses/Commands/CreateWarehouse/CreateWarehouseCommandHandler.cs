@@ -68,6 +68,9 @@ public class CreateWarehouseCommandHandler : IRequestHandler<CreateWarehouseComm
             await _unitOfWork.Warehouses.AddAsync(warehouse, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
+            // Load Country for DTO mapping
+            var country = await _unitOfWork.Countries.GetByIdAsync(warehouse.CountryId);
+
             _logger.LogInformation(
                 "Warehouse {Code} created successfully for tenant {TenantId}",
                 warehouse.Code,
@@ -86,8 +89,8 @@ public class CreateWarehouseCommandHandler : IRequestHandler<CreateWarehouseComm
                 State = warehouse.State,
                 PostalCode = warehouse.PostalCode,
                 CountryId = warehouse.CountryId,
-                CountryName = string.Empty,
-                CountryCode = string.Empty,
+                CountryName = country?.Name ?? string.Empty,
+                CountryCode = country?.Code ?? string.Empty,
                 Phone = warehouse.Phone,
                 Email = warehouse.Email,
                 IsActive = warehouse.IsActive,

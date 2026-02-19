@@ -41,7 +41,7 @@ public class CreateEstablishmentCommandHandler : IRequestHandler<CreateEstablish
                 TenantId = _tenantContext.TenantId.Value,
                 EstablishmentCode = request.EstablishmentCode,
                 Name = request.Name,
-                Address = request.Address,
+                Address = request.Address ?? string.Empty,
                 Phone = request.Phone,
                 IsActive = request.IsActive
             };

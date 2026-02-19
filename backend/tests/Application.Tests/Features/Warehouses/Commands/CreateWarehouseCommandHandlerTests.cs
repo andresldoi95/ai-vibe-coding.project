@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using SaaS.Application.Features.Warehouses.Commands.CreateWarehouse;
 using SaaS.Application.Common.Interfaces;
 using SaaS.Domain.Entities;
+using SaaS.Domain.Interfaces;
 
 namespace Application.Tests.Features.Warehouses.Commands;
 
@@ -14,6 +15,7 @@ public class CreateWarehouseCommandHandlerTests
     private readonly Mock<ITenantContext> _tenantContextMock;
     private readonly Mock<ILogger<CreateWarehouseCommandHandler>> _loggerMock;
     private readonly Mock<IWarehouseRepository> _warehouseRepositoryMock;
+    private readonly Mock<ICountryRepository> _countryRepositoryMock;
     private readonly CreateWarehouseCommandHandler _handler;
 
     public CreateWarehouseCommandHandlerTests()
@@ -22,9 +24,11 @@ public class CreateWarehouseCommandHandlerTests
         _tenantContextMock = new Mock<ITenantContext>();
         _loggerMock = new Mock<ILogger<CreateWarehouseCommandHandler>>();
         _warehouseRepositoryMock = new Mock<IWarehouseRepository>();
+        _countryRepositoryMock = new Mock<ICountryRepository>();
 
-        // Setup UnitOfWork to return mocked repository
+        // Setup UnitOfWork to return mocked repositories
         _unitOfWorkMock.Setup(u => u.Warehouses).Returns(_warehouseRepositoryMock.Object);
+        _unitOfWorkMock.Setup(u => u.Countries).Returns(_countryRepositoryMock.Object);
 
         _handler = new CreateWarehouseCommandHandler(
             _unitOfWorkMock.Object,
@@ -37,11 +41,16 @@ public class CreateWarehouseCommandHandlerTests
     {
         // Arrange
         var tenantId = Guid.NewGuid();
+        var countryId = Guid.NewGuid();
         _tenantContextMock.Setup(t => t.TenantId).Returns(tenantId);
 
         _warehouseRepositoryMock
             .Setup(r => r.GetByCodeAsync("WH-001", tenantId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((Warehouse?)null);
+
+        _countryRepositoryMock
+            .Setup(r => r.GetByIdAsync(countryId))
+            .ReturnsAsync(new Country { Id = countryId, Name = "United States", Code = "US" });
 
         var command = new CreateWarehouseCommand
         {
@@ -52,7 +61,7 @@ public class CreateWarehouseCommandHandlerTests
             City = "New York",
             State = "NY",
             PostalCode = "10001",
-            Country = "USA",
+            CountryId = countryId,
             Phone = "+1-555-0100",
             Email = "warehouse@example.com",
             IsActive = true,
@@ -94,7 +103,7 @@ public class CreateWarehouseCommandHandlerTests
             StreetAddress = "123 Storage St",
             City = "New York",
             PostalCode = "10001",
-            Country = "USA"
+            CountryId = Guid.NewGuid()
         };
 
         // Act
@@ -136,7 +145,7 @@ public class CreateWarehouseCommandHandlerTests
             StreetAddress = "123 Storage St",
             City = "New York",
             PostalCode = "10001",
-            Country = "USA"
+            CountryId = Guid.NewGuid()
         };
 
         // Act
@@ -158,11 +167,16 @@ public class CreateWarehouseCommandHandlerTests
     {
         // Arrange
         var tenantId = Guid.NewGuid();
+        var countryId = Guid.NewGuid();
         _tenantContextMock.Setup(t => t.TenantId).Returns(tenantId);
 
         _warehouseRepositoryMock
             .Setup(r => r.GetByCodeAsync("WH-MIN", tenantId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((Warehouse?)null);
+
+        _countryRepositoryMock
+            .Setup(r => r.GetByIdAsync(countryId))
+            .ReturnsAsync(new Country { Id = countryId, Name = "United States", Code = "US" });
 
         var command = new CreateWarehouseCommand
         {
@@ -173,7 +187,7 @@ public class CreateWarehouseCommandHandlerTests
             City = "Boston",
             State = null,
             PostalCode = "02101",
-            Country = "USA",
+            CountryId = countryId,
             Phone = null,
             Email = null,
             IsActive = true,
@@ -200,11 +214,16 @@ public class CreateWarehouseCommandHandlerTests
     {
         // Arrange
         var tenantId = Guid.NewGuid();
+        var countryId = Guid.NewGuid();
         _tenantContextMock.Setup(t => t.TenantId).Returns(tenantId);
 
         _warehouseRepositoryMock
             .Setup(r => r.GetByCodeAsync("WH-FULL", tenantId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((Warehouse?)null);
+
+        _countryRepositoryMock
+            .Setup(r => r.GetByIdAsync(countryId))
+            .ReturnsAsync(new Country { Id = countryId, Name = "United States", Code = "US" });
 
         var command = new CreateWarehouseCommand
         {
@@ -215,7 +234,7 @@ public class CreateWarehouseCommandHandlerTests
             City = "Chicago",
             State = "IL",
             PostalCode = "60601",
-            Country = "USA",
+            CountryId = countryId,
             Phone = "+1-555-0200",
             Email = "full@example.com",
             IsActive = false,
@@ -236,7 +255,7 @@ public class CreateWarehouseCommandHandlerTests
         result.Value.City.Should().Be("Chicago");
         result.Value.State.Should().Be("IL");
         result.Value.PostalCode.Should().Be("60601");
-        result.Value.Country.Should().Be("USA");
+        result.Value.CountryName.Should().NotBeNullOrEmpty();
         result.Value.Phone.Should().Be("+1-555-0200");
         result.Value.Email.Should().Be("full@example.com");
         result.Value.IsActive.Should().BeFalse();
@@ -250,11 +269,16 @@ public class CreateWarehouseCommandHandlerTests
     {
         // Arrange
         var tenantId = Guid.NewGuid();
+        var countryId = Guid.NewGuid();
         _tenantContextMock.Setup(t => t.TenantId).Returns(tenantId);
 
         _warehouseRepositoryMock
             .Setup(r => r.GetByCodeAsync("WH-LOG", tenantId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((Warehouse?)null);
+
+        _countryRepositoryMock
+            .Setup(r => r.GetByIdAsync(countryId))
+            .ReturnsAsync(new Country { Id = countryId, Name = "United States", Code = "US" });
 
         var command = new CreateWarehouseCommand
         {
@@ -263,7 +287,7 @@ public class CreateWarehouseCommandHandlerTests
             StreetAddress = "123 Log St",
             City = "Test City",
             PostalCode = "12345",
-            Country = "USA"
+            CountryId = countryId
         };
 
         // Act

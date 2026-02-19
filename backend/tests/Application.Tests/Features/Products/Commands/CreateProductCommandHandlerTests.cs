@@ -4,6 +4,7 @@ using Moq;
 using Microsoft.Extensions.Logging;
 using SaaS.Application.Features.Products.Commands.CreateProduct;
 using SaaS.Application.Common.Interfaces;
+using SaaS.Application.Services;
 using SaaS.Domain.Entities;
 
 namespace Application.Tests.Features.Products.Commands;
@@ -12,28 +13,34 @@ public class CreateProductCommandHandlerTests
 {
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly Mock<ITenantContext> _tenantContextMock;
+    private readonly Mock<IStockLevelService> _stockLevelServiceMock;
     private readonly Mock<ILogger<CreateProductCommandHandler>> _loggerMock;
     private readonly Mock<IProductRepository> _productRepositoryMock;
     private readonly Mock<IStockMovementRepository> _stockMovementRepositoryMock;
     private readonly Mock<IWarehouseInventoryRepository> _warehouseInventoryRepositoryMock;
+    private readonly Mock<IWarehouseRepository> _warehouseRepositoryMock;
     private readonly CreateProductCommandHandler _handler;
 
     public CreateProductCommandHandlerTests()
     {
         _unitOfWorkMock = new Mock<IUnitOfWork>();
         _tenantContextMock = new Mock<ITenantContext>();
+        _stockLevelServiceMock = new Mock<IStockLevelService>();
         _loggerMock = new Mock<ILogger<CreateProductCommandHandler>>();
         _productRepositoryMock = new Mock<IProductRepository>();
         _stockMovementRepositoryMock = new Mock<IStockMovementRepository>();
         _warehouseInventoryRepositoryMock = new Mock<IWarehouseInventoryRepository>();
+        _warehouseRepositoryMock = new Mock<IWarehouseRepository>();
 
         _unitOfWorkMock.Setup(u => u.Products).Returns(_productRepositoryMock.Object);
         _unitOfWorkMock.Setup(u => u.StockMovements).Returns(_stockMovementRepositoryMock.Object);
         _unitOfWorkMock.Setup(u => u.WarehouseInventory).Returns(_warehouseInventoryRepositoryMock.Object);
+        _unitOfWorkMock.Setup(u => u.Warehouses).Returns(_warehouseRepositoryMock.Object);
 
         _handler = new CreateProductCommandHandler(
             _unitOfWorkMock.Object,
             _tenantContextMock.Object,
+            _stockLevelServiceMock.Object,
             _loggerMock.Object);
     }
 
@@ -172,6 +179,21 @@ public class CreateProductCommandHandlerTests
             .Setup(r => r.GetByCodeAsync("PROD-001", tenantId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((Product?)null);
 
+        var warehouse = new Warehouse
+        {
+            Id = warehouseId,
+            TenantId = tenantId,
+            IsDeleted = false
+        };
+
+        _warehouseRepositoryMock
+            .Setup(r => r.GetByIdAsync(warehouseId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(warehouse);
+
+        _stockLevelServiceMock
+            .Setup(s => s.UpdateStockLevelsAsync(It.IsAny<StockMovement>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+
         var command = new CreateProductCommand
         {
             Name = "Test Product",
@@ -196,5 +218,12 @@ public class CreateProductCommandHandlerTests
                 sm.TenantId == tenantId),
             It.IsAny<CancellationToken>()),
             Times.Once);
+
+        _stockLevelServiceMock.Verify(s => s.UpdateStockLevelsAsync(
+            It.IsAny<StockMovement>(),
+            It.IsAny<CancellationToken>()),
+            Times.Once);
+
+        _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Exactly(3));
     }
 }
