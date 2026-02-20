@@ -122,13 +122,13 @@ public class AcceptInvitationCommandHandlerTests
         result.Value.RefreshToken.Should().Be("refresh-token");
         result.Value.User.Name.Should().Be("New User");
         result.Value.User.Email.Should().Be("newuser@example.com");
-        
+
         user.Name.Should().Be("New User");
         user.IsActive.Should().BeTrue();
         user.EmailConfirmed.Should().BeTrue();
         invitation.IsActive.Should().BeFalse();
         invitation.AcceptedAt.Should().NotBeNull();
-        
+
         _userRepositoryMock.Verify(r => r.UpdateAsync(user, It.IsAny<CancellationToken>()), Times.Once);
         _userTenantRepositoryMock.Verify(r => r.AddAsync(It.IsAny<UserTenant>(), It.IsAny<CancellationToken>()), Times.Once);
         _refreshTokenRepositoryMock.Verify(r => r.AddAsync(It.IsAny<RefreshToken>(), It.IsAny<CancellationToken>()), Times.Once);
@@ -419,7 +419,7 @@ public class AcceptInvitationCommandHandlerTests
         existingUserTenant.IsActive.Should().BeTrue();
         existingUserTenant.RoleId.Should().Be(roleId);
         existingUserTenant.JoinedAt.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(5));
-        
+
         _userTenantRepositoryMock.Verify(r => r.UpdateAsync(existingUserTenant, It.IsAny<CancellationToken>()), Times.Once);
         _userTenantRepositoryMock.Verify(r => r.AddAsync(It.IsAny<UserTenant>(), It.IsAny<CancellationToken>()), Times.Never);
     }
@@ -454,10 +454,10 @@ public class AcceptInvitationCommandHandlerTests
             EmailConfirmed = true
         };
 
-        var tenant = new Tenant 
-        { 
-            Id = tenantId, 
-            Name = "Test Company", 
+        var tenant = new Tenant
+        {
+            Id = tenantId,
+            Name = "Test Company",
             Slug = "test-company",
             Status = TenantStatus.Active
         };
@@ -506,7 +506,7 @@ public class AcceptInvitationCommandHandlerTests
         result.Value.Tenants.Should().HaveCount(1);
         result.Value.Tenants.First().Id.Should().Be(tenantId);
         result.Value.Tenants.First().Name.Should().Be("Test Company");
-        
+
         _authServiceMock.Verify(s => s.GenerateJwtToken(user, It.IsAny<List<Guid>>()), Times.Once);
         _authServiceMock.Verify(s => s.GenerateRefreshToken(It.IsAny<string>()), Times.Once);
     }

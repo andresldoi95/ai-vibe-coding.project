@@ -62,7 +62,7 @@ public class UpdateCurrentUserCommandHandlerTests
         result.Value.Id.Should().Be(userId);
         result.Value.Name.Should().Be("New Name");
         result.Value.Email.Should().Be("user@example.com");
-        
+
         user.Name.Should().Be("New Name");
         _userRepositoryMock.Verify(r => r.UpdateAsync(user, It.IsAny<CancellationToken>()), Times.Once);
         _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
@@ -92,7 +92,7 @@ public class UpdateCurrentUserCommandHandlerTests
     {
         // Arrange
         var userId = Guid.NewGuid();
-        
+
         _userRepositoryMock
             .Setup(r => r.GetByIdAsync(userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((User?)null);

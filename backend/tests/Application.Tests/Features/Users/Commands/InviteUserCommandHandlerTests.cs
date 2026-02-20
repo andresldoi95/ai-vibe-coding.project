@@ -93,7 +93,7 @@ public class InviteUserCommandHandlerTests
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        
+
         _userRepositoryMock.Verify(r => r.AddAsync(It.Is<User>(u => u.Email == "newuser@example.com"), It.IsAny<CancellationToken>()), Times.Once);
         _userInvitationRepositoryMock.Verify(r => r.AddAsync(It.IsAny<UserInvitation>(), It.IsAny<CancellationToken>()), Times.Once);
         _emailServiceMock.Verify(s => s.SendUserInvitationAsync("newuser@example.com", "Test Company", It.IsAny<string>(), tenantId), Times.Once);
@@ -385,10 +385,10 @@ public class InviteUserCommandHandlerTests
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        
+
         // User should not be created again
         _userRepositoryMock.Verify(r => r.AddAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()), Times.Never);
-        
+
         // Invitation should be created
         _userInvitationRepositoryMock.Verify(r => r.AddAsync(It.IsAny<UserInvitation>(), It.IsAny<CancellationToken>()), Times.Once);
     }

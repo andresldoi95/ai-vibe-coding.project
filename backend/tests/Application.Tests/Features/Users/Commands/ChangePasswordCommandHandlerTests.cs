@@ -74,7 +74,7 @@ public class ChangePasswordCommandHandlerTests
         // Assert
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().BeTrue();
-        
+
         user.PasswordHash.Should().Be(newPasswordHash);
         _userRepositoryMock.Verify(r => r.UpdateAsync(user, It.IsAny<CancellationToken>()), Times.Once);
         _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
@@ -105,7 +105,7 @@ public class ChangePasswordCommandHandlerTests
     {
         // Arrange
         var userId = Guid.NewGuid();
-        
+
         _userRepositoryMock
             .Setup(r => r.GetByIdAsync(userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((User?)null);
