@@ -15,6 +15,7 @@ public class GetPaymentByIdQueryHandlerTests
     private readonly Mock<ITenantContext> _tenantContextMock;
     private readonly Mock<ILogger<GetPaymentByIdQueryHandler>> _loggerMock;
     private readonly Mock<IPaymentRepository> _paymentRepositoryMock;
+    private readonly Mock<IInvoiceRepository> _invoiceRepositoryMock;
     private readonly GetPaymentByIdQueryHandler _handler;
 
     public GetPaymentByIdQueryHandlerTests()
@@ -23,8 +24,10 @@ public class GetPaymentByIdQueryHandlerTests
         _tenantContextMock = new Mock<ITenantContext>();
         _loggerMock = new Mock<ILogger<GetPaymentByIdQueryHandler>>();
         _paymentRepositoryMock = new Mock<IPaymentRepository>();
+        _invoiceRepositoryMock = new Mock<IInvoiceRepository>();
 
         _unitOfWorkMock.Setup(u => u.Payments).Returns(_paymentRepositoryMock.Object);
+        _unitOfWorkMock.Setup(u => u.Invoices).Returns(_invoiceRepositoryMock.Object);
 
         _handler = new GetPaymentByIdQueryHandler(
             _unitOfWorkMock.Object,
@@ -38,13 +41,14 @@ public class GetPaymentByIdQueryHandlerTests
         // Arrange
         var tenantId = Guid.NewGuid();
         var paymentId = Guid.NewGuid();
+        var invoiceId = Guid.NewGuid();
         _tenantContextMock.Setup(t => t.TenantId).Returns(tenantId);
 
         var payment = new Payment
         {
             Id = paymentId,
             TenantId = tenantId,
-            InvoiceId = Guid.NewGuid(),
+            InvoiceId = invoiceId,
             Amount = 500.00m,
             PaymentDate = DateTime.UtcNow,
             PaymentMethod = SriPaymentMethod.Cash,
@@ -52,9 +56,20 @@ public class GetPaymentByIdQueryHandlerTests
             IsDeleted = false
         };
 
+        var invoice = new Invoice
+        {
+            Id = invoiceId,
+            InvoiceNumber = "INV-001",
+            Customer = new Customer { Name = "Test Customer" }
+        };
+
         _paymentRepositoryMock
             .Setup(r => r.GetByIdAsync(paymentId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(payment);
+
+        _invoiceRepositoryMock
+            .Setup(r => r.GetByIdAsync(invoiceId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(invoice);
 
         var query = new GetPaymentByIdQuery(paymentId);
 

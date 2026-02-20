@@ -73,6 +73,9 @@ public class CompletePaymentCommandHandler : IRequestHandler<CompletePaymentComm
                     : $"{payment.Notes}\n{request.Notes}";
             }
 
+            // Update the payment
+            await _unitOfWork.Payments.UpdateAsync(payment, cancellationToken);
+
             // Recalculate invoice status
             var paymentInvoice = await _unitOfWork.Invoices.GetByIdAsync(
                 payment.InvoiceId,

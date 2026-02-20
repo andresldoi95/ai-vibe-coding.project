@@ -73,6 +73,11 @@ public class UpdateTaxRateCommandHandler : IRequestHandler<UpdateTaxRateCommand,
 
             return Result<TaxRateDto>.Success(taxRateDto);
         }
+        catch (UnauthorizedAccessException ex)
+        {
+            _logger.LogWarning(ex, "Unauthorized access while updating tax rate {TaxRateId}", request.Id);
+            return Result<TaxRateDto>.Failure(ex.Message);
+        }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error updating tax rate {TaxRateId}", request.Id);

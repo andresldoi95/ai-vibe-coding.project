@@ -49,6 +49,11 @@ public class GetAllTaxRatesQueryHandler : IRequestHandler<GetAllTaxRatesQuery, R
 
             return Result<List<TaxRateDto>>.Success(taxRateDtos);
         }
+        catch (UnauthorizedAccessException ex)
+        {
+            _logger.LogWarning(ex, "Unauthorized access while retrieving tax rates");
+            return Result<List<TaxRateDto>>.Failure(ex.Message);
+        }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error retrieving tax rates");

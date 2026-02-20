@@ -53,6 +53,11 @@ public class GetTaxRateByIdQueryHandler : IRequestHandler<GetTaxRateByIdQuery, R
 
             return Result<TaxRateDto>.Success(taxRateDto);
         }
+        catch (UnauthorizedAccessException ex)
+        {
+            _logger.LogWarning(ex, "Unauthorized access while retrieving tax rate {TaxRateId}", request.Id);
+            return Result<TaxRateDto>.Failure(ex.Message);
+        }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error retrieving tax rate {TaxRateId}", request.Id);

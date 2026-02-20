@@ -70,6 +70,9 @@ public class VoidPaymentCommandHandler : IRequestHandler<VoidPaymentCommand, Res
                     : $"{payment.Notes}\nVoided: {request.Reason}";
             }
 
+            // Update the payment
+            await _unitOfWork.Payments.UpdateAsync(payment, cancellationToken);
+
             // If payment was completed, recalculate invoice status
             if (wasCompleted)
             {

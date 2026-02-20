@@ -61,6 +61,20 @@ public class CreatePaymentCommandHandlerTests
             .Setup(r => r.GetByInvoiceIdAsync(invoiceId, tenantId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<Payment>());
 
+        // Mock the payment retrieval after creation
+        _paymentRepositoryMock
+            .Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Guid id, CancellationToken ct) => new Payment
+            {
+                Id = id,
+                TenantId = tenantId,
+                InvoiceId = invoiceId,
+                Amount = 500.00m,
+                PaymentDate = DateTime.UtcNow,
+                PaymentMethod = SriPaymentMethod.Cash,
+                Status = PaymentStatus.Completed
+            });
+
         var command = new CreatePaymentCommand
         {
             InvoiceId = invoiceId,
@@ -106,6 +120,20 @@ public class CreatePaymentCommandHandlerTests
         _paymentRepositoryMock
             .Setup(r => r.GetByInvoiceIdAsync(invoiceId, tenantId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<Payment>());
+
+        // Mock the payment retrieval after creation
+        _paymentRepositoryMock
+            .Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Guid id, CancellationToken ct) => new Payment
+            {
+                Id = id,
+                TenantId = tenantId,
+                InvoiceId = invoiceId,
+                Amount = 1000.00m,
+                PaymentDate = DateTime.UtcNow,
+                PaymentMethod = SriPaymentMethod.Cash,
+                Status = PaymentStatus.Completed
+            });
 
         var command = new CreatePaymentCommand
         {

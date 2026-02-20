@@ -100,6 +100,9 @@ public class CreatePaymentCommandHandler : IRequestHandler<CreatePaymentCommand,
                         invoice.InvoiceNumber,
                         request.Amount);
                 }
+
+                // Update the invoice
+                await _unitOfWork.Invoices.UpdateAsync(invoice, cancellationToken);
             }
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);

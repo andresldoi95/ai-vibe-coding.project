@@ -44,6 +44,11 @@ public class DeleteTaxRateCommandHandler : IRequestHandler<DeleteTaxRateCommand,
 
             return Result<bool>.Success(true);
         }
+        catch (UnauthorizedAccessException ex)
+        {
+            _logger.LogWarning(ex, "Unauthorized access while deleting tax rate {TaxRateId}", request.Id);
+            return Result<bool>.Failure(ex.Message);
+        }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error deleting tax rate {TaxRateId}", request.Id);

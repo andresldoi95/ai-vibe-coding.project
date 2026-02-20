@@ -16,7 +16,7 @@ public class UpdateEmissionPointCommandValidator : AbstractValidator<UpdateEmiss
             .NotEmpty().WithMessage("Emission point code is required")
             .Length(3).WithMessage("Emission point code must be exactly 3 digits")
             .Matches("^[0-9]{3}$").WithMessage("Emission point code must be exactly 3 digits (001-999)")
-            .Must(code => int.Parse(code) >= 1 && int.Parse(code) <= 999)
+            .Must(code => string.IsNullOrWhiteSpace(code) || !int.TryParse(code, out var number) || (number >= 1 && number <= 999))
             .WithMessage("Emission point code must be between 001 and 999");
 
         RuleFor(x => x.Name)

@@ -72,6 +72,11 @@ public class CreateTaxRateCommandHandler : IRequestHandler<CreateTaxRateCommand,
 
             return Result<TaxRateDto>.Success(taxRateDto);
         }
+        catch (UnauthorizedAccessException ex)
+        {
+            _logger.LogWarning(ex, "Unauthorized access while creating tax rate");
+            return Result<TaxRateDto>.Failure(ex.Message);
+        }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error creating tax rate");
