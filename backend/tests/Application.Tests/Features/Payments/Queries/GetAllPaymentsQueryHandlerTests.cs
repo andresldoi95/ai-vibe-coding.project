@@ -193,7 +193,7 @@ public class GetAllPaymentsQueryHandlerTests
         // Assert
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().HaveCount(1);
-        
+
         var paymentDto = result.Value![0];
         paymentDto.Id.Should().Be(payment.Id);
         paymentDto.Amount.Should().Be(2500.00m);
