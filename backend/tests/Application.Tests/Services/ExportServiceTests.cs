@@ -151,7 +151,7 @@ public class ExportServiceTests
         var worksheet = workbook.Worksheet(1);
 
         worksheet.Name.Should().Be("Products");
-        
+
         // Should have headers
         worksheet.Cell(1, 1).Value.ToString().Should().Be("Id");
         worksheet.Cell(1, 2).Value.ToString().Should().Be("Name");
@@ -184,7 +184,7 @@ public class ExportServiceTests
 
         // Assert
         result.Should().NotBeNull();
-        
+
         using var stream = new MemoryStream(result);
         using var workbook = new XLWorkbook(stream);
         var worksheet = workbook.Worksheet(1);

@@ -407,7 +407,7 @@ public class RucValidatorTests
 
         // Act
         var result = RucValidator.IsValid(ruc);
-        
+
         // Assert
         result.Should().BeTrue("because it uses a valid cédula with correct suffix");
     }

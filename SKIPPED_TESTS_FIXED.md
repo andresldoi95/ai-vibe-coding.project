@@ -9,7 +9,7 @@ Fixed all 10 skipped tests in the Domain validator test suite by generating prop
 - **Domain Tests**: 414 total (404 passing, 10 skipped)
 - **Application Tests**: 806 total (806 passing, 0 skipped)
 
-### After  
+### After
 - **Domain Tests**: 421 total (421 passing, **0 skipped**) ✅
 - **Application Tests**: 806 total (806 passing, 0 skipped) ✅
 
@@ -84,7 +84,7 @@ Fixed all 10 skipped tests in the Domain validator test suite by generating prop
   - D: Digits
   - C: Check digit (Modulo 10 algorithm)
 - **Third digit** (position 2): Must be 0-5 for natural persons
-- **Check digit algorithm**: 
+- **Check digit algorithm**:
   - Odd positions (0,2,4,6,8): Multiply by 2, subtract 9 if > 9
   - Even positions (1,3,5,7): Multiply by 1
   - Check digit = (10 - (sum % 10)) % 10
@@ -98,7 +98,7 @@ Fixed all 10 skipped tests in the Domain validator test suite by generating prop
 #### Public Company (third digit = 6)
 - **Check digit position**: Position 8 (9th digit)
 - **Algorithm**: Modulo 11 with coefficients [3,2,7,6,5,4,3,2]
-- **Special cases**: 
+- **Special cases**:
   - If remainder = 0 → check digit = 0
   - If remainder = 10 → check digit = 1
 
@@ -118,5 +118,5 @@ Fixed all 10 skipped tests in the Domain validator test suite by generating prop
 - ✅ Better test data quality with properly calculated check digits
 - ✅ No regressions in Application tests
 
-## Date  
+## Date
 February 20, 2026
