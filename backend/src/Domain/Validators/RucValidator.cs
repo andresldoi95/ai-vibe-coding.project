@@ -158,6 +158,10 @@ public static class RucValidator
         if (!ruc.All(char.IsDigit))
             return "RUC must contain only digits";
 
+        // Return empty string if valid
+        if (IsValid(ruc))
+            return string.Empty;
+
         return "Invalid RUC check digit";
     }
 }

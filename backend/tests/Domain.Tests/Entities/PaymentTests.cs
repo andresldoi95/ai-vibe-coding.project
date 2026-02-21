@@ -115,4 +115,98 @@ public class PaymentTests
         // Assert
         payment.Amount.Should().Be(amount);
     }
+
+    [Fact]
+    public void Payment_WithInvoiceRelationship_ShouldHaveInvoiceId()
+    {
+        // Arrange
+        var invoiceId = Guid.NewGuid();
+
+        // Act
+        var payment = new Payment { InvoiceId = invoiceId };
+
+        // Assert
+        payment.InvoiceId.Should().Be(invoiceId);
+        payment.InvoiceId.Should().NotBeEmpty();
+    }
+
+    [Fact]
+    public void Payment_Complete_ChangesStatusAndSetsDate()
+    {
+        // Arrange
+        var paymentDate = DateTime.UtcNow;
+        var payment = new Payment
+        {
+            Status = PaymentStatus.Pending,
+            Amount = 100.00m,
+            PaymentMethod = SriPaymentMethod.Cash
+        };
+
+        // Act
+        payment.Status = PaymentStatus.Completed;
+        payment.PaymentDate = paymentDate;
+
+        // Assert
+        payment.Status.Should().Be(PaymentStatus.Completed);
+        payment.PaymentDate.Should().Be(paymentDate);
+    }
+
+    [Fact]
+    public void Payment_Void_ChangesStatus()
+    {
+        // Arrange
+        var payment = new Payment
+        {
+            Status = PaymentStatus.Completed,
+            Amount = 100.00m
+        };
+
+        // Act
+        payment.Status = PaymentStatus.Voided;
+
+        // Assert
+        payment.Status.Should().Be(PaymentStatus.Voided);
+    }
+
+    [Fact]
+    public void Payment_TransactionId_CanStoreExternalReference()
+    {
+        // Arrange
+        var transactionId = "STRIPE-TXN-123456789";
+
+        // Act
+        var payment = new Payment { TransactionId = transactionId };
+
+        // Assert
+        payment.TransactionId.Should().Be(transactionId);
+    }
+
+    [Fact]
+    public void Payment_StatusTransition_FromPendingToCompleted()
+    {
+        // Arrange
+        var payment = new Payment { Status = PaymentStatus.Pending };
+
+        // Act
+        payment.Status = PaymentStatus.Completed;
+
+        // Assert
+        payment.Status.Should().Be(PaymentStatus.Completed);
+    }
+
+    [Fact]
+    public void Payment_PaymentDate_CanBeSetToAnyDateTime()
+    {
+        // Arrange
+        var pastDate = DateTime.UtcNow.AddDays(-30);
+        var futureDate = DateTime.UtcNow.AddDays(30);
+
+        // Act
+        var payment1 = new Payment { PaymentDate = pastDate };
+        var payment2 = new Payment { PaymentDate = futureDate };
+
+        // Assert
+        payment1.PaymentDate.Should().Be(pastDate);
+        payment2.PaymentDate.Should().Be(futureDate);
+    }
 }

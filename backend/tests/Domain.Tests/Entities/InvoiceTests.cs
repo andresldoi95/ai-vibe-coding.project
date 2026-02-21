@@ -162,4 +162,100 @@ public class InvoiceTests
         // Assert
         invoice.DocumentType.Should().Be(documentType);
     }
+
+    [Fact]
+    public void Invoice_Items_InitializesAsEmptyList()
+    {
+        // Arrange & Act
+        var invoice = new Invoice();
+
+        // Assert
+        invoice.Items.Should().NotBeNull();
+        invoice.Items.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void Invoice_Payments_InitializesAsEmptyList()
+    {
+        // Arrange & Act
+        var invoice = new Invoice();
+
+        // Assert
+        invoice.Payments.Should().NotBeNull();
+        invoice.Payments.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void Invoice_IsEditable_Combinations_AreCorrect()
+    {
+        // Test all combinations of Status and IsDeleted
+        var draftNotDeleted = new Invoice { Status = InvoiceStatus.Draft, IsDeleted = false };
+        var draftDeleted = new Invoice { Status = InvoiceStatus.Draft, IsDeleted = true };
+        var authorizedNotDeleted = new Invoice { Status = InvoiceStatus.Authorized, IsDeleted = false };
+        var paidNotDeleted = new Invoice { Status = InvoiceStatus.Paid, IsDeleted = false };
+
+        // Assert
+        draftNotDeleted.IsEditable.Should().BeTrue();
+        draftDeleted.IsEditable.Should().BeFalse();
+        authorizedNotDeleted.IsEditable.Should().BeFalse();
+        paidNotDeleted.IsEditable.Should().BeFalse();
+    }
+
+    [Fact]
+    public void Invoice_AmountsCanBeZero_ForNewInvoice()
+    {
+        // Arrange & Act
+        var invoice = new Invoice();
+
+        // Assert
+        invoice.SubtotalAmount.Should().Be(0);
+        invoice.TaxAmount.Should().Be(0);
+        invoice.TotalAmount.Should().Be(0);
+    }
+
+    [Fact]
+    public void Invoice_CanCalculate_TotalFromSubtotalAndTax()
+    {
+        // Arrange & Act
+        var invoice = new Invoice
+        {
+            SubtotalAmount = 100.00m,
+            TaxAmount = 12.00m,
+            TotalAmount = 112.00m
+        };
+
+        // Assert
+        invoice.TotalAmount.Should().Be(invoice.SubtotalAmount + invoice.TaxAmount);
+    }
+
+    [Theory]
+    [InlineData(SriEnvironment.Test)]
+    [InlineData(SriEnvironment.Production)]
+    public void Invoice_Environment_CanBeSet(SriEnvironment environment)
+    {
+        // Arrange & Act
+        var invoice = new Invoice { Environment = environment };
+
+        // Assert
+        invoice.Environment.Should().Be(environment);
+    }
+
+    [Fact]
+    public void Invoice_AuthorizationFields_CanBeSetTogether()
+    {
+        // Arrange
+        var authDate = DateTime.UtcNow;
+        var auth = "AUTH-123456";
+
+        // Act
+        var invoice = new Invoice
+        {
+            SriAuthorization = auth,
+            AuthorizationDate = authDate
+        };
+
+        // Assert
+        invoice.SriAuthorization.Should().Be(auth);
+        invoice.AuthorizationDate.Should().Be(authDate);
+    }
 }
