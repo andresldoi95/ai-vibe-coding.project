@@ -89,9 +89,10 @@ public class AcceptInvitationCommandHandlerTests
             .Setup(r => r.GetByUserAndTenantAsync(userId, tenantId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((UserTenant?)null); // No existing UserTenant
 
+        var tenantList1 = new List<Tenant> { tenant };
         _tenantRepositoryMock
-            .Setup(r => r.GetUserTenantsAsync(userId))
-            .ReturnsAsync(new List<Tenant> { tenant });
+            .Setup(r => r.GetUserTenantsAsync(userId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(tenantList1);
 
         _authServiceMock
             .Setup(s => s.HashPassword("newPassword123"))
@@ -101,9 +102,10 @@ public class AcceptInvitationCommandHandlerTests
             .Setup(s => s.GenerateJwtToken(It.IsAny<User>(), It.IsAny<List<Guid>>()))
             .Returns("jwt-token");
 
+        var refreshToken1 = new RefreshToken { Token = "refresh-token" };
         _authServiceMock
             .Setup(s => s.GenerateRefreshToken(It.IsAny<string>()))
-            .Returns(new RefreshToken { Token = "refresh-token" });
+            .Returns(refreshToken1);
 
         var command = new AcceptInvitationCommand
         {
@@ -392,17 +394,19 @@ public class AcceptInvitationCommandHandlerTests
             .Setup(r => r.GetByUserAndTenantAsync(userId, tenantId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(existingUserTenant);
 
+        var tenantList2 = new List<Tenant> { tenant };
         _tenantRepositoryMock
-            .Setup(r => r.GetUserTenantsAsync(userId))
-            .ReturnsAsync(new List<Tenant> { tenant });
+            .Setup(r => r.GetUserTenantsAsync(userId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(tenantList2);
 
         _authServiceMock
             .Setup(s => s.GenerateJwtToken(It.IsAny<User>(), It.IsAny<List<Guid>>()))
             .Returns("jwt-token");
 
+        var refreshToken2 = new RefreshToken { Token = "refresh-token" };
         _authServiceMock
             .Setup(s => s.GenerateRefreshToken(It.IsAny<string>()))
-            .Returns(new RefreshToken { Token = "refresh-token" });
+            .Returns(refreshToken2);
 
         var command = new AcceptInvitationCommand
         {
@@ -474,17 +478,20 @@ public class AcceptInvitationCommandHandlerTests
             .Setup(r => r.GetByUserAndTenantAsync(userId, tenantId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((UserTenant?)null);
 
+        var tenantList3 = new List<Tenant> { tenant };
         _tenantRepositoryMock
-            .Setup(r => r.GetUserTenantsAsync(userId))
-            .ReturnsAsync(new List<Tenant> { tenant });
+            .Setup(r => r.GetUserTenantsAsync(userId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(tenantList3);
 
+        var tenantIdList = new List<Guid> { tenantId };
         _authServiceMock
-            .Setup(s => s.GenerateJwtToken(user, new List<Guid> { tenantId }))
+            .Setup(s => s.GenerateJwtToken(user, tenantIdList))
             .Returns("generated-jwt-token");
 
+        var refreshToken3 = new RefreshToken { Token = "generated-refresh-token" };
         _authServiceMock
             .Setup(s => s.GenerateRefreshToken(It.IsAny<string>()))
-            .Returns(new RefreshToken { Token = "generated-refresh-token" });
+            .Returns(refreshToken3);
 
         var command = new AcceptInvitationCommand
         {
