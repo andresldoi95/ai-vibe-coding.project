@@ -36,12 +36,12 @@ public class ResetPasswordCommandValidatorTests
     [InlineData("")]
     [InlineData(null)]
     [InlineData("   ")]
-    public void Validate_EmptyToken_ShouldFail(string token)
+    public void Validate_EmptyToken_ShouldFail(string? token)
     {
         // Arrange
         var command = new ResetPasswordCommand
         {
-            Token = token,
+            Token = token!,
             NewPassword = "NewSecurePass123!",
             ConfirmPassword = "NewSecurePass123!"
         };
@@ -58,14 +58,14 @@ public class ResetPasswordCommandValidatorTests
     [InlineData("")]
     [InlineData(null)]
     [InlineData("   ")]
-    public void Validate_EmptyNewPassword_ShouldFail(string password)
+    public void Validate_EmptyNewPassword_ShouldFail(string? password)
     {
         // Arrange
         var command = new ResetPasswordCommand
         {
             Token = "valid_reset_token_123",
-            NewPassword = password,
-            ConfirmPassword = password
+            NewPassword = password!,
+            ConfirmPassword = password!
         };
 
         // Act
@@ -185,14 +185,14 @@ public class ResetPasswordCommandValidatorTests
     [InlineData("")]
     [InlineData(null)]
     [InlineData("   ")]
-    public void Validate_EmptyConfirmPassword_ShouldFail(string confirmPassword)
+    public void Validate_EmptyConfirmPassword_ShouldFail(string? confirmPassword)
     {
         // Arrange
         var command = new ResetPasswordCommand
         {
             Token = "valid_reset_token_123",
             NewPassword = "NewSecurePass123!",
-            ConfirmPassword = confirmPassword
+            ConfirmPassword = confirmPassword!
         };
 
         // Act

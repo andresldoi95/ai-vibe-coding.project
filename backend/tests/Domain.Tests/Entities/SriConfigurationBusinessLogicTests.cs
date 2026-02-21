@@ -154,10 +154,10 @@ public class SriConfigurationBusinessLogicTests
     [InlineData(null, false)]             // Null
     [InlineData("   ", false)]            // Whitespace
     [InlineData("123-456-78901", false)]  // Contains hyphens
-    public void SriConfiguration_IsValidRuc_ReturnsFalseForInvalidFormats(string ruc, bool expected)
+    public void SriConfiguration_IsValidRuc_ReturnsFalseForInvalidFormats(string? ruc, bool expected)
     {
         // Arrange
-        var config = new SriConfiguration { CompanyRuc = ruc };
+        var config = new SriConfiguration { CompanyRuc = ruc! };
 
         // Act
         var result = config.IsValidRuc();

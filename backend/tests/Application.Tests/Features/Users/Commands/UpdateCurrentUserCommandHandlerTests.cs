@@ -175,7 +175,7 @@ public class UpdateCurrentUserCommandHandlerTests
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        result.Value.Id.Should().Be(userId);
+        result.Value!.Id.Should().Be(userId);
         result.Value.Email.Should().Be("user@example.com");
         result.Value.Name.Should().Be("Updated Name");
         result.Value.IsActive.Should().BeTrue();

@@ -177,7 +177,7 @@ public class GetUserByIdQueryHandlerTests
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        result.Value.Id.Should().Be(userId);
+        result.Value!.Id.Should().Be(userId);
         result.Value.IsActive.Should().BeFalse();
     }
 }

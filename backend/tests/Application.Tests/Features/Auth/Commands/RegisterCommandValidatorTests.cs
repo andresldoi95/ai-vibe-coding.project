@@ -38,12 +38,12 @@ public class RegisterCommandValidatorTests
     [InlineData("")]
     [InlineData(null)]
     [InlineData("   ")]
-    public void Validate_EmptyCompanyName_ShouldFail(string companyName)
+    public void Validate_EmptyCompanyName_ShouldFail(string? companyName)
     {
         // Arrange
         var command = new RegisterCommand
         {
-            CompanyName = companyName,
+            CompanyName = companyName!,
             Slug = "test-company",
             Email = "admin@test.com",
             Password = "SecurePass123",
@@ -83,13 +83,13 @@ public class RegisterCommandValidatorTests
     [InlineData("")]
     [InlineData(null)]
     [InlineData("   ")]
-    public void Validate_EmptySlug_ShouldFail(string slug)
+    public void Validate_EmptySlug_ShouldFail(string? slug)
     {
         // Arrange
         var command = new RegisterCommand
         {
             CompanyName = "Test Company",
-            Slug = slug,
+            Slug = slug!,
             Email = "admin@test.com",
             Password = "SecurePass123",
             Name = "Admin User"
@@ -177,14 +177,14 @@ public class RegisterCommandValidatorTests
     [InlineData("")]
     [InlineData(null)]
     [InlineData("   ")]
-    public void Validate_EmptyEmail_ShouldFail(string email)
+    public void Validate_EmptyEmail_ShouldFail(string? email)
     {
         // Arrange
         var command = new RegisterCommand
         {
             CompanyName = "Test Company",
             Slug = "test-company",
-            Email = email,
+            Email = email!,
             Password = "SecurePass123",
             Name = "Admin User"
         };
@@ -246,7 +246,7 @@ public class RegisterCommandValidatorTests
     [InlineData("")]
     [InlineData(null)]
     [InlineData("   ")]
-    public void Validate_EmptyPassword_ShouldFail(string password)
+    public void Validate_EmptyPassword_ShouldFail(string? password)
     {
         // Arrange
         var command = new RegisterCommand
@@ -254,7 +254,7 @@ public class RegisterCommandValidatorTests
             CompanyName = "Test Company",
             Slug = "test-company",
             Email = "admin@test.com",
-            Password = password,
+            Password = password!,
             Name = "Admin User"
         };
 
@@ -362,7 +362,7 @@ public class RegisterCommandValidatorTests
     [InlineData("")]
     [InlineData(null)]
     [InlineData("   ")]
-    public void Validate_EmptyName_ShouldFail(string name)
+    public void Validate_EmptyName_ShouldFail(string? name)
     {
         // Arrange
         var command = new RegisterCommand
@@ -371,7 +371,7 @@ public class RegisterCommandValidatorTests
             Slug = "test-company",
             Email = "admin@test.com",
             Password = "SecurePass123",
-            Name = name
+            Name = name!
         };
 
         // Act

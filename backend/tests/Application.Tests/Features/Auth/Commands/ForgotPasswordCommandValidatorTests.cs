@@ -34,12 +34,12 @@ public class ForgotPasswordCommandValidatorTests
     [InlineData("")]
     [InlineData(null)]
     [InlineData("   ")]
-    public void Validate_EmptyEmail_ShouldFail(string email)
+    public void Validate_EmptyEmail_ShouldFail(string? email)
     {
         // Arrange
         var command = new ForgotPasswordCommand
         {
-            Email = email
+            Email = email!
         };
 
         // Act

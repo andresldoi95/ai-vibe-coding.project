@@ -36,10 +36,10 @@ public class EstablishmentBusinessLogicTests
     [InlineData("   ", false)]  // Invalid - whitespace
     [InlineData("-01", false)]  // Invalid - negative sign
     [InlineData("1.0", false)]  // Invalid - decimal
-    public void Establishment_IsValidCode_ReturnsFalseForInvalidCodes(string code, bool expected)
+    public void Establishment_IsValidCode_ReturnsFalseForInvalidCodes(string? code, bool expected)
     {
         // Arrange
-        var establishment = new Establishment { EstablishmentCode = code };
+        var establishment = new Establishment { EstablishmentCode = code! };
 
         // Act
         var result = establishment.IsValidCode();

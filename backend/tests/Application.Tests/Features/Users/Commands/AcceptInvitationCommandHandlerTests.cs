@@ -498,7 +498,7 @@ public class AcceptInvitationCommandHandlerTests
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        result.Value.AccessToken.Should().Be("generated-jwt-token");
+        result.Value!.AccessToken.Should().Be("generated-jwt-token");
         result.Value.RefreshToken.Should().Be("generated-refresh-token");
         result.Value.User.Id.Should().Be(userId);
         result.Value.User.Email.Should().Be("user@example.com");

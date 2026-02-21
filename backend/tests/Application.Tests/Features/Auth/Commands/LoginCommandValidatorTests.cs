@@ -35,12 +35,12 @@ public class LoginCommandValidatorTests
     [InlineData("")]
     [InlineData(null)]
     [InlineData("   ")]
-    public void Validate_EmptyEmail_ShouldFail(string email)
+    public void Validate_EmptyEmail_ShouldFail(string? email)
     {
         // Arrange
         var command = new LoginCommand
         {
-            Email = email,
+            Email = email!,
             Password = "SecurePassword123"
         };
 
@@ -78,13 +78,13 @@ public class LoginCommandValidatorTests
     [InlineData("")]
     [InlineData(null)]
     [InlineData("   ")]
-    public void Validate_EmptyPassword_ShouldFail(string password)
+    public void Validate_EmptyPassword_ShouldFail(string? password)
     {
         // Arrange
         var command = new LoginCommand
         {
             Email = "user@example.com",
-            Password = password
+            Password = password!
         };
 
         // Act

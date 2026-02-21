@@ -483,7 +483,7 @@ public class AccessKeyTests
     public void IsValid_NullOrEmpty_ReturnsFalse(string? value)
     {
         // Arrange & Act
-        var result = AccessKey.IsValid(value);
+        var result = AccessKey.IsValid(value!);
 
         // Assert
         result.Should().BeFalse();

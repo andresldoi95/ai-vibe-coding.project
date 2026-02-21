@@ -46,12 +46,12 @@ public class CreateWarehouseCommandValidatorTests
     [InlineData("")]
     [InlineData(null)]
     [InlineData("   ")]
-    public void Validate_EmptyName_ShouldFail(string name)
+    public void Validate_EmptyName_ShouldFail(string? name)
     {
         // Arrange
         var command = new CreateWarehouseCommand
         {
-            Name = name,
+            Name = name!,
             Code = "WH-001",
             StreetAddress = "123 Storage St",
             City = "New York",
@@ -93,13 +93,13 @@ public class CreateWarehouseCommandValidatorTests
     [InlineData("")]
     [InlineData(null)]
     [InlineData("   ")]
-    public void Validate_EmptyCode_ShouldFail(string code)
+    public void Validate_EmptyCode_ShouldFail(string? code)
     {
         // Arrange
         var command = new CreateWarehouseCommand
         {
             Name = "Main Warehouse",
-            Code = code,
+            Code = code!,
             StreetAddress = "123 Storage St",
             City = "New York",
             PostalCode = "10001",
@@ -213,14 +213,14 @@ public class CreateWarehouseCommandValidatorTests
     [Theory]
     [InlineData("")]
     [InlineData(null)]
-    public void Validate_EmptyStreetAddress_ShouldFail(string streetAddress)
+    public void Validate_EmptyStreetAddress_ShouldFail(string? streetAddress)
     {
         // Arrange
         var command = new CreateWarehouseCommand
         {
             Name = "Main Warehouse",
             Code = "WH-001",
-            StreetAddress = streetAddress,
+            StreetAddress = streetAddress!,
             City = "New York",
             PostalCode = "10001",
             CountryId = Guid.NewGuid()
@@ -237,7 +237,7 @@ public class CreateWarehouseCommandValidatorTests
     [Theory]
     [InlineData("")]
     [InlineData(null)]
-    public void Validate_EmptyCity_ShouldFail(string city)
+    public void Validate_EmptyCity_ShouldFail(string? city)
     {
         // Arrange
         var command = new CreateWarehouseCommand
@@ -245,7 +245,7 @@ public class CreateWarehouseCommandValidatorTests
             Name = "Main Warehouse",
             Code = "WH-001",
             StreetAddress = "123 Storage St",
-            City = city,
+            City = city!,
             PostalCode = "10001",
             CountryId = Guid.NewGuid()
         };
@@ -261,7 +261,7 @@ public class CreateWarehouseCommandValidatorTests
     [Theory]
     [InlineData("")]
     [InlineData(null)]
-    public void Validate_EmptyPostalCode_ShouldFail(string postalCode)
+    public void Validate_EmptyPostalCode_ShouldFail(string? postalCode)
     {
         // Arrange
         var command = new CreateWarehouseCommand
@@ -270,7 +270,7 @@ public class CreateWarehouseCommandValidatorTests
             Code = "WH-001",
             StreetAddress = "123 Storage St",
             City = "New York",
-            PostalCode = postalCode,
+            PostalCode = postalCode!,
             CountryId = Guid.NewGuid()
         };
 

@@ -34,10 +34,10 @@ public class EmissionPointBusinessLogicTests
     [InlineData(null, false)]   // Null
     [InlineData("   ", false)]  // Whitespace
     [InlineData("000", false)]  // Zero (not in range 1-999)
-    public void EmissionPoint_IsValidCode_ReturnsFalseForInvalidCodes(string code, bool expected)
+    public void EmissionPoint_IsValidCode_ReturnsFalseForInvalidCodes(string? code, bool expected)
     {
         // Arrange
-        var emissionPoint = new EmissionPoint { EmissionPointCode = code };
+        var emissionPoint = new EmissionPoint { EmissionPointCode = code! };
 
         // Act
         var result = emissionPoint.IsValidCode();
