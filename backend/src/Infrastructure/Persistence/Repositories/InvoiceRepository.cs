@@ -55,4 +55,14 @@ public class InvoiceRepository : Repository<Invoice>, IInvoiceRepository
                 i => i.Id == id && i.TenantId == tenantId && !i.IsDeleted,
                 cancellationToken);
     }
+
+    public async Task<List<Invoice>> GetAllByStatusAsync(InvoiceStatus status, CancellationToken cancellationToken = default)
+    {
+        // Cross-tenant query for background jobs - no tenant filter
+        return await _dbSet
+            .Include(i => i.Customer)
+            .Where(i => i.Status == status && !i.IsDeleted)
+            .OrderByDescending(i => i.IssueDate)
+            .ToListAsync(cancellationToken);
+    }
 }

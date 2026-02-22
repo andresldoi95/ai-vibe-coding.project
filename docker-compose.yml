@@ -41,6 +41,8 @@ services:
       - Email__FromEmail=noreply@saas.local
       - Email__FromName=SaaS Platform
       - Email__EnableSsl=false
+    volumes:
+      - ./storage:/app/storage
     depends_on:
       db:
         condition: service_healthy

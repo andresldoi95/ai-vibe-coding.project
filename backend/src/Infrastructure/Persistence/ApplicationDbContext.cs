@@ -44,6 +44,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<Establishment> Establishments => Set<Establishment>();
     public DbSet<EmissionPoint> EmissionPoints => Set<EmissionPoint>();
     public DbSet<SriConfiguration> SriConfigurations => Set<SriConfiguration>();
+    public DbSet<SriErrorLog> SriErrorLogs => Set<SriErrorLog>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

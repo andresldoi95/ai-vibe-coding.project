@@ -1,0 +1,120 @@
+<factura id="comprobante" version="1.1.0">
+  <infoTributaria>
+    <ambiente>1</ambiente>
+    <tipoEmision>1</tipoEmision>
+    <razonSocial>Andres Leon</razonSocial>
+    <nombreComercial>Andres Leon</nombreComercial>
+    <ruc>0929866168001</ruc>
+    <claveAcceso>2712202501092986616800110010020000000024240519017</claveAcceso>
+    <codDoc>01</codDoc>
+    <estab>001</estab>
+    <ptoEmi>002</ptoEmi>
+    <secuencial>000000002</secuencial>
+    <dirMatriz>Av. Vernaza y Calle Guayaquil</dirMatriz>
+  </infoTributaria>
+  <infoFactura>
+    <fechaEmision>27/12/2025</fechaEmision>
+    <dirEstablecimiento>Av. República 345-678, Quito</dirEstablecimiento>
+    <contribuyenteEspecial />
+    <obligadoContabilidad>NO</obligadoContabilidad>
+    <tipoIdentificacionComprador>05</tipoIdentificacionComprador>
+    <razonSocialComprador>Global Enterprises LLC SF</razonSocialComprador>
+    <identificacionComprador>1712345678</identificacionComprador>
+    <totalSinImpuestos>2449.88</totalSinImpuestos>
+    <totalDescuento>0.00</totalDescuento>
+    <totalConImpuestos>
+      <totalImpuesto>
+        <codigo>2</codigo>
+        <codigoPorcentaje>0</codigoPorcentaje>
+        <baseImponible>2449.88</baseImponible>
+        <valor>367.49</valor>
+      </totalImpuesto>
+    </totalConImpuestos>
+    <propina>0.00</propina>
+    <importeTotal>2817.36</importeTotal>
+    <moneda>DOLAR</moneda>
+    <pagos>
+      <pago>
+        <formaPago>01</formaPago>
+        <total>2817.36</total>
+        <plazo>0</plazo>
+        <unidadTiempo>dias</unidadTiempo>
+      </pago>
+    </pagos>
+  </infoFactura>
+  <detalles>
+    <detalle>
+      <codigoPrincipal>PROD-TECHSTARTUP-002</codigoPrincipal>
+      <descripcion>Ergonomic wireless mouse with precision scrolling and customizable buttons</descripcion>
+      <cantidad>6.000000</cantidad>
+      <precioUnitario>99.990000</precioUnitario>
+      <descuento>0.00</descuento>
+      <precioTotalSinImpuesto>599.94</precioTotalSinImpuesto>
+      <impuestos>
+        <impuesto>
+          <codigo>2</codigo>
+          <codigoPorcentaje>0</codigoPorcentaje>
+          <tarifa>0.15</tarifa>
+          <baseImponible>599.94</baseImponible>
+          <valor>89.99</valor>
+        </impuesto>
+      </impuestos>
+    </detalle>
+    <detalle>
+      <codigoPrincipal>PROD-TECHSTARTUP-002</codigoPrincipal>
+      <descripcion>Ergonomic wireless mouse with precision scrolling and customizable buttons</descripcion>
+      <cantidad>2.000000</cantidad>
+      <precioUnitario>99.990000</precioUnitario>
+      <descuento>0.00</descuento>
+      <precioTotalSinImpuesto>199.98</precioTotalSinImpuesto>
+      <impuestos>
+        <impuesto>
+          <codigo>2</codigo>
+          <codigoPorcentaje>0</codigoPorcentaje>
+          <tarifa>0.15</tarifa>
+          <baseImponible>199.98</baseImponible>
+          <valor>30.00</valor>
+        </impuesto>
+      </impuestos>
+    </detalle>
+    <detalle>
+      <codigoPrincipal>PROD-TECHSTARTUP-005</codigoPrincipal>
+      <descripcion>7-in-1 USB-C hub with HDMI, ethernet, USB 3.0, and SD card reader</descripcion>
+      <cantidad>3.000000</cantidad>
+      <precioUnitario>49.990000</precioUnitario>
+      <descuento>0.00</descuento>
+      <precioTotalSinImpuesto>149.97</precioTotalSinImpuesto>
+      <impuestos>
+        <impuesto>
+          <codigo>2</codigo>
+          <codigoPorcentaje>0</codigoPorcentaje>
+          <tarifa>0.15</tarifa>
+          <baseImponible>149.97</baseImponible>
+          <valor>22.50</valor>
+        </impuesto>
+      </impuestos>
+    </detalle>
+    <detalle>
+      <codigoPrincipal>PROD-TECHSTARTUP-001</codigoPrincipal>
+      <descripcion>High-performance laptop with 15.6" display, Intel i7, 16GB RAM, 512GB SSD</descripcion>
+      <cantidad>1.000000</cantidad>
+      <precioUnitario>1499.990000</precioUnitario>
+      <descuento>0.00</descuento>
+      <precioTotalSinImpuesto>1499.99</precioTotalSinImpuesto>
+      <impuestos>
+        <impuesto>
+          <codigo>2</codigo>
+          <codigoPorcentaje>0</codigoPorcentaje>
+          <tarifa>0.15</tarifa>
+          <baseImponible>1499.99</baseImponible>
+          <valor>225.00</valor>
+        </impuesto>
+      </impuestos>
+    </detalle>
+  </detalles>
+  <infoAdicional>
+    <campoAdicional nombre="Email">procurement@globalent-tech-startup.example.com</campoAdicional>
+    <campoAdicional nombre="Telefono">+1 (555) 345-6789</campoAdicional>
+    <campoAdicional nombre="Observaciones">Factura de prueba #2 - Draft</campoAdicional>
+  </infoAdicional>
+</factura>

@@ -14,8 +14,8 @@ public interface IInvoiceXmlService
     /// <param name="sriConfiguration">SRI configuration for the company</param>
     /// <param name="establishment">Establishment details</param>
     /// <param name="emissionPoint">Emission point details</param>
-    /// <returns>Path to the generated XML file</returns>
-    Task<string> GenerateInvoiceXmlAsync(
+    /// <returns>Tuple with the file path and access key</returns>
+    Task<(string FilePath, string AccessKey)> GenerateInvoiceXmlAsync(
         Invoice invoice,
         SriConfiguration sriConfiguration,
         Establishment establishment,

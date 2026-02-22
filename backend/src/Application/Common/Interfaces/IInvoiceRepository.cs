@@ -9,4 +9,7 @@ public interface IInvoiceRepository : IRepository<Invoice>
     Task<List<Invoice>> GetByCustomerAsync(Guid customerId, Guid tenantId, CancellationToken cancellationToken = default);
     Task<List<Invoice>> GetByStatusAsync(InvoiceStatus status, Guid tenantId, CancellationToken cancellationToken = default);
     Task<Invoice?> GetWithItemsAsync(Guid id, Guid tenantId, CancellationToken cancellationToken = default);
+
+    // Background job methods (cross-tenant)
+    Task<List<Invoice>> GetAllByStatusAsync(InvoiceStatus status, CancellationToken cancellationToken = default);
 }

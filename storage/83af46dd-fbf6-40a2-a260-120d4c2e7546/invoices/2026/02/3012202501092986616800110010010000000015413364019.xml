@@ -1,0 +1,102 @@
+<factura id="comprobante" version="1.1.0">
+  <infoTributaria>
+    <ambiente>1</ambiente>
+    <tipoEmision>1</tipoEmision>
+    <razonSocial>Andres Leon</razonSocial>
+    <nombreComercial>Andres Leon</nombreComercial>
+    <ruc>0929866168001</ruc>
+    <claveAcceso>3012202501092986616800110010010000000015413364019</claveAcceso>
+    <codDoc>01</codDoc>
+    <estab>001</estab>
+    <ptoEmi>001</ptoEmi>
+    <secuencial>000000001</secuencial>
+    <dirMatriz>Av. Vernaza y Calle Guayaquil</dirMatriz>
+  </infoTributaria>
+  <infoFactura>
+    <fechaEmision>30/12/2025</fechaEmision>
+    <dirEstablecimiento>Av. República 345-678, Quito</dirEstablecimiento>
+    <obligadoContabilidad>NO</obligadoContabilidad>
+    <tipoIdentificacionComprador>04</tipoIdentificacionComprador>
+    <razonSocialComprador>Acme Corporation SF</razonSocialComprador>
+    <identificacionComprador>1790123456001</identificacionComprador>
+    <totalSinImpuestos>3139.82</totalSinImpuestos>
+    <totalDescuento>0.00</totalDescuento>
+    <totalConImpuestos>
+      <totalImpuesto>
+        <codigo>2</codigo>
+        <codigoPorcentaje>0</codigoPorcentaje>
+        <baseImponible>3139.82</baseImponible>
+        <valor>470.98</valor>
+      </totalImpuesto>
+    </totalConImpuestos>
+    <propina>0.00</propina>
+    <importeTotal>3610.79</importeTotal>
+    <moneda>DOLAR</moneda>
+    <pagos>
+      <pago>
+        <formaPago>01</formaPago>
+        <total>3610.79</total>
+        <plazo>0</plazo>
+        <unidadTiempo>dias</unidadTiempo>
+      </pago>
+    </pagos>
+  </infoFactura>
+  <detalles>
+    <detalle>
+      <codigoPrincipal>PROD-TECHSTARTUP-003</codigoPrincipal>
+      <descripcion>27-inch 4K UHD IPS monitor with HDR support and USB-C connectivity</descripcion>
+      <cantidad>2.000000</cantidad>
+      <precioUnitario>449.990000</precioUnitario>
+      <descuento>0.00</descuento>
+      <precioTotalSinImpuesto>899.98</precioTotalSinImpuesto>
+      <impuestos>
+        <impuesto>
+          <codigo>2</codigo>
+          <codigoPorcentaje>0</codigoPorcentaje>
+          <tarifa>0.15</tarifa>
+          <baseImponible>899.98</baseImponible>
+          <valor>135.00</valor>
+        </impuesto>
+      </impuestos>
+    </detalle>
+    <detalle>
+      <codigoPrincipal>PROD-TECHSTARTUP-002</codigoPrincipal>
+      <descripcion>Ergonomic wireless mouse with precision scrolling and customizable buttons</descripcion>
+      <cantidad>8.000000</cantidad>
+      <precioUnitario>99.990000</precioUnitario>
+      <descuento>0.00</descuento>
+      <precioTotalSinImpuesto>799.92</precioTotalSinImpuesto>
+      <impuestos>
+        <impuesto>
+          <codigo>2</codigo>
+          <codigoPorcentaje>0</codigoPorcentaje>
+          <tarifa>0.15</tarifa>
+          <baseImponible>799.92</baseImponible>
+          <valor>119.99</valor>
+        </impuesto>
+      </impuestos>
+    </detalle>
+    <detalle>
+      <codigoPrincipal>PROD-TECHSTARTUP-004</codigoPrincipal>
+      <descripcion>Mechanical gaming keyboard with RGB backlighting and programmable macro keys</descripcion>
+      <cantidad>8.000000</cantidad>
+      <precioUnitario>179.990000</precioUnitario>
+      <descuento>0.00</descuento>
+      <precioTotalSinImpuesto>1439.92</precioTotalSinImpuesto>
+      <impuestos>
+        <impuesto>
+          <codigo>2</codigo>
+          <codigoPorcentaje>0</codigoPorcentaje>
+          <tarifa>0.15</tarifa>
+          <baseImponible>1439.92</baseImponible>
+          <valor>215.99</valor>
+        </impuesto>
+      </impuestos>
+    </detalle>
+  </detalles>
+  <infoAdicional>
+    <campoAdicional nombre="Email">contact@acme-tech-startup.example.com</campoAdicional>
+    <campoAdicional nombre="Telefono">+1 (555) 123-4567</campoAdicional>
+    <campoAdicional nombre="Observaciones">Factura de prueba #1 - Draft</campoAdicional>
+  </infoAdicional>
+</factura>

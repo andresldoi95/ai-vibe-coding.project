@@ -552,6 +552,9 @@ namespace SaaS.Infrastructure.Persistence.Migrations
                         .HasColumnType("integer")
                         .HasDefaultValue(1);
 
+                    b.Property<string>("RideFilePath")
+                        .HasColumnType("text");
+
                     b.Property<string>("SignedXmlFilePath")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
@@ -1117,6 +1120,80 @@ namespace SaaS.Infrastructure.Persistence.Migrations
                         .HasDatabaseName("IX_SriConfigurations_TenantId");
 
                     b.ToTable("SriConfigurations", (string)null);
+                });
+
+            modelBuilder.Entity("SaaS.Domain.Entities.SriErrorLog", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("AdditionalData")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ErrorCode")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("ErrorMessage")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<Guid>("InvoiceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("OccurredAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Operation")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<bool?>("RetrySucceeded")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("StackTrace")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("WasRetried")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InvoiceId");
+
+                    b.HasIndex("OccurredAt");
+
+                    b.HasIndex("Operation");
+
+                    b.HasIndex("TenantId", "OccurredAt");
+
+                    b.ToTable("SriErrorLogs", (string)null);
                 });
 
             modelBuilder.Entity("SaaS.Domain.Entities.StockMovement", b =>
@@ -1761,6 +1838,17 @@ namespace SaaS.Infrastructure.Persistence.Migrations
                     b.Navigation("Permission");
 
                     b.Navigation("Role");
+                });
+
+            modelBuilder.Entity("SaaS.Domain.Entities.SriErrorLog", b =>
+                {
+                    b.HasOne("SaaS.Domain.Entities.Invoice", "Invoice")
+                        .WithMany()
+                        .HasForeignKey("InvoiceId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Invoice");
                 });
 
             modelBuilder.Entity("SaaS.Domain.Entities.StockMovement", b =>

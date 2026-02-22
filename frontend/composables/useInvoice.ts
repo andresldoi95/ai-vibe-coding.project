@@ -70,6 +70,58 @@ export function useInvoice() {
     })
   }
 
+  // SRI Workflow Methods
+  async function generateXml(id: string): Promise<Invoice> {
+    const response = await apiFetch<ApiResponse<Invoice>>(`/invoices/${id}/generate-xml`, {
+      method: 'POST',
+    })
+    return response.data
+  }
+
+  async function signDocument(id: string): Promise<Invoice> {
+    const response = await apiFetch<ApiResponse<Invoice>>(`/invoices/${id}/sign`, {
+      method: 'POST',
+    })
+    return response.data
+  }
+
+  async function submitToSri(id: string): Promise<Invoice> {
+    const response = await apiFetch<ApiResponse<Invoice>>(`/invoices/${id}/submit-to-sri`, {
+      method: 'POST',
+    })
+    return response.data
+  }
+
+  async function checkAuthorization(id: string): Promise<Invoice> {
+    const response = await apiFetch<ApiResponse<Invoice>>(`/invoices/${id}/check-authorization`, {
+      method: 'GET',
+    })
+    return response.data
+  }
+
+  async function generateRide(id: string): Promise<Invoice> {
+    const response = await apiFetch<ApiResponse<Invoice>>(`/invoices/${id}/generate-ride`, {
+      method: 'POST',
+    })
+    return response.data
+  }
+
+  async function downloadXml(id: string): Promise<Blob> {
+    const response = await apiFetch(`/invoices/${id}/download-xml`, {
+      method: 'GET',
+      responseType: 'blob',
+    })
+    return response as unknown as Blob
+  }
+
+  async function downloadRide(id: string): Promise<Blob> {
+    const response = await apiFetch(`/invoices/${id}/download-ride`, {
+      method: 'GET',
+      responseType: 'blob',
+    })
+    return response as unknown as Blob
+  }
+
   return {
     getAllInvoices,
     getInvoiceById,
@@ -77,5 +129,13 @@ export function useInvoice() {
     updateInvoice,
     changeInvoiceStatus,
     deleteInvoice,
+    // SRI Methods
+    generateXml,
+    signDocument,
+    submitToSri,
+    checkAuthorization,
+    generateRide,
+    downloadXml,
+    downloadRide,
   }
 }

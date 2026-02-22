@@ -853,7 +853,42 @@
     "change_status_message": "Select the new status for this invoice:",
     "new_status": "New Status",
     "status_change_success": "Invoice status changed successfully",
-    "status_change_error": "Failed to change invoice status"
+    "status_change_error": "Failed to change invoice status",
+    "sri": {
+      "title": "SRI Electronic Invoicing",
+      "workflow_status": "Workflow Status",
+      "access_key": "Access Key",
+      "authorization_number": "Authorization Number",
+      "actions": {
+        "generate_xml": "Generate XML",
+        "sign_document": "Sign Document",
+        "submit_to_sri": "Submit to SRI",
+        "check_authorization": "Check Authorization",
+        "generate_ride": "Generate RIDE PDF",
+        "download_xml": "Download XML",
+        "download_ride": "Download RIDE"
+      },
+      "xml_generated": "XML generated successfully",
+      "xml_generation_error": "Failed to generate XML",
+      "document_signed": "Document signed successfully",
+      "sign_error": "Failed to sign document",
+      "submitted": "Submitted to SRI successfully",
+      "submit_error": "Failed to submit to SRI",
+      "authorized": "Invoice authorized by SRI",
+      "rejected": "Invoice rejected by SRI",
+      "pending_authorization": "Authorization is still pending",
+      "check_auth_error": "Failed to check authorization status",
+      "ride_generated": "RIDE PDF generated successfully",
+      "ride_generation_error": "Failed to generate RIDE PDF",
+      "xml_downloaded": "XML file downloaded",
+      "ride_downloaded": "RIDE PDF downloaded",
+      "download_error": "Failed to download file",
+      "info_draft": "Click 'Generate XML' to start the SRI electronic invoicing workflow. This will create the XML file required by Ecuador's tax authority.",
+      "info_pending_signature": "The XML has been generated. Click 'Sign Document' to digitally sign the invoice with your electronic certificate.",
+      "info_pending_authorization": "The document has been signed and submitted. Click 'Check Authorization' to verify the SRI authorization status. Authorization is usually processed within minutes.",
+      "info_authorized": "This invoice has been authorized by SRI. You can now download the RIDE PDF to deliver to your customer.",
+      "info_rejected": "This invoice was rejected by SRI. Please review the error details and create a corrected invoice."
+    }
   },
   "payments": {
     "title": "Payments",

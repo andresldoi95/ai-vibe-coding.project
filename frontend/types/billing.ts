@@ -66,6 +66,7 @@ export interface Invoice {
   paymentMethod: number
   xmlFilePath?: string
   signedXmlFilePath?: string
+  rideFilePath?: string
   environment: number
   sriAuthorization?: string // Ecuador SRI authorization number
   authorizationDate?: string // Ecuador SRI authorization date

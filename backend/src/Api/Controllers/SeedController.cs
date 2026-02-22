@@ -263,6 +263,11 @@ public class SeedController : ControllerBase
                 await _context.InvoiceItems.AddRangeAsync(invoiceItems);
                 await _context.SaveChangesAsync();
 
+                // Seed SRI Error Logs
+                var sriErrorLogs = CreateSriErrorLogsForInvoices(invoices, now);
+                await _context.SriErrorLogs.AddRangeAsync(sriErrorLogs);
+                await _context.SaveChangesAsync();
+
                 summaries.Add(new
                 {
                     tenant = new { id = tenant.Id, name = tenant.Name, slug = tenant.Slug },
@@ -276,7 +281,8 @@ public class SeedController : ControllerBase
                     stockMovements = stockMovements.Count,
                     inventoryRecords = inventoryLevels.Count,
                     invoices = invoices.Count,
-                    invoiceItems = invoiceItems.Count
+                    invoiceItems = invoiceItems.Count,
+                    sriErrorLogs = sriErrorLogs.Count
                 });
             }
 
@@ -399,12 +405,12 @@ public class SeedController : ControllerBase
         await _context.RolePermissions.AddRangeAsync(adminPermissions);
 
         // Manager: Full access to warehouses, products, customers, stock, establishments, emission_points
-        // Read/create/update/send/export for invoices, read/create/update/void/complete for payments, read/update for tax-rates, read for invoice-config, sri_configuration
+        // Read/create/update/send/export/manage for invoices, read/create/update/void/complete for payments, read/update for tax-rates, read for invoice-config, sri_configuration
         // Read-only access to roles
         var managerPermissions = allPermissions
             .Where(p =>
                 new[] { "warehouses", "products", "customers", "stock", "establishments", "emission_points" }.Contains(p.Resource) ||
-                (p.Resource == "invoices" && new[] { "read", "create", "update", "send", "export" }.Contains(p.Action)) ||
+                (p.Resource == "invoices" && new[] { "read", "create", "update", "send", "export", "manage" }.Contains(p.Action)) ||
                 (p.Resource == "payments" && new[] { "read", "create", "update", "void", "complete" }.Contains(p.Action)) ||
                 (p.Resource == "tax-rates" && new[] { "read", "create", "update" }.Contains(p.Action)) ||
                 (p.Resource == "invoice-config" && new[] { "read", "update" }.Contains(p.Action)) ||
@@ -1236,8 +1242,8 @@ public class SeedController : ControllerBase
         var invoices = new List<Invoice>();
         var random = new Random(tenantId.GetHashCode());
 
-        // Create 10 invoices with various statuses
-        for (int i = 0; i < 10; i++)
+        // Create 15 invoices with various SRI workflow statuses
+        for (int i = 0; i < 15; i++)
         {
             var customer = customers[random.Next(customers.Count)];
             var warehouse = warehouses[random.Next(warehouses.Count)];
@@ -1246,19 +1252,24 @@ public class SeedController : ControllerBase
             var issueDate = now.AddDays(-random.Next(1, 60));
             var dueDate = issueDate.AddDays(30);
 
-            // Determine status based on age
-            var daysOld = (now - issueDate).Days;
+            // Determine status to cover all SRI workflow states
             InvoiceStatus status;
             if (i < 2)
-                status = InvoiceStatus.Draft;
+                status = InvoiceStatus.Draft; // 2 invoices
             else if (i < 4)
-                status = InvoiceStatus.Authorized;
-            else if (i < 7)
-                status = InvoiceStatus.Sent;
+                status = InvoiceStatus.PendingSignature; // 2 invoices (XML generated, awaiting signature)
+            else if (i < 6)
+                status = InvoiceStatus.PendingAuthorization; // 2 invoices (signed, awaiting SRI)
             else if (i < 9)
-                status = InvoiceStatus.Paid;
+                status = InvoiceStatus.Authorized; // 3 invoices (approved by SRI)
+            else if (i < 10)
+                status = InvoiceStatus.Rejected; // 1 invoice (rejected by SRI)
+            else if (i < 12)
+                status = InvoiceStatus.Sent; // 2 invoices (sent to customer)
+            else if (i < 14)
+                status = InvoiceStatus.Paid; // 2 invoices
             else
-                status = InvoiceStatus.Overdue;
+                status = InvoiceStatus.Overdue; // 1 invoice
 
             var invoice = new Invoice
             {
@@ -1277,18 +1288,39 @@ public class SeedController : ControllerBase
                 SubtotalAmount = 0, // Will be calculated from items
                 TaxAmount = 0,
                 TotalAmount = 0,
-                Notes = $"Factura de prueba #{i + 1}",
+                Notes = $"Factura de prueba #{i + 1} - {status}",
                 CreatedAt = issueDate,
                 UpdatedAt = issueDate,
                 IsDeleted = false
             };
 
-            // Add authorization for non-draft invoices
-            if (status != InvoiceStatus.Draft)
+            // Set SRI workflow fields based on status
+            if (status >= InvoiceStatus.PendingSignature)
             {
+                // XML has been generated
+                invoice.XmlFilePath = $"invoices/{invoice.Id}/factura_{invoice.InvoiceNumber}.xml";
+            }
+
+            if (status >= InvoiceStatus.PendingAuthorization)
+            {
+                // Document has been signed
+                invoice.SignedXmlFilePath = $"invoices/{invoice.Id}/factura_{invoice.InvoiceNumber}_signed.xml";
                 invoice.AccessKey = $"1120{issueDate:ddMMyyyy}01{emissionPoint.Establishment.EstablishmentCode}{emissionPoint.EmissionPointCode}{(i + 1):D9}12345678{random.Next(10000000, 99999999)}";
+            }
+
+            if (status == InvoiceStatus.Authorized || status == InvoiceStatus.Sent || status == InvoiceStatus.Paid || status == InvoiceStatus.Overdue)
+            {
+                // Invoice has been authorized by SRI
                 invoice.SriAuthorization = invoice.AccessKey;
                 invoice.AuthorizationDate = issueDate.AddHours(2);
+                invoice.RideFilePath = $"invoices/{invoice.Id}/ride_{invoice.InvoiceNumber}.pdf";
+            }
+
+            if (status == InvoiceStatus.Rejected)
+            {
+                // Invoice was rejected by SRI (has AccessKey but no authorization)
+                invoice.AuthorizationDate = null;
+                invoice.RideFilePath = null;
             }
 
             // Set paid date for paid invoices
@@ -1358,6 +1390,102 @@ public class SeedController : ControllerBase
         }
 
         return items;
+    }
+
+    private List<SriErrorLog> CreateSriErrorLogsForInvoices(
+        List<Invoice> invoices,
+        DateTime now)
+    {
+        var errorLogs = new List<SriErrorLog>();
+        var random = new Random();
+
+        // Sample error scenarios for rejected invoices and failures
+        var sampleErrors = new[]
+        {
+            new { Operation = "GenerateXml", Code = "XML_001", Message = "Error al generar XML: Campo obligatorio 'RUC del comprador' no puede estar vacío" },
+            new { Operation = "SignDocument", Code = "SIGN_001", Message = "Error al firmar documento: El certificado digital ha expirado" },
+            new { Operation = "SignDocument", Code = "SIGN_002", Message = "Error al firmar documento: La contraseña del certificado es incorrecta" },
+            new { Operation = "SubmitToSRI", Code = "SRI_001", Message = "Recepción SRI: CLAVE_ACCESO_INVALIDA - La clave de acceso no tiene el formato correcto" },
+            new { Operation = "SubmitToSRI", Code = "SRI_002", Message = "Recepción SRI: SECUENCIAL_REGISTRADO - El secuencial de la factura ya está registrado" },
+            new { Operation = "CheckAuthorization", Code = "SRI_003", Message = "Autorización SRI: DOCUMENTO_NO_AUTORIZADO - El documento no cumple con las validaciones del SRI" },
+            new { Operation = "CheckAuthorization", Code = "SRI_004", Message = "Autorización SRI: ESTABLECIMIENTO_INACTIVO - El establecimiento emisor no está activo en el RUC" },
+            new { Operation = "GenerateRIDE", Code = "RIDE_001", Message = "Error al generar RIDE: No se encontró la información de autorización del SRI" }
+        };
+
+        // Add error logs for rejected invoices
+        var rejectedInvoices = invoices.Where(i => i.Status == InvoiceStatus.Rejected).ToList();
+        foreach (var invoice in rejectedInvoices)
+        {
+            // Rejected invoices typically have errors in submission or authorization
+            var errorScenario = sampleErrors[random.Next(3, 7)]; // Use SRI-related errors
+
+            errorLogs.Add(new SriErrorLog
+            {
+                Id = Guid.NewGuid(),
+                InvoiceId = invoice.Id,
+                TenantId = invoice.TenantId,
+                Operation = errorScenario.Operation,
+                ErrorCode = errorScenario.Code,
+                ErrorMessage = errorScenario.Message,
+                StackTrace = GenerateSampleStackTrace(errorScenario.Operation),
+                OccurredAt = invoice.IssueDate.AddHours(1),
+                WasRetried = random.Next(0, 2) == 1,
+                RetrySucceeded = false,
+                CreatedAt = invoice.IssueDate.AddHours(1),
+                UpdatedAt = invoice.IssueDate.AddHours(1),
+                IsDeleted = false
+            });
+        }
+
+        // Add some error logs for successful invoices (transient errors that were later resolved)
+        var successfulInvoices = invoices
+            .Where(i => i.Status == InvoiceStatus.Authorized || i.Status == InvoiceStatus.Sent)
+            .Take(2)
+            .ToList();
+
+        foreach (var invoice in successfulInvoices)
+        {
+            // These had temporary failures but succeeded on retry
+            var errorScenario = sampleErrors[random.Next(0, 3)]; // Use generation/signing errors
+
+            errorLogs.Add(new SriErrorLog
+            {
+                Id = Guid.NewGuid(),
+                InvoiceId = invoice.Id,
+                TenantId = invoice.TenantId,
+                Operation = errorScenario.Operation,
+                ErrorCode = errorScenario.Code,
+                ErrorMessage = errorScenario.Message,
+                StackTrace = GenerateSampleStackTrace(errorScenario.Operation),
+                OccurredAt = invoice.IssueDate.AddMinutes(30),
+                WasRetried = true,
+                RetrySucceeded = true,
+                CreatedAt = invoice.IssueDate.AddMinutes(30),
+                UpdatedAt = invoice.IssueDate.AddHours(1),
+                IsDeleted = false
+            });
+        }
+
+        return errorLogs;
+    }
+
+    private string GenerateSampleStackTrace(string operation)
+    {
+        return operation switch
+        {
+            "GenerateXml" => @"   at SaaS.Application.Features.Invoices.Commands.GenerateInvoiceXml.GenerateInvoiceXmlCommandHandler.Handle(GenerateInvoiceXmlCommand request, CancellationToken cancellationToken) in C:\Projects\SaaS\src\Application\Features\Invoices\Commands\GenerateInvoiceXml\GenerateInvoiceXmlCommandHandler.cs:line 87
+   at MediatR.Pipeline.RequestExceptionProcessorBehavior`2.Handle(TRequest request, RequestHandlerDelegate`1 next, CancellationToken cancellationToken)",
+            "SignDocument" => @"   at SaaS.Infrastructure.ExternalServices.SriSoapClient.SignDocumentAsync(String xmlContent, String certificatePath, String password) in C:\Projects\SaaS\src\Infrastructure\ExternalServices\SriSoapClient.cs:line 145
+   at SaaS.Application.Features.Invoices.Commands.SignInvoice.SignInvoiceCommandHandler.Handle(SignInvoiceCommand request, CancellationToken cancellationToken) in C:\Projects\SaaS\src\Application\Features\Invoices\Commands\SignInvoice\SignInvoiceCommandHandler.cs:line 95",
+            "SubmitToSRI" => @"   at SaaS.Infrastructure.ExternalServices.SriSoapClient.SubmitDocumentAsync(String signedXml) in C:\Projects\SaaS\src\Infrastructure\ExternalServices\SriSoapClient.cs:line 178
+   at SaaS.Application.Features.Invoices.Commands.SubmitToSri.SubmitToSriCommandHandler.Handle(SubmitToSriCommand request, CancellationToken cancellationToken) in C:\Projects\SaaS\src\Application\Features\Invoices\Commands\SubmitToSri\SubmitToSriCommandHandler.cs:line 112",
+            "CheckAuthorization" => @"   at SaaS.Infrastructure.ExternalServices.SriSoapClient.CheckAuthorizationAsync(String accessKey) in C:\Projects\SaaS\src\Infrastructure\ExternalServices\SriSoapClient.cs:line 203
+   at SaaS.Application.Features.Invoices.Commands.CheckAuthorizationStatus.CheckAuthorizationStatusCommandHandler.Handle(CheckAuthorizationStatusCommand request, CancellationToken cancellationToken) in C:\Projects\SaaS\src\Application\Features\Invoices\Commands\CheckAuthorizationStatus\CheckAuthorizationStatusCommandHandler.cs:line 98",
+            "GenerateRIDE" => @"   at QuestPDF.Infrastructure.Document.GeneratePdf() in C:\Projects\QuestPDF\Infrastructure\Document.cs:line 234
+   at SaaS.Infrastructure.Services.RideGenerationService.GenerateRidePdfAsync(Invoice invoice) in C:\Projects\SaaS\src\Infrastructure\Services\RideGenerationService.cs:line 287
+   at SaaS.Application.Features.Invoices.Commands.GenerateRide.GenerateRideCommandHandler.Handle(GenerateRideCommand request, CancellationToken cancellationToken) in C:\Projects\SaaS\src\Application\Features\Invoices\Commands\GenerateRide\GenerateRideCommandHandler.cs:line 125",
+            _ => "   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)\n   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)"
+        };
     }
 
     #endregion

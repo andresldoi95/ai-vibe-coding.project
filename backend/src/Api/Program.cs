@@ -1,5 +1,7 @@
 using System.Text;
 using FluentValidation;
+using Hangfire;
+using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +12,7 @@ using SaaS.Api.Middleware;
 using SaaS.Application.Common.Behaviors;
 using SaaS.Application.Common.Interfaces;
 using SaaS.Application.Interfaces;
+using SaaS.Application.Jobs;
 using SaaS.Domain.Interfaces;
 using SaaS.Infrastructure.Persistence;
 using SaaS.Infrastructure.Persistence.Repositories;
@@ -75,6 +78,29 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// Configure Hangfire for background jobs
+builder.Services.AddHangfire(configuration => configuration
+    .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+    .UseSimpleAssemblyNameTypeSerializer()
+    .UseRecommendedSerializerSettings()
+    .UsePostgreSqlStorage(c =>
+        c.UseNpgsqlConnection(builder.Configuration.GetConnectionString("DefaultConnection")),
+        new PostgreSqlStorageOptions
+        {
+            QueuePollInterval = TimeSpan.FromSeconds(15),
+            InvisibilityTimeout = TimeSpan.FromMinutes(30),
+            SchemaName = "hangfire"
+        }));
+
+builder.Services.AddHangfireServer(options =>
+{
+    options.WorkerCount = 2; // Number of concurrent background jobs
+});
+
+// Register background jobs
+builder.Services.AddScoped<CheckPendingAuthorizationsJob>();
+builder.Services.AddScoped<GenerateRideForAuthorizedInvoicesJob>();
+
 // Configure JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("JWT");
 var secretKey = jwtSettings["Secret"] ?? throw new InvalidOperationException("JWT Secret not configured");
@@ -124,7 +150,7 @@ builder.Services.AddAuthorization(options =>
         "invoice-config.read", "invoice-config.update",
         // Invoices
         "invoices.read", "invoices.create", "invoices.update", "invoices.delete",
-        "invoices.send", "invoices.void", "invoices.export",
+        "invoices.send", "invoices.void", "invoices.export", "invoices.manage",
         // Payments
         "payments.read", "payments.create", "payments.update", "payments.void", "payments.complete", "payments.delete",
         // SRI - Establishments
@@ -184,6 +210,8 @@ builder.Services.AddScoped<IInvoiceNumberService, InvoiceNumberService>();
 builder.Services.AddScoped<ISriAccessKeyService, SriAccessKeyService>();
 builder.Services.AddScoped<IInvoiceXmlService, InvoiceXmlService>();
 builder.Services.AddScoped<IXmlSignatureService, XmlSignatureService>();
+builder.Services.AddScoped<ISriWebServiceClient, SriSoapClient>();
+builder.Services.AddScoped<IRideGenerationService, RideGenerationService>();
 
 // Configure Email Settings
 builder.Services.Configure<SaaS.Application.Common.Models.EmailSettings>(
@@ -215,6 +243,7 @@ builder.Services.AddScoped<ICountryRepository, CountryRepository>();
 builder.Services.AddScoped<IEstablishmentRepository, EstablishmentRepository>();
 builder.Services.AddScoped<IEmissionPointRepository, EmissionPointRepository>();
 builder.Services.AddScoped<ISriConfigurationRepository, SriConfigurationRepository>();
+builder.Services.AddScoped<ISriErrorLogRepository, SriErrorLogRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 var app = builder.Build();
@@ -231,6 +260,16 @@ if (app.Environment.IsDevelopment())
 app.UseSerilogRequestLogging();
 
 app.UseCors();
+
+// Configure Hangfire Dashboard
+app.UseHangfireDashboard("/hangfire", new DashboardOptions
+{
+    Authorization = new[] { new HangfireAuthorizationFilter() },
+    DashboardTitle = "SaaS Background Jobs"
+});
+
+// Start Hangfire server to process background jobs
+app.UseHangfireServer();
 
 app.UseAuthentication();
 app.UseAuthorization();
@@ -254,6 +293,19 @@ using (var scope = app.Services.CreateScope())
         Log.Error(ex, "An error occurred while migrating the database");
     }
 }
+
+// Configure Hangfire recurring jobs
+RecurringJob.AddOrUpdate<CheckPendingAuthorizationsJob>(
+    "check-pending-authorizations",
+    job => job.ExecuteAsync(),
+    "*/30 * * * * *"); // Every 30 seconds
+
+RecurringJob.AddOrUpdate<GenerateRideForAuthorizedInvoicesJob>(
+    "generate-ride-for-authorized-invoices",
+    job => job.ExecuteAsync(),
+    Cron.Minutely); // Every 60 seconds
+
+Log.Information("Hangfire recurring jobs configured successfully");
 
 Log.Information("Starting SaaS API");
 

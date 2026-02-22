@@ -26,6 +26,13 @@ public class InvoiceDto
     public string? EstablishmentCode { get; set; }
 
     // Ecuador SRI fields
+    public DocumentType DocumentType { get; set; }
+    public string? AccessKey { get; set; }
+    public SriPaymentMethod PaymentMethod { get; set; }
+    public string? XmlFilePath { get; set; }
+    public string? SignedXmlFilePath { get; set; }
+    public string? RideFilePath { get; set; }
+    public SriEnvironment Environment { get; set; }
     public string? SriAuthorization { get; set; }
     public DateTime? AuthorizationDate { get; set; }
     public DateTime? PaidDate { get; set; }

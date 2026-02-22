@@ -28,6 +28,7 @@ public interface IUnitOfWork : IDisposable
     IEstablishmentRepository Establishments { get; }
     IEmissionPointRepository EmissionPoints { get; }
     ISriConfigurationRepository SriConfigurations { get; }
+    ISriErrorLogRepository SriErrorLogs { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     Task BeginTransactionAsync(CancellationToken cancellationToken = default);

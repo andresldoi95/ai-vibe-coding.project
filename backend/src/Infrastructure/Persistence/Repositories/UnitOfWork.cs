@@ -33,6 +33,7 @@ public class UnitOfWork : IUnitOfWork
     public IEstablishmentRepository Establishments { get; }
     public IEmissionPointRepository EmissionPoints { get; }
     public ISriConfigurationRepository SriConfigurations { get; }
+    public ISriErrorLogRepository SriErrorLogs { get; }
 
     public UnitOfWork(
         ApplicationDbContext context,
@@ -55,7 +56,8 @@ public class UnitOfWork : IUnitOfWork
         ICountryRepository countryRepository,
         IEstablishmentRepository establishmentRepository,
         IEmissionPointRepository emissionPointRepository,
-        ISriConfigurationRepository sriConfigurationRepository)
+        ISriConfigurationRepository sriConfigurationRepository,
+        ISriErrorLogRepository sriErrorLogRepository)
     {
         _context = context;
         Users = userRepository;
@@ -78,6 +80,7 @@ public class UnitOfWork : IUnitOfWork
         Establishments = establishmentRepository;
         EmissionPoints = emissionPointRepository;
         SriConfigurations = sriConfigurationRepository;
+        SriErrorLogs = sriErrorLogRepository;
     }
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

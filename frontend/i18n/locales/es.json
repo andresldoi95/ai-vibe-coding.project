@@ -851,7 +851,42 @@
     "change_status_message": "Seleccione el nuevo estado para esta factura:",
     "new_status": "Nuevo Estado",
     "status_change_success": "Estado de factura cambiado exitosamente",
-    "status_change_error": "Error al cambiar estado de factura"
+    "status_change_error": "Error al cambiar estado de factura",
+    "sri": {
+      "title": "Facturación Electrónica SRI",
+      "workflow_status": "Estado del Proceso",
+      "access_key": "Clave de Acceso",
+      "authorization_number": "Número de Autorización",
+      "actions": {
+        "generate_xml": "Generar XML",
+        "sign_document": "Firmar Documento",
+        "submit_to_sri": "Enviar al SRI",
+        "check_authorization": "Verificar Autorización",
+        "generate_ride": "Generar RIDE PDF",
+        "download_xml": "Descargar XML",
+        "download_ride": "Descargar RIDE"
+      },
+      "xml_generated": "XML generado exitosamente",
+      "xml_generation_error": "Error al generar XML",
+      "document_signed": "Documento firmado exitosamente",
+      "sign_error": "Error al firmar documento",
+      "submitted": "Enviado al SRI exitosamente",
+      "submit_error": "Error al enviar al SRI",
+      "authorized": "Factura autorizada por el SRI",
+      "rejected": "Factura rechazada por el SRI",
+      "pending_authorization": "La autorización aún está pendiente",
+      "check_auth_error": "Error al verificar estado de autorización",
+      "ride_generated": "RIDE PDF generado exitosamente",
+      "ride_generation_error": "Error al generar RIDE PDF",
+      "xml_downloaded": "Archivo XML descargado",
+      "ride_downloaded": "RIDE PDF descargado",
+      "download_error": "Error al descargar archivo",
+      "info_draft": "Haga clic en 'Generar XML' para iniciar el proceso de facturación electrónica SRI. Esto creará el archivo XML requerido por el Servicio de Rentas Internas.",
+      "info_pending_signature": "El XML ha sido generado. Haga clic en 'Firmar Documento' para firmar digitalmente la factura con su certificado electrónico.",
+      "info_pending_authorization": "El documento ha sido firmado y enviado. Haga clic en 'Verificar Autorización' para comprobar el estado de autorización del SRI. La autorización generalmente se procesa en minutos.",
+      "info_authorized": "Esta factura ha sido autorizada por el SRI. Ahora puede descargar el RIDE PDF para entregar a su cliente.",
+      "info_rejected": "Esta factura fue rechazada por el SRI. Por favor revise los detalles del error y cree una factura corregida."
+    }
   },
   "payments": {
     "title": "Pagos",

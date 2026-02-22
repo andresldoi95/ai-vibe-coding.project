@@ -19,7 +19,7 @@ public class InvoiceXmlService : IInvoiceXmlService
         _accessKeyService = accessKeyService;
     }
 
-    public async Task<string> GenerateInvoiceXmlAsync(
+    public async Task<(string FilePath, string AccessKey)> GenerateInvoiceXmlAsync(
         Invoice invoice,
         SriConfiguration sriConfiguration,
         Establishment establishment,
@@ -60,7 +60,9 @@ public class InvoiceXmlService : IInvoiceXmlService
             new XElement("infoFactura",
                 new XElement("fechaEmision", invoice.IssueDate.ToString("dd/MM/yyyy")),
                 new XElement("dirEstablecimiento", establishment.Address),
-                new XElement("contribuyenteEspecial", sriConfiguration.AccountingRequired ? "001" : null),
+                string.IsNullOrWhiteSpace(sriConfiguration.SpecialTaxpayerNumber)
+                    ? null
+                    : new XElement("contribuyenteEspecial", sriConfiguration.SpecialTaxpayerNumber),
                 new XElement("obligadoContabilidad", sriConfiguration.AccountingRequired ? "SI" : "NO"),
                 new XElement("tipoIdentificacionComprador", ((int)invoice.Customer.IdentificationType).ToString("00")),
                 new XElement("razonSocialComprador", invoice.Customer.Name),
@@ -104,7 +106,7 @@ public class InvoiceXmlService : IInvoiceXmlService
         // Save XML to file
         var filePath = await SaveXmlToFileAsync(xml, invoice.TenantId.ToString(), accessKey.Value);
 
-        return filePath;
+        return (filePath, accessKey.Value);
     }
 
     private IEnumerable<XElement> GenerateTaxTotals(Invoice invoice)

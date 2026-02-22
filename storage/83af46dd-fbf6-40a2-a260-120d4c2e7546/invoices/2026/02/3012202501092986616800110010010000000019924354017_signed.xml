@@ -1,0 +1,103 @@
+<factura id="comprobante" version="1.1.0">
+  <infoTributaria>
+    <ambiente>1</ambiente>
+    <tipoEmision>1</tipoEmision>
+    <razonSocial>Andres Leon</razonSocial>
+    <nombreComercial>Andres Leon</nombreComercial>
+    <ruc>0929866168001</ruc>
+    <claveAcceso>3012202501092986616800110010010000000019924354017</claveAcceso>
+    <codDoc>01</codDoc>
+    <estab>001</estab>
+    <ptoEmi>001</ptoEmi>
+    <secuencial>000000001</secuencial>
+    <dirMatriz>Av. Vernaza y Calle Guayaquil</dirMatriz>
+  </infoTributaria>
+  <infoFactura>
+    <fechaEmision>30/12/2025</fechaEmision>
+    <dirEstablecimiento>Av. República 345-678, Quito</dirEstablecimiento>
+    <contribuyenteEspecial />
+    <obligadoContabilidad>NO</obligadoContabilidad>
+    <tipoIdentificacionComprador>04</tipoIdentificacionComprador>
+    <razonSocialComprador>Acme Corporation SF</razonSocialComprador>
+    <identificacionComprador>1790123456001</identificacionComprador>
+    <totalSinImpuestos>3139.82</totalSinImpuestos>
+    <totalDescuento>0.00</totalDescuento>
+    <totalConImpuestos>
+      <totalImpuesto>
+        <codigo>2</codigo>
+        <codigoPorcentaje>0</codigoPorcentaje>
+        <baseImponible>3139.82</baseImponible>
+        <valor>470.98</valor>
+      </totalImpuesto>
+    </totalConImpuestos>
+    <propina>0.00</propina>
+    <importeTotal>3610.79</importeTotal>
+    <moneda>DOLAR</moneda>
+    <pagos>
+      <pago>
+        <formaPago>01</formaPago>
+        <total>3610.79</total>
+        <plazo>0</plazo>
+        <unidadTiempo>dias</unidadTiempo>
+      </pago>
+    </pagos>
+  </infoFactura>
+  <detalles>
+    <detalle>
+      <codigoPrincipal>PROD-TECHSTARTUP-003</codigoPrincipal>
+      <descripcion>27-inch 4K UHD IPS monitor with HDR support and USB-C connectivity</descripcion>
+      <cantidad>2.000000</cantidad>
+      <precioUnitario>449.990000</precioUnitario>
+      <descuento>0.00</descuento>
+      <precioTotalSinImpuesto>899.98</precioTotalSinImpuesto>
+      <impuestos>
+        <impuesto>
+          <codigo>2</codigo>
+          <codigoPorcentaje>0</codigoPorcentaje>
+          <tarifa>0.15</tarifa>
+          <baseImponible>899.98</baseImponible>
+          <valor>135.00</valor>
+        </impuesto>
+      </impuestos>
+    </detalle>
+    <detalle>
+      <codigoPrincipal>PROD-TECHSTARTUP-002</codigoPrincipal>
+      <descripcion>Ergonomic wireless mouse with precision scrolling and customizable buttons</descripcion>
+      <cantidad>8.000000</cantidad>
+      <precioUnitario>99.990000</precioUnitario>
+      <descuento>0.00</descuento>
+      <precioTotalSinImpuesto>799.92</precioTotalSinImpuesto>
+      <impuestos>
+        <impuesto>
+          <codigo>2</codigo>
+          <codigoPorcentaje>0</codigoPorcentaje>
+          <tarifa>0.15</tarifa>
+          <baseImponible>799.92</baseImponible>
+          <valor>119.99</valor>
+        </impuesto>
+      </impuestos>
+    </detalle>
+    <detalle>
+      <codigoPrincipal>PROD-TECHSTARTUP-004</codigoPrincipal>
+      <descripcion>Mechanical gaming keyboard with RGB backlighting and programmable macro keys</descripcion>
+      <cantidad>8.000000</cantidad>
+      <precioUnitario>179.990000</precioUnitario>
+      <descuento>0.00</descuento>
+      <precioTotalSinImpuesto>1439.92</precioTotalSinImpuesto>
+      <impuestos>
+        <impuesto>
+          <codigo>2</codigo>
+          <codigoPorcentaje>0</codigoPorcentaje>
+          <tarifa>0.15</tarifa>
+          <baseImponible>1439.92</baseImponible>
+          <valor>215.99</valor>
+        </impuesto>
+      </impuestos>
+    </detalle>
+  </detalles>
+  <infoAdicional>
+    <campoAdicional nombre="Email">contact@acme-tech-startup.example.com</campoAdicional>
+    <campoAdicional nombre="Telefono">+1 (555) 123-4567</campoAdicional>
+    <campoAdicional nombre="Observaciones">Factura de prueba #1 - Draft</campoAdicional>
+  </infoAdicional>
+<Signature xmlns="http://www.w3.org/2000/09/xmldsig#"><SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315" /><SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256" /><Reference URI="#comprobante"><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature" /></Transforms><DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256" /><DigestValue>0dCAU3BmE0iYMwS27tbwWUedQhnMyRkm65gkLPwlvtc=</DigestValue></Reference></SignedInfo><SignatureValue>t4UeCtJAcuW6cCajdLlVlP+jZuOLxbhS0XYyZIzhuZWvUAejHY5EtK/XtG7MzUdW9CnVskVdhJZo8n343E+1LlxuxW692/rntCOhVQJVYAkzscTB/W4Il8OcglFALVubZ5SNe8RbVntXV3xUtSzZ6l3hsFuwSILfAFb7nYjJ5AoZjOLbImNyldLVWgK6z3zhPsQJvzXikpcYE2foDGTwzjCRA46MBUMsYMMa66sHxe+iQAOgmgQkDRLEEgN6jOZUOQ5yoZOGmyFfe6kDc5DwU878VzCjL8lizsHjIILUgZuSc6LqRIYxLRi5/5Y7boNpk/akyYgIctM9Wh+8nriYnQ==</SignatureValue><KeyInfo><X509Data><X509Certificate>MIIKsTCCCJmgAwIBAgIISV88QO6YmG8wDQYJKoZIhvcNAQELBQAwgZkxCzAJBgNVBAYTAkVDMR0wGwYDVQQKDBRTRUNVUklUWSBEQVRBIFMuQS4gMjEwMC4GA1UECwwnRU5USURBRCBERSBDRVJUSUZJQ0FDSU9OIERFIElORk9STUFDSU9OMTkwNwYDVQQDDDBBVVRPUklEQUQgREUgQ0VSVElGSUNBQ0lPTiBTVUJDQS0yIFNFQ1VSSVRZIERBVEEwHhcNMjUxMDIyMjIzMDE0WhcNMjYxMDIyMjIzMDE0WjCBpzElMCMGA1UEAwwcQU5EUkVTIEFMRVhBTkRFUiBMRU9OIERPWUxFVDEgMB4GA1UEBRMXMDkyOTg2NjE2OC0yMjEwMjUxNzQwMDUxMDAuBgNVBAsMJ0VOVElEQUQgREUgQ0VSVElGSUNBQ0lPTiBERSBJTkZPUk1BQ0lPTjEdMBsGA1UECgwUU0VDVVJJVFkgREFUQSBTLkEuIDIxCzAJBgNVBAYTAkVDMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvVKY650xaUsHnRhWzFHp7cCfKCJVMMeRRzJPp5c7RtAXfsqZXGR6Tw60qvPRX2kOMDl+mSsQlCzL2fWbHulPt9JXOJAvxqXt/eEgpXXhz9VlZ9y3d8ipG8edTy2swRSgJt0klOmpbnOkrXGTXr4pI/g1wIfMHpOMserNL3wrbv1Cgl2B2q2pL1zAFXFvA2QyIwMe8WZAtBvhlj2Kzk/1Kck1CcaqhfHuyKdQOXPQ3jNMy9VES8bL/LTvH5qZHdWoa9/df2/qHHq1NY2Ah18nsbGPB3vSIxeqUB0XDuCgjY2IUuvnt0AoXl5+YlSnktWZ44ST+tZK7o6YEtxmrY0NaQIDAQABo4IF6zCCBecwDAYDVR0TAQH/BAIwADAfBgNVHSMEGDAWgBSMusoRV3glgB1rCktVv42uYt29jzBZBggrBgEFBQcBAQRNMEswSQYIKwYBBQUHMAGGPWh0dHA6Ly9vY3NwZ3cuc2VjdXJpdHlkYXRhLm5ldC5lYy9lamJjYS9wdWJsaWN3ZWIvc3RhdHVzL29jc3AwJQYDVR0RBB4wHIEaYW5kcmVzbGVvbmRveWxldEBnbWFpbC5jb20wggEGBgNVHSAEgf4wgfswWgYKKwYBBAGCpnICBzBMMEoGCCsGAQUFBwICMD4ePABDAGUAcgB0AGkAZgBpAGMAYQBkAG8AIABkAGUAIABQAGUAcgBzAG8AbgBhACAATgBhAHQAdQByAGEAbDCBnAYKKwYBBAGCpnICATCBjTCBigYIKwYBBQUHAgEWfmh0dHBzOi8vd3d3LnNlY3VyaXR5ZGF0YS5uZXQuZWMvd3AtY29udGVudC9kb3dubG9hZHMvTm9ybWF0aXZhcy9QX2RlX0NlcnRpZmljYWRvcy9Qb2xpdGljYXMgZGUgQ2VydGlmaWNhZG8gUGVyc29uYSBOYXR1cmFsLnBkZjAdBgNVHSUEFjAUBggrBgEFBQcDAgYIKwYBBQUHAwQwggIPBgNVHR8EggIGMIICAjCB3qA6oDiGNmh0dHA6Ly9jcmwxLnNlY3VyaXR5ZGF0YS5uZXQuZWMvc3ViY2EyY3JsMS9jcmxmaWxlLmNybKKBn6SBnDCBmTE5MDcGA1UEAwwwQVVUT1JJREFEIERFIENFUlRJRklDQUNJT04gU1VCQ0EtMiBTRUNVUklUWSBEQVRBMTAwLgYDVQQLDCdFTlRJREFEIERFIENFUlRJRklDQUNJT04gREUgSU5GT1JNQUNJT04xHTAbBgNVBAoMFFNFQ1VSSVRZIERBVEEgUy5BLiAyMQswCQYDVQQGEwJFQzA8oDqgOIY2aHR0cDovL2NybDIuc2VjdXJpdHlkYXRhLm5ldC5lYy9zdWJjYTJjcmwyL2NybGZpbGUuY3JsMIHgoIHdoIHahoHXaHR0cHM6Ly9wb3J0YWwtb3BlcmFkb3IyLnNlY3VyaXR5ZGF0YS5uZXQuZWMvZWpiY2EvcHVibGljd2ViL3dlYmRpc3QvY2VydGRpc3Q/Y21kPWNybCZpc3N1ZXI9Q049QVVUT1JJREFEIERFIENFUlRJRklDQUNJT04gU1VCQ0EtMiBTRUNVUklUWSBEQVRBLE9VPUVOVElEQUQgREUgQ0VSVElGSUNBQ0lPTiBERSBJTkZPUk1BQ0lPTixPPVNFQ1VSSVRZIERBVEEgUy5BLiAyLEM9RUMwHQYDVR0OBBYEFDu9rD5fxCcEtf70lJsHH+aI8u/JMCsGA1UdEAQkMCKADzIwMjUxMDIyMjIzMDE0WoEPMjAyNjEwMjIyMjMwMTRaMAsGA1UdDwQEAwIF4DAaBgorBgEEAYKmcgMBBAwMCjA5Mjk4NjYxNjgwNgYKKwYBBAGCpnIDCQQoDCZFTCBTQUxJVFJFIExBUyBSQU1BUyBDQUJFQ0VSQSBDQU5UT05BTDARBgorBgEEAYKmcgMiBAMMAS4wLAYKKwYBBAGCpnIDBwQeDBxBViBWRVJOQVpBIFkgQ0FMTEUgR1VBWUFRVUlMMCAGCisGAQQBgqZyAwIEEgwQQU5EUkVTIEFMRVhBTkRFUjAQBgorBgEEAYKmcgMgBAIMADARBgorBgEEAYKmcgMjBAMMAS4wEwYKKwYBBAGCpnIDIQQFDANQRlgwFwYKKwYBBAGCpnIDDAQJDAdFQ1VBRE9SMBQGCisGAQQBgqZyAwMEBgwETEVPTjAZBgorBgEEAYKmcgMeBAsMCUlOR0VOSUVSTzAdBgorBgEEAYKmcgMLBA8MDTA5Mjk4NjYxNjgwMDEwEQYKKwYBBAGCpnIDHQQDDAEuMBYGCisGAQQBgqZyAwQECAwGRE9ZTEVUMBoGCisGAQQBgqZyAwgEDAwKMDk5NzYwNDM3NjANBgkqhkiG9w0BAQsFAAOCAgEAswzAWdkTAe/c9kCU3taIixxX151hqD2STJABMNJbZ+xRF/K5AWF/Y/EUfGL1yLIvG5sbjg/7YxfSFBkVbZYIwVpY3zm9pxvAoihwBYO99Ta1p7a8otICk8b3cKV+VuxkW2u9A/lYC0OQ7PVTxFcEWqtiiy+qoNzuiSE95Ueqp3k91IVmwpfSU79Q0yU8CD4FkqU3gRKRz/xSYfes0ye3DF7jq/oK2kzBWQVLECZk9HyiXoxGdvEZRyBLbMU0JnHmXlL05TxvORkaU3FyghQE5/MGY74qGf3XlMD3SCCX1qOTf2YFVEbzJ8SchFD/hyqk5ki2wMNuuR8cqzRQck+4eRjMxhYwD7d70cXPSeig9cn178Yl+Ya2FMwXTEelOIap8u4PVfK0Gbf3OmTKPd4jTHpqLcMg2GYVarmUzVWRIZo8Z6hcPa82HiIXpbKq34bYO+t1wrqIbZR3q0S9yBzmfWRKOq771TVQj/f3hULl85IDFOs5PrCjnbr2NsQ2oLn8SvNvi7RkPfm8Mh2/fMbveazVEoAzVQJmtMu5/WsKf2gZceLGFn0B9/1pcUXQXzrgOKhryZMrW4WrHxoKTCn3pmPg/1Xcbs+QeDVhF8GiMZNK5AVGFjDLTIh/MY2cpBVFWTUwILYz4d2dlLu1OiBRRg1zZ2Td4Ic23+8kMyxtCao=</X509Certificate></X509Data></KeyInfo></Signature></factura>

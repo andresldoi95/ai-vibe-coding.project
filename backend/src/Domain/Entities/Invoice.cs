@@ -23,6 +23,7 @@ public class Invoice : TenantEntity
     public SriPaymentMethod PaymentMethod { get; set; } = SriPaymentMethod.Cash;
     public string? XmlFilePath { get; set; }
     public string? SignedXmlFilePath { get; set; }
+    public string? RideFilePath { get; set; }
     public SriEnvironment Environment { get; set; } = SriEnvironment.Test;
     public string? SriAuthorization { get; set; }
     public DateTime? AuthorizationDate { get; set; }
