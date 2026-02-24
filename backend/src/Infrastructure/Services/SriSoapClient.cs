@@ -333,13 +333,19 @@ public class SriSoapClient : ISriWebServiceClient
                     };
                 }
 
+                // No <autorizacion> element found — this is a parse/infrastructure issue, not a real SRI rejection.
+                // Log the full XML at Warning level so it can be investigated.
+                _logger.LogWarning(
+                    "SRI authorization response did not contain <autorizacion> element. Estado: {Estado}. Raw XML: {XmlContent}",
+                    estado ?? "(none)", xmlContent);
+
                 return new SriAuthorizationResponse
                 {
                     IsAuthorized = false,
-                    Status = "ERROR",
+                    Status = "INVALID_RESPONSE",
                     Errors = new List<SriError>
                     {
-                        new SriError { Code = "INVALID_RESPONSE", Message = "No se encontró información de autorización" }
+                        new SriError { Code = "INVALID_RESPONSE", Message = "No se encontró información de autorización en la respuesta del SRI. Se reintentará en el siguiente ciclo." }
                     }
                 };
             }

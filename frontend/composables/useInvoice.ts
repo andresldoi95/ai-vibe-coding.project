@@ -1,4 +1,4 @@
-import type { CreateInvoiceDto, Invoice, InvoiceFilters, InvoiceStatus, UpdateInvoiceDto } from '~/types/billing'
+import type { CreateInvoiceDto, Invoice, InvoiceFilters, InvoiceStatus, SriErrorLog, UpdateInvoiceDto } from '~/types/billing'
 
 interface ApiResponse<T> {
   data: T
@@ -122,6 +122,13 @@ export function useInvoice() {
     return response as unknown as Blob
   }
 
+  async function getSriErrors(id: string): Promise<SriErrorLog[]> {
+    const response = await apiFetch<ApiResponse<SriErrorLog[]>>(`/invoices/${id}/sri-errors`, {
+      method: 'GET',
+    })
+    return response.data
+  }
+
   return {
     getAllInvoices,
     getInvoiceById,
@@ -137,5 +144,6 @@ export function useInvoice() {
     generateRide,
     downloadXml,
     downloadRide,
+    getSriErrors,
   }
 }

@@ -83,18 +83,51 @@ public class CheckAuthorizationStatusCommandHandler : IRequestHandler<CheckAutho
             }
             else if (!authorizationResponse.IsAuthorized && authorizationResponse.Errors.Any())
             {
-                // Authorization was rejected
+                var transientCodes = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+                    { "INVALID_RESPONSE", "PARSE_ERROR" };
+                var isTransientError = authorizationResponse.Errors.All(e => transientCodes.Contains(e.Code));
+
                 var errorMessages = string.Join("; ", authorizationResponse.Errors.Select(e => $"{e.Code}: {e.Message}"));
-                _logger.LogError(
-                    "Invoice {InvoiceId} rejected by SRI. Errors: {Errors}",
-                    request.InvoiceId,
-                    errorMessages);
 
-                invoice.Status = InvoiceStatus.Rejected;
-                invoice.UpdatedAt = DateTime.UtcNow;
+                if (isTransientError)
+                {
+                    // This is a client-side parse / connectivity issue, NOT a definitive SRI rejection.
+                    // Keep the invoice in PendingAuthorization so the background job retries.
+                    _logger.LogWarning(
+                        "Invoice {InvoiceId} received an unreadable response from SRI (will retry). Details: {Errors}",
+                        request.InvoiceId,
+                        errorMessages);
+                }
+                else
+                {
+                    // Real SRI rejection — mark as Rejected and persist the reasons.
+                    _logger.LogError(
+                        "Invoice {InvoiceId} rejected by SRI. Errors: {Errors}",
+                        request.InvoiceId,
+                        errorMessages);
 
-                await _unitOfWork.Invoices.UpdateAsync(invoice);
-                await _unitOfWork.SaveChangesAsync(cancellationToken);
+                    invoice.Status = InvoiceStatus.Rejected;
+                    invoice.UpdatedAt = DateTime.UtcNow;
+
+                    await _unitOfWork.Invoices.UpdateAsync(invoice);
+
+                    foreach (var sriError in authorizationResponse.Errors)
+                    {
+                        var errorLog = new Domain.Entities.SriErrorLog
+                        {
+                            InvoiceId = request.InvoiceId,
+                            TenantId = invoice.TenantId,
+                            Operation = "CheckAuthorization",
+                            ErrorCode = sriError.Code,
+                            ErrorMessage = sriError.Message,
+                            AdditionalData = sriError.AdditionalInfo,
+                            OccurredAt = DateTime.UtcNow,
+                        };
+                        await _unitOfWork.SriErrorLogs.AddAsync(errorLog);
+                    }
+
+                    await _unitOfWork.SaveChangesAsync(cancellationToken);
+                }
             }
 
             _logger.LogInformation(

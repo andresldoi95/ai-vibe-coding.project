@@ -1,0 +1,136 @@
+<factura id="comprobante" version="1.1.0">
+  <infoTributaria>
+    <ambiente>1</ambiente>
+    <tipoEmision>1</tipoEmision>
+    <razonSocial>Andres Leon</razonSocial>
+    <nombreComercial>Andres Leon</nombreComercial>
+    <ruc>0929866168001</ruc>
+    <claveAcceso>2801202601092986616800110020010000000024561298017</claveAcceso>
+    <codDoc>01</codDoc>
+    <estab>002</estab>
+    <ptoEmi>001</ptoEmi>
+    <secuencial>000000002</secuencial>
+    <dirMatriz>Av. Vernaza y Calle Guayaquil</dirMatriz>
+  </infoTributaria>
+  <infoFactura>
+    <fechaEmision>28/01/2026</fechaEmision>
+    <dirEstablecimiento>Av. Simón Bolívar 678-901, Guayaquil</dirEstablecimiento>
+    <obligadoContabilidad>NO</obligadoContabilidad>
+    <tipoIdentificacionComprador>04</tipoIdentificacionComprador>
+    <razonSocialComprador>Acme Corporation CHI</razonSocialComprador>
+    <identificacionComprador>1790123456001</identificacionComprador>
+    <totalSinImpuestos>22659.75</totalSinImpuestos>
+    <totalDescuento>0.00</totalDescuento>
+    <totalConImpuestos>
+      <totalImpuesto>
+        <codigo>2</codigo>
+        <codigoPorcentaje>0</codigoPorcentaje>
+        <baseImponible>22659.75</baseImponible>
+        <valor>3398.97</valor>
+      </totalImpuesto>
+    </totalConImpuestos>
+    <propina>0.00</propina>
+    <importeTotal>26058.71</importeTotal>
+    <moneda>DOLAR</moneda>
+    <pagos>
+      <pago>
+        <formaPago>02</formaPago>
+        <total>26058.71</total>
+        <plazo>0</plazo>
+        <unidadTiempo>dias</unidadTiempo>
+      </pago>
+    </pagos>
+  </infoFactura>
+  <detalles>
+    <detalle>
+      <codigoPrincipal>PROD-MANUFACTURINGCORP-001</codigoPrincipal>
+      <descripcion>High-performance laptop with 15.6" display, Intel i7, 16GB RAM, 512GB SSD</descripcion>
+      <cantidad>6.000000</cantidad>
+      <precioUnitario>1499.990000</precioUnitario>
+      <descuento>0.00</descuento>
+      <precioTotalSinImpuesto>8999.94</precioTotalSinImpuesto>
+      <impuestos>
+        <impuesto>
+          <codigo>2</codigo>
+          <codigoPorcentaje>0</codigoPorcentaje>
+          <tarifa>0.15</tarifa>
+          <baseImponible>8999.94</baseImponible>
+          <valor>1349.99</valor>
+        </impuesto>
+      </impuestos>
+    </detalle>
+    <detalle>
+      <codigoPrincipal>PROD-MANUFACTURINGCORP-001</codigoPrincipal>
+      <descripcion>High-performance laptop with 15.6" display, Intel i7, 16GB RAM, 512GB SSD</descripcion>
+      <cantidad>8.000000</cantidad>
+      <precioUnitario>1499.990000</precioUnitario>
+      <descuento>0.00</descuento>
+      <precioTotalSinImpuesto>11999.92</precioTotalSinImpuesto>
+      <impuestos>
+        <impuesto>
+          <codigo>2</codigo>
+          <codigoPorcentaje>0</codigoPorcentaje>
+          <tarifa>0.15</tarifa>
+          <baseImponible>11999.92</baseImponible>
+          <valor>1799.99</valor>
+        </impuesto>
+      </impuestos>
+    </detalle>
+    <detalle>
+      <codigoPrincipal>PROD-MANUFACTURINGCORP-002</codigoPrincipal>
+      <descripcion>Ergonomic wireless mouse with precision scrolling and customizable buttons</descripcion>
+      <cantidad>1.000000</cantidad>
+      <precioUnitario>99.990000</precioUnitario>
+      <descuento>0.00</descuento>
+      <precioTotalSinImpuesto>99.99</precioTotalSinImpuesto>
+      <impuestos>
+        <impuesto>
+          <codigo>2</codigo>
+          <codigoPorcentaje>0</codigoPorcentaje>
+          <tarifa>0.15</tarifa>
+          <baseImponible>99.99</baseImponible>
+          <valor>15.00</valor>
+        </impuesto>
+      </impuestos>
+    </detalle>
+    <detalle>
+      <codigoPrincipal>PROD-MANUFACTURINGCORP-004</codigoPrincipal>
+      <descripcion>Mechanical gaming keyboard with RGB backlighting and programmable macro keys</descripcion>
+      <cantidad>7.000000</cantidad>
+      <precioUnitario>179.990000</precioUnitario>
+      <descuento>0.00</descuento>
+      <precioTotalSinImpuesto>1259.93</precioTotalSinImpuesto>
+      <impuestos>
+        <impuesto>
+          <codigo>2</codigo>
+          <codigoPorcentaje>0</codigoPorcentaje>
+          <tarifa>0.15</tarifa>
+          <baseImponible>1259.93</baseImponible>
+          <valor>188.99</valor>
+        </impuesto>
+      </impuestos>
+    </detalle>
+    <detalle>
+      <codigoPrincipal>PROD-MANUFACTURINGCORP-002</codigoPrincipal>
+      <descripcion>Ergonomic wireless mouse with precision scrolling and customizable buttons</descripcion>
+      <cantidad>3.000000</cantidad>
+      <precioUnitario>99.990000</precioUnitario>
+      <descuento>0.00</descuento>
+      <precioTotalSinImpuesto>299.97</precioTotalSinImpuesto>
+      <impuestos>
+        <impuesto>
+          <codigo>2</codigo>
+          <codigoPorcentaje>0</codigoPorcentaje>
+          <tarifa>0.15</tarifa>
+          <baseImponible>299.97</baseImponible>
+          <valor>45.00</valor>
+        </impuesto>
+      </impuestos>
+    </detalle>
+  </detalles>
+  <infoAdicional>
+    <campoAdicional nombre="Email">contact@acme-manufacturing-corp.example.com</campoAdicional>
+    <campoAdicional nombre="Telefono">+1 (555) 123-4567</campoAdicional>
+    <campoAdicional nombre="Observaciones">Factura de prueba #2 - Draft</campoAdicional>
+  </infoAdicional>
+</factura>

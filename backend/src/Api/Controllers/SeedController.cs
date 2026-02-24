@@ -155,6 +155,10 @@ public class SeedController : ControllerBase
             await _context.Users.AddRangeAsync(ownerUser, adminUser, managerUser, regularUser);
             await _context.SaveChangesAsync(); // Save tenants and users first
 
+            // 2.5. Ensure all required permissions exist in DB (defensive: data-only migrations may not
+            //      have run if their Designer.cs was missing on a fresh-DB reset).
+            await EnsureRequiredPermissionsAsync();
+
             // 3. Create Roles and Permissions for all tenants
             var tenants = new[] { demoCompany, techStartup, manufacturingCorp };
             var rolesByTenant = new Dictionary<Guid, Dictionary<string, Role>>();
@@ -311,6 +315,39 @@ public class SeedController : ControllerBase
     }
 
     #region Helper Methods
+
+    /// <summary>
+    /// Ensures permissions that are added via data-only migrations exist in the DB.
+    /// This is a defensive measure: when a fresh DB is created, data-only migrations
+    /// that are missing their .Designer.cs file won't be discovered by EF and won't run.
+    /// The SeedController must therefore guarantee these permissions exist itself.
+    /// </summary>
+    private async Task EnsureRequiredPermissionsAsync()
+    {
+        var requiredPermissions = new[]
+        {
+            ("invoices.manage", "Manage invoice SRI workflow (XML generation, signing, submission)", "invoices", "manage"),
+        };
+
+        foreach (var (name, description, resource, action) in requiredPermissions)
+        {
+            var exists = await _context.Permissions.AnyAsync(p => p.Name == name);
+            if (!exists)
+            {
+                _context.Permissions.Add(new Permission
+                {
+                    Id = Guid.NewGuid(),
+                    Name = name,
+                    Description = description,
+                    Resource = resource,
+                    Action = action
+                });
+                _logger.LogInformation("Seeder: adding missing permission '{Permission}'", name);
+            }
+        }
+
+        await _context.SaveChangesAsync();
+    }
 
     private Tenant CreateTenant(string name, string slug, DateTime now)
     {

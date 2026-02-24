@@ -132,7 +132,7 @@ public class InvoiceXmlService : IInvoiceXmlService
     private XElement GenerateItemDetail(InvoiceItem item)
     {
         return new XElement("detalle",
-            new XElement("codigoPrincipal", item.ProductCode ?? "N/A"),
+            new XElement("codigoPrincipal", (item.ProductCode ?? "N/A")[..Math.Min(25, (item.ProductCode ?? "N/A").Length)]),
             new XElement("descripcion", item.Description),
             new XElement("cantidad", item.Quantity.ToString("F6")),
             new XElement("precioUnitario", item.UnitPrice.ToString("F6")),

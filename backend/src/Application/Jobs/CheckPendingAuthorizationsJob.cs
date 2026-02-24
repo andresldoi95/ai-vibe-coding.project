@@ -15,15 +15,21 @@ namespace SaaS.Application.Jobs;
 public class CheckPendingAuthorizationsJob
 {
     private readonly IInvoiceRepository _invoiceRepository;
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly ITenantContext _tenantContext;
     private readonly IMediator _mediator;
     private readonly ILogger<CheckPendingAuthorizationsJob> _logger;
 
     public CheckPendingAuthorizationsJob(
         IInvoiceRepository invoiceRepository,
+        IUnitOfWork unitOfWork,
+        ITenantContext tenantContext,
         IMediator mediator,
         ILogger<CheckPendingAuthorizationsJob> logger)
     {
         _invoiceRepository = invoiceRepository;
+        _unitOfWork = unitOfWork;
+        _tenantContext = tenantContext;
         _mediator = mediator;
         _logger = logger;
     }
@@ -59,6 +65,19 @@ public class CheckPendingAuthorizationsJob
 
                 try
                 {
+                    // Set the tenant context for this invoice before dispatching the command.
+                    // Background jobs run outside of an HTTP request, so no middleware sets the context.
+                    var tenant = await _unitOfWork.Tenants.GetByIdAsync(invoice.TenantId);
+                    if (tenant == null)
+                    {
+                        _logger.LogWarning("Tenant {TenantId} not found for invoice {InvoiceId}. Skipping.", invoice.TenantId, invoice.Id);
+                        errorCount++;
+                        continue;
+                    }
+
+                    var schemaName = tenant.SchemaName ?? $"tenant_{tenant.Slug}";
+                    _tenantContext.SetTenant(invoice.TenantId, schemaName);
+
                     var command = new CheckAuthorizationStatusCommand { InvoiceId = invoice.Id };
                     var result = await _mediator.Send(command);
 

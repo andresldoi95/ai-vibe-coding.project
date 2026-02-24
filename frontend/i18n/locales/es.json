@@ -885,7 +885,14 @@
       "info_pending_signature": "El XML ha sido generado. Haga clic en 'Firmar Documento' para firmar digitalmente la factura con su certificado electrónico.",
       "info_pending_authorization": "El documento ha sido firmado y enviado. Haga clic en 'Verificar Autorización' para comprobar el estado de autorización del SRI. La autorización generalmente se procesa en minutos.",
       "info_authorized": "Esta factura ha sido autorizada por el SRI. Ahora puede descargar el RIDE PDF para entregar a su cliente.",
-      "info_rejected": "Esta factura fue rechazada por el SRI. Por favor revise los detalles del error y cree una factura corregida."
+      "info_rejected": "Esta factura fue rechazada por el SRI. Por favor revise los detalles del error y cree una factura corregida.",
+      "errors_title": "Detalles del Rechazo SRI",
+      "errors_empty": "No hay detalles de error SRI disponibles.",
+      "error_code": "Código de Error",
+      "error_message": "Mensaje",
+      "error_operation": "Operación",
+      "error_occurred_at": "Fecha",
+      "error_additional_data": "Información Adicional"
     }
   },
   "payments": {

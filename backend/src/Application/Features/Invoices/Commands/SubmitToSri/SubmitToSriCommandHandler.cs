@@ -46,6 +46,22 @@ public class SubmitToSriCommandHandler : IRequestHandler<SubmitToSriCommand, Res
             if (invoice.Status != InvoiceStatus.PendingAuthorization)
             {
                 _logger.LogWarning("Invoice {InvoiceId} is not in PendingAuthorization status (current: {Status})", request.InvoiceId, invoice.Status);
+
+                // If the invoice was previously rejected, fetch the SRI rejection reasons so the user can see them
+                if (invoice.Status == InvoiceStatus.Rejected)
+                {
+                    var rejectionLogs = await _unitOfWork.SriErrorLogs.GetByInvoiceIdAsync(request.InvoiceId, tenantId, cancellationToken);
+                    if (rejectionLogs.Any())
+                    {
+                        var reasons = string.Join("; ", rejectionLogs.Select(e => $"[{e.ErrorCode}] {e.ErrorMessage}"));
+                        _logger.LogWarning(
+                            "Invoice {InvoiceId} was previously rejected by SRI. Rejection reasons: {Reasons}",
+                            request.InvoiceId, reasons);
+                        return Result<string>.Failure(
+                            $"Invoice was rejected by SRI and cannot be resubmitted without correction. Rejection reasons: {reasons}");
+                    }
+                }
+
                 return Result<string>.Failure($"Invoice must be in PendingAuthorization status to submit (current status: {invoice.Status})");
             }
 

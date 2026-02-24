@@ -12,7 +12,7 @@ public class CreateProductCommandValidator : AbstractValidator<CreateProductComm
 
         RuleFor(x => x.Code)
             .NotEmpty().WithMessage("Product code is required")
-            .MaximumLength(50).WithMessage("Product code cannot exceed 50 characters")
+            .MaximumLength(25).WithMessage("Product code cannot exceed 25 characters (SRI XML schema limit for codigoPrincipal)")
             .Matches("^[A-Z0-9-]+$").WithMessage("Product code can only contain uppercase letters, numbers, and hyphens");
 
         RuleFor(x => x.SKU)

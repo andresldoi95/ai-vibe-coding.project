@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Invoice, Payment } from '~/types/billing'
+import type { Invoice, Payment, SriErrorLog } from '~/types/billing'
 import { InvoiceStatus, PaymentStatus } from '~/types/billing'
 
 definePageMeta({
@@ -11,14 +11,16 @@ const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const toast = useNotification()
-const { getInvoiceById, changeInvoiceStatus, generateXml, signDocument, submitToSri, checkAuthorization, generateRide, downloadXml, downloadRide } = useInvoice()
+const { getInvoiceById, changeInvoiceStatus, generateXml, signDocument, submitToSri, checkAuthorization, generateRide, downloadXml, downloadRide, getSriErrors } = useInvoice()
 const { getPaymentsByInvoiceId } = usePayment()
 const { can } = usePermissions()
 
 const invoice = ref<Invoice | null>(null)
 const payments = ref<Payment[]>([])
+const sriErrors = ref<SriErrorLog[]>([])
 const loading = ref(true)
 const paymentsLoading = ref(false)
+const sriErrorsLoading = ref(false)
 const statusChangeDialog = ref(false)
 const statusChangeLoading = ref(false)
 const newStatus = ref<InvoiceStatus>(InvoiceStatus.Sent)
@@ -36,7 +38,7 @@ onMounted(async () => {
   try {
     const id = route.params.id as string
     invoice.value = await getInvoiceById(id)
-    await loadPayments(id)
+    await Promise.all([loadPayments(id), loadSriErrors(id)])
   }
   catch {
     toast.showError(t('invoices.load_error'))
@@ -57,6 +59,19 @@ async function loadPayments(invoiceId: string) {
   }
   finally {
     paymentsLoading.value = false
+  }
+}
+
+async function loadSriErrors(invoiceId: string) {
+  sriErrorsLoading.value = true
+  try {
+    sriErrors.value = await getSriErrors(invoiceId)
+  }
+  catch (error) {
+    console.error('Failed to load SRI errors:', error)
+  }
+  finally {
+    sriErrorsLoading.value = false
   }
 }
 
@@ -268,6 +283,8 @@ async function handleCheckAuthorization() {
   sriLoading.value.checkAuth = true
   try {
     invoice.value = await checkAuthorization(invoice.value.id)
+    // Refresh SRI error logs — if rejected, new errors will now appear in the panel
+    await loadSriErrors(invoice.value.id)
     if (invoice.value.status === InvoiceStatus.Authorized) {
       toast.showSuccess(t('invoices.sri.authorized'))
     }
@@ -727,6 +744,51 @@ const canDownloadRide = computed(() => {
                 <span class="text-lg font-bold text-teal-600">{{ formatCurrency(invoice.totalAmount) }}</span>
               </div>
             </div>
+          </div>
+        </template>
+      </Card>
+
+      <!-- SRI Rejection Details -->
+      <Card v-if="sriErrors.length > 0 || sriErrorsLoading">
+        <template #header>
+          <div class="p-6 pb-0 flex items-center gap-2">
+            <i class="pi pi-exclamation-triangle text-red-500" />
+            <h3 class="text-lg font-semibold text-red-600">
+              {{ t('invoices.sri.errors_title') }}
+            </h3>
+          </div>
+        </template>
+
+        <template #content>
+          <div v-if="sriErrorsLoading" class="flex justify-center py-8">
+            <ProgressSpinner />
+          </div>
+
+          <div v-else-if="sriErrors.length > 0">
+            <DataTable :value="sriErrors" striped-rows>
+              <Column field="operation" :header="t('invoices.sri.error_operation')" style="width: 160px" />
+              <Column field="errorCode" :header="t('invoices.sri.error_code')" style="width: 120px">
+                <template #body="{ data }">
+                  <Tag v-if="data.errorCode" :value="data.errorCode" severity="danger" />
+                  <span v-else class="text-surface-400">—</span>
+                </template>
+              </Column>
+              <Column field="errorMessage" :header="t('invoices.sri.error_message')" />
+              <Column field="additionalData" :header="t('invoices.sri.error_additional_data')">
+                <template #body="{ data }">
+                  {{ data.additionalData || '—' }}
+                </template>
+              </Column>
+              <Column field="occurredAt" :header="t('invoices.sri.error_occurred_at')" style="width: 160px">
+                <template #body="{ data }">
+                  {{ new Date(data.occurredAt).toLocaleString() }}
+                </template>
+              </Column>
+            </DataTable>
+          </div>
+
+          <div v-else class="py-6 text-center text-surface-500">
+            {{ t('invoices.sri.errors_empty') }}
           </div>
         </template>
       </Card>

@@ -12,6 +12,7 @@ using SaaS.Application.Features.Invoices.Commands.SubmitToSri;
 using SaaS.Application.Features.Invoices.Commands.UpdateInvoice;
 using SaaS.Application.Features.Invoices.Queries.GetAllInvoices;
 using SaaS.Application.Features.Invoices.Queries.GetInvoiceById;
+using SaaS.Application.Features.Invoices.Queries.GetSriErrorLogs;
 using SaaS.Domain.Enums;
 
 namespace SaaS.Api.Controllers;
@@ -253,6 +254,21 @@ public class InvoicesController : BaseController
         }
 
         return Ok(new { data = invoiceResult.Value, message = "RIDE PDF generated successfully", success = true });
+    }
+
+    [HttpGet("{id:guid}/sri-errors")]
+    [Authorize(Policy = "invoices.read")]
+    public async Task<IActionResult> GetSriErrors(Guid id)
+    {
+        var query = new GetSriErrorLogsForInvoiceQuery(id);
+        var result = await _mediator.Send(query);
+
+        if (!result.IsSuccess)
+        {
+            return NotFound(new { message = result.Error, success = false });
+        }
+
+        return Ok(new { data = result.Value, success = true });
     }
 
     [HttpGet("{id:guid}/download-xml")]

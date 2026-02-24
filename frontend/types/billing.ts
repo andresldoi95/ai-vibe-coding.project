@@ -244,3 +244,12 @@ export interface Subscription {
 }
 
 export type SubscriptionStatus = 'active' | 'cancelled' | 'expired' | 'trial'
+
+export interface SriErrorLog {
+  id: string
+  operation: string
+  errorCode?: string
+  errorMessage: string
+  additionalData?: string
+  occurredAt: string
+}
