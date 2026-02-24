@@ -123,7 +123,7 @@ public class CreateProductCommandValidatorTests
         var command = new CreateProductCommand
         {
             Name = "Test Product",
-            Code = new string('A', 51),
+            Code = new string('A', 26),
             SKU = "SKU-001",
             UnitPrice = 99.99m,
             CostPrice = 50.00m,
@@ -136,7 +136,7 @@ public class CreateProductCommandValidatorTests
 
         // Assert
         result.ShouldHaveValidationErrorFor(x => x.Code)
-            .WithErrorMessage("Product code cannot exceed 50 characters");
+            .WithErrorMessage("Product code cannot exceed 25 characters (SRI XML schema limit for codigoPrincipal)");
     }
 
     [Theory]

@@ -83,6 +83,9 @@ public class EstablishmentTests
     [InlineData("1", false)]
     [InlineData("12", false)]
     [InlineData("1234", false)]
+    [InlineData("000", false)]   // zero is below the valid range (001-999)
+    [InlineData("ABC", false)]   // non-numeric
+    [InlineData("01A", false)]   // mixed alphanumeric
     public void Establishment_IsValidCode_ValidatesCorrectly(string code, bool expectedValid)
     {
         // Arrange
