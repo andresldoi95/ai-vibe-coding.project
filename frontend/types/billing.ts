@@ -294,6 +294,7 @@ export interface CreditNote {
   sriAuthorization?: string
   authorizationDate?: string
 
+  isPhysicalReturn: boolean
   items: CreditNoteItem[]
   isEditable: boolean
   createdAt: string
@@ -340,6 +341,7 @@ export interface CreateCreditNoteDto {
   issueDate: string
   reason: string
   notes?: string
+  isPhysicalReturn?: boolean
   items: CreateCreditNoteItemDto[]
 }
 

@@ -54,6 +54,7 @@ public class GetCreditNoteByIdQueryHandler : IRequestHandler<GetCreditNoteByIdQu
                 OriginalInvoiceDate = creditNote.OriginalInvoiceDate,
                 Reason = creditNote.Reason,
                 Notes = creditNote.Notes,
+                IsPhysicalReturn = creditNote.IsPhysicalReturn,
                 DocumentType = creditNote.DocumentType,
                 AccessKey = creditNote.AccessKey,
                 PaymentMethod = creditNote.PaymentMethod,

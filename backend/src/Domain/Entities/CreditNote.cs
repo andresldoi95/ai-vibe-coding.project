@@ -22,6 +22,7 @@ public class CreditNote : TenantEntity
     // Credit note specific fields
     public string Reason { get; set; } = string.Empty;
     public decimal ValueModification { get; set; }
+    public bool IsPhysicalReturn { get; set; }
 
     // SRI Ecuador fields
     public Guid? EmissionPointId { get; set; }

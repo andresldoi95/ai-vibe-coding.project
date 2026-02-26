@@ -955,6 +955,9 @@
     "edit_error": "No se puede editar la nota de crédito",
     "only_draft_editable": "Solo las notas de crédito en borrador se pueden editar",
     "add_items_error": "Por favor agregue al menos un ítem",
+    "is_physical_return": "Devolución Física (restaura inventario)",
+    "is_physical_return_hint": "Marque esta opción si el cliente devuelve físicamente la mercadería. Se creará automáticamente un movimiento de devolución en el inventario.",
+    "stock_restored": "Inventario restaurado mediante movimiento de devolución",
     "sri": {
       "title": "Documento Electrónico SRI",
       "workflow_status": "Estado del Flujo",

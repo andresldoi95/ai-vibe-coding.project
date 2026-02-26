@@ -178,6 +178,7 @@ public class CreateCreditNoteCommandHandler : IRequestHandler<CreateCreditNoteCo
                 ValueModification = creditNoteTotal,
                 Reason = request.Reason,
                 Notes = request.Notes,
+                IsPhysicalReturn = request.IsPhysicalReturn,
                 PaymentMethod = originalInvoice.PaymentMethod,
                 Environment = config.Environment
             };
@@ -191,6 +192,37 @@ public class CreateCreditNoteCommandHandler : IRequestHandler<CreateCreditNoteCo
                 await _unitOfWork.CreditNoteItems.AddAsync(item, cancellationToken);
             }
             await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            // Create inventory return movements when this is a physical return
+            if (request.IsPhysicalReturn)
+            {
+                if (!originalInvoice.WarehouseId.HasValue)
+                {
+                    await _unitOfWork.RollbackTransactionAsync(cancellationToken);
+                    _logger.LogWarning("Cannot create stock return: original invoice {InvoiceId} has no warehouse assigned", originalInvoice.Id);
+                    return Result<CreditNoteDto>.Failure("Cannot create stock return: the original invoice has no warehouse assigned");
+                }
+
+                foreach (var item in creditNoteItems)
+                {
+                    var movement = new StockMovement
+                    {
+                        TenantId = tenantId,
+                        MovementType = MovementType.Return,
+                        ProductId = item.ProductId,
+                        WarehouseId = originalInvoice.WarehouseId.Value,
+                        Quantity = item.Quantity,
+                        UnitCost = item.UnitPrice,
+                        TotalCost = item.SubtotalAmount,
+                        Reference = creditNote.CreditNoteNumber,
+                        Notes = $"Credit Note {creditNote.CreditNoteNumber}",
+                        MovementDate = creditNote.IssueDate
+                    };
+                    await _unitOfWork.StockMovements.AddAsync(movement, cancellationToken);
+                }
+                await _unitOfWork.SaveChangesAsync(cancellationToken);
+                _logger.LogInformation("{Count} stock return movement(s) created for credit note {CreditNoteNumber}", creditNoteItems.Count, creditNote.CreditNoteNumber);
+            }
 
             await _unitOfWork.CommitTransactionAsync(cancellationToken);
 
@@ -218,6 +250,7 @@ public class CreateCreditNoteCommandHandler : IRequestHandler<CreateCreditNoteCo
                 OriginalInvoiceDate = creditNote.OriginalInvoiceDate,
                 Reason = creditNote.Reason,
                 Notes = creditNote.Notes,
+                IsPhysicalReturn = creditNote.IsPhysicalReturn,
                 PaymentMethod = creditNote.PaymentMethod,
                 Environment = creditNote.Environment,
                 DocumentType = creditNote.DocumentType,

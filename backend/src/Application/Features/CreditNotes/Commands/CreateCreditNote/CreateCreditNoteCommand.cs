@@ -12,5 +12,6 @@ public record CreateCreditNoteCommand : IRequest<Result<CreditNoteDto>>
     public DateTime? IssueDate { get; init; }
     public string Reason { get; init; } = string.Empty;
     public string? Notes { get; init; }
+    public bool IsPhysicalReturn { get; init; }
     public List<CreateCreditNoteItemDto> Items { get; init; } = new();
 }

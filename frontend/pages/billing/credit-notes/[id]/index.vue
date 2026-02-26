@@ -414,6 +414,13 @@ function formatCurrency(amount: number): string {
                 {{ creditNote.notes }}
               </p>
             </div>
+
+            <div v-if="creditNote.isPhysicalReturn" class="field md:col-span-2">
+              <div class="flex items-center gap-2 p-3 bg-teal-50 dark:bg-teal-950 border border-teal-200 dark:border-teal-800 rounded-lg">
+                <i class="pi pi-box text-teal-600" />
+                <span class="font-medium text-teal-700 dark:text-teal-300">{{ t('creditNotes.stock_restored') }}</span>
+              </div>
+            </div>
           </div>
         </template>
       </Card>

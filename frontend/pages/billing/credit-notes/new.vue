@@ -34,6 +34,7 @@ const formData = reactive({
   issueDate: new Date().toISOString().split('T')[0],
   reason: '',
   notes: '',
+  isPhysicalReturn: false,
   items: [] as CreateCreditNoteItemDto[],
 })
 
@@ -179,6 +180,7 @@ async function handleSubmit() {
       issueDate: formData.issueDate,
       reason: formData.reason,
       notes: formData.notes || undefined,
+      isPhysicalReturn: formData.isPhysicalReturn,
       items: formData.items,
     }
 
@@ -346,6 +348,23 @@ function handleCancel() {
                 class="w-full"
                 :placeholder="t('creditNotes.notes_placeholder')"
               />
+            </div>
+
+            <!-- Physical Return toggle -->
+            <div class="mt-4 flex items-start gap-3 p-3 border rounded-lg bg-surface-50 dark:bg-surface-800">
+              <Checkbox
+                v-model="formData.isPhysicalReturn"
+                input-id="isPhysicalReturn"
+                :binary="true"
+              />
+              <div>
+                <label for="isPhysicalReturn" class="font-medium cursor-pointer">
+                  {{ t('creditNotes.is_physical_return') }}
+                </label>
+                <p class="text-sm text-surface-500 mt-0.5">
+                  {{ t('creditNotes.is_physical_return_hint') }}
+                </p>
+              </div>
             </div>
           </div>
 

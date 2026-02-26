@@ -957,6 +957,9 @@
     "edit_error": "Cannot edit credit note",
     "only_draft_editable": "Only draft credit notes can be edited",
     "add_items_error": "Please add at least one line item",
+    "is_physical_return": "Physical Return (restores stock)",
+    "is_physical_return_hint": "Check this if the customer is physically returning the goods. A stock return movement will be created automatically.",
+    "stock_restored": "Stock restored via return movement",
     "sri": {
       "title": "SRI Electronic Document",
       "workflow_status": "Workflow Status",

@@ -191,6 +191,7 @@ public class UpdateCreditNoteCommandHandler : IRequestHandler<UpdateCreditNoteCo
         OriginalInvoiceDate = cn.OriginalInvoiceDate,
         Reason = cn.Reason,
         Notes = cn.Notes,
+        IsPhysicalReturn = cn.IsPhysicalReturn,
         DocumentType = cn.DocumentType,
         AccessKey = cn.AccessKey,
         PaymentMethod = cn.PaymentMethod,
