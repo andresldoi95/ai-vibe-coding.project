@@ -254,7 +254,7 @@ export class ProductPage {
 Create `e2e/products.spec.ts`:
 
 ```typescript
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 import { ProductPage } from './fixtures'
 
 test.describe('Product Management', () => {

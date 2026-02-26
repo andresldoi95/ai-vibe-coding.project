@@ -202,13 +202,13 @@ describe('useWarehouse', () => {
   })
 
   describe('exportWarehouseStockSummary', () => {
-    let mockFetch: any
-    let mockBlob: any
-    let mockCreateElement: any
-    let mockAppendChild: any
-    let mockRemoveChild: any
-    let mockCreateObjectURL: any
-    let mockRevokeObjectURL: any
+    let mockFetch: ReturnType<typeof vi.fn>
+    let mockBlob: Blob
+    let mockCreateElement: ReturnType<typeof vi.spyOn>
+    let mockAppendChild: ReturnType<typeof vi.spyOn>
+    let mockRemoveChild: ReturnType<typeof vi.spyOn>
+    let mockCreateObjectURL: ReturnType<typeof vi.fn>
+    let mockRevokeObjectURL: ReturnType<typeof vi.fn>
 
     beforeEach(() => {
       // Mock fetch
@@ -224,22 +224,22 @@ describe('useWarehouse', () => {
         },
         blob: vi.fn().mockResolvedValue(mockBlob),
       })
-      global.fetch = mockFetch
+      globalThis.fetch = mockFetch
 
       // Mock DOM APIs
       mockCreateObjectURL = vi.fn().mockReturnValue('blob:mock-url')
       mockRevokeObjectURL = vi.fn()
-      global.URL.createObjectURL = mockCreateObjectURL
-      global.URL.revokeObjectURL = mockRevokeObjectURL
+      globalThis.URL.createObjectURL = mockCreateObjectURL
+      globalThis.URL.revokeObjectURL = mockRevokeObjectURL
 
       const mockAnchor = {
         href: '',
         download: '',
         click: vi.fn(),
       }
-      mockCreateElement = vi.spyOn(document, 'createElement').mockReturnValue(mockAnchor as any)
-      mockAppendChild = vi.spyOn(document.body, 'appendChild').mockImplementation(() => mockAnchor as any)
-      mockRemoveChild = vi.spyOn(document.body, 'removeChild').mockImplementation(() => mockAnchor as any)
+      mockCreateElement = vi.spyOn(document, 'createElement').mockReturnValue(mockAnchor as unknown as HTMLAnchorElement)
+      mockAppendChild = vi.spyOn(document.body, 'appendChild').mockImplementation(() => mockAnchor as unknown as HTMLAnchorElement)
+      mockRemoveChild = vi.spyOn(document.body, 'removeChild').mockImplementation(() => mockAnchor as unknown as HTMLAnchorElement)
     })
 
     it('should export warehouse stock summary with default format', async () => {

@@ -104,7 +104,7 @@ test.describe('Login Flow', () => {
     expect(isDashboardVisible).toBeTruthy()
   })
 
-  test('should disable submit button while loading', async ({ page }) => {
+  test('should disable submit button while loading', async ({ page: _page }) => {
     const submitButton = await loginPage.getSubmitButton()
 
     // Start login process

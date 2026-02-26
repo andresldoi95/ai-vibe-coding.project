@@ -84,11 +84,11 @@ Added to [package.json](package.json):
 
 ```json
 {
-  "e2e": "playwright test",              // Run tests headless
-  "e2e:ui": "playwright test --ui",      // Run with UI (dev)
+  "e2e": "playwright test", // Run tests headless
+  "e2e:ui": "playwright test --ui", // Run with UI (dev)
   "e2e:debug": "playwright test --debug", // Debug mode
   "e2e:report": "playwright show-report", // View last report
-  "e2e:install": "playwright install"     // Install browsers
+  "e2e:install": "playwright install" // Install browsers
 }
 ```
 

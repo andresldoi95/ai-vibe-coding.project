@@ -44,7 +44,7 @@ Test credentials are defined in `fixtures.ts`:
 
 ```typescript
 TEST_CREDENTIALS.admin // admin@example.com / Admin123!
-TEST_CREDENTIALS.user  // user@example.com / User123!
+TEST_CREDENTIALS.user // user@example.com / User123!
 ```
 
 **Important**: These must match backend seed data.
@@ -59,7 +59,7 @@ TEST_CREDENTIALS.user  // user@example.com / User123!
 Example:
 
 ```typescript
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 import { LoginPage } from './fixtures'
 
 test('should login successfully', async ({ page }) => {

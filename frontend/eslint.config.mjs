@@ -3,6 +3,11 @@ import antfu from '@antfu/eslint-config'
 export default antfu({
   typescript: true,
   vue: true,
+  markdown: false,
+
+  ignores: [
+    '**/*.md',
+  ],
 
   rules: {
     'no-console': 'warn',
