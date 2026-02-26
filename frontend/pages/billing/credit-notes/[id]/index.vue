@@ -442,12 +442,12 @@ function formatCurrency(amount: number): string {
             </Column>
             <Column :header="t('creditNotes.item_tax_rate')" style="width: 8rem">
               <template #body="{ data }">
-                {{ data.taxRateName || data.taxRateId }}
+                {{ data.taxRate }}%
               </template>
             </Column>
             <Column :header="t('creditNotes.item_total')" style="width: 10rem">
               <template #body="{ data }">
-                <span class="font-medium">{{ formatCurrency(data.total) }}</span>
+                <span class="font-medium">{{ formatCurrency(data.totalAmount) }}</span>
               </template>
             </Column>
           </DataTable>
@@ -457,7 +457,7 @@ function formatCurrency(amount: number): string {
             <div class="w-72 space-y-2">
               <div class="flex justify-between text-sm">
                 <span>{{ t('creditNotes.subtotal') }}</span>
-                <span>{{ formatCurrency(creditNote.subtotal) }}</span>
+                <span>{{ formatCurrency(creditNote.subtotalAmount) }}</span>
               </div>
               <div class="flex justify-between text-sm">
                 <span>{{ t('creditNotes.tax') }}</span>

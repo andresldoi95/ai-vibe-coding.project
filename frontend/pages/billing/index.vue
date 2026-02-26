@@ -18,7 +18,7 @@ const modules = [
   {
     title: 'nav.credit_notes',
     description: 'module_descriptions.credit_notes',
-    icon: 'pi pi-file-minus',
+    icon: 'pi pi-receipt',
     to: '/billing/credit-notes',
     color: 'bg-amber-500',
   },
