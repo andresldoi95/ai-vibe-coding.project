@@ -1,6 +1,7 @@
 {
-  "extends": "./.nuxt/tsconfig.json",
+  "extends": "../.nuxt/tsconfig.json",
   "compilerOptions": {
+    "types": ["vitest/globals"],
     "strict": true,
     "strictFunctionTypes": true,
     "strictNullChecks": true,
@@ -12,5 +13,9 @@
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true
   },
-  "exclude": ["tests"]
+  "include": [
+    "../**/*.ts",
+    "../**/*.vue",
+    "./**/*.ts"
+  ]
 }

@@ -5,6 +5,9 @@ import vue from '@vitejs/plugin-vue'
 export default defineConfig({
   plugins: [vue()],
   test: {
+    typecheck: {
+      tsconfig: './tests/tsconfig.json',
+    },
     globals: true,
     environment: 'happy-dom',
     setupFiles: ['./tests/setup.ts'],
