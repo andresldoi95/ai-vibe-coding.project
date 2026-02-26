@@ -42,10 +42,10 @@ async function loadData() {
       }
 
       const results = await Promise.all(promises)
-      product.value = results[0]
-      warehouse.value = results[1]
+      product.value = results[0] as Product
+      warehouse.value = results[1] as Warehouse
       if (results[2]) {
-        destinationWarehouse.value = results[2]
+        destinationWarehouse.value = results[2] as Warehouse
       }
     }
 

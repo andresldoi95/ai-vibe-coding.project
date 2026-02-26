@@ -152,7 +152,7 @@ async function handleSubmit() {
     navigateTo('/settings/roles')
   }
   catch (error) {
-    const message = error?.data?.message || t('messages.error_save')
+    const message = (error as { data?: { message?: string } })?.data?.message || t('messages.error_save')
     showError(message)
   }
   finally {

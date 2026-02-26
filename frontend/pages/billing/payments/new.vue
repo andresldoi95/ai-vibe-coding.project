@@ -2,7 +2,8 @@
 import { useVuelidate } from '@vuelidate/core'
 import { maxLength, minValue, required } from '@vuelidate/validators'
 import type { Invoice } from '~/types/billing'
-import { PaymentStatus, SriPaymentMethod } from '~/types/billing'
+import { InvoiceStatus, PaymentStatus } from '~/types/billing'
+import { SriPaymentMethod } from '~/types/sri-enums'
 
 definePageMeta({
   middleware: ['auth', 'tenant'],
@@ -24,7 +25,7 @@ const unpaidInvoices = ref<Invoice[]>([])
 const formData = reactive({
   invoiceId: '',
   amount: 0,
-  paymentDate: new Date().toISOString().split('T')[0],
+  paymentDate: new Date() as Date | null,
   paymentMethod: SriPaymentMethod.Cash,
   status: PaymentStatus.Completed,
   transactionId: '',
@@ -45,7 +46,7 @@ onMounted(async () => {
   try {
     const allInvoices = await getAllInvoices()
     unpaidInvoices.value = allInvoices.filter(
-      inv => inv.status !== 'paid' && inv.status !== 'cancelled' && inv.status !== 'voided',
+      inv => inv.status !== InvoiceStatus.Paid && inv.status !== InvoiceStatus.Cancelled && inv.status !== InvoiceStatus.Voided,
     )
 
     // Pre-fill invoice if provided in query
@@ -132,7 +133,7 @@ async function handleSubmit() {
     await createPayment({
       invoiceId: formData.invoiceId,
       amount: formData.amount,
-      paymentDate: formData.paymentDate,
+      paymentDate: formData.paymentDate instanceof Date ? formData.paymentDate.toISOString().split('T')[0] : '',
       paymentMethod: formData.paymentMethod,
       status: formData.status,
       transactionId: formData.transactionId || undefined,

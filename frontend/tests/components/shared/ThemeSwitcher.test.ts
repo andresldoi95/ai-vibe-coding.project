@@ -8,7 +8,8 @@ import ThemeSwitcher from '~/components/shared/ThemeSwitcher.vue'
 const SelectStub = {
   name: 'SelectStub',
   props: ['modelValue', 'options', 'optionLabel', 'optionValue', 'appendTo'],
-  render() {
+  // eslint-disable-next-line ts/no-explicit-any
+  render(this: any) {
     const { modelValue, options, $attrs, $slots } = this
 
     return h('div', { class: ['select-stub', $attrs.class] }, [

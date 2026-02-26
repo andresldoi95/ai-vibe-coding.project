@@ -51,6 +51,16 @@ const dialogVisible = computed({
 const selectedFormat = ref(props.formats[0]?.value || 'excel')
 const filterValues = reactive<Record<string, unknown>>({})
 
+function getFilterValue(name: string): string {
+  return filterValues[name] as string
+}
+function getFilterDate(name: string): Date | Date[] | null | undefined {
+  return filterValues[name] as Date | null | undefined
+}
+function setFilterValue(name: string, val: unknown) {
+  filterValues[name] = val
+}
+
 // Initialize filter values
 watch(() => props.filters, (newFilters) => {
   newFilters.forEach((filter) => {
@@ -124,9 +134,10 @@ function handleCancel() {
                 <label :for="filter.name" class="block text-sm mb-1">{{ filter.label }}</label>
                 <InputText
                   :id="filter.name"
-                  v-model="filterValues[filter.name]"
+                  :model-value="getFilterValue(filter.name)"
                   :placeholder="filter.placeholder"
                   class="w-full"
+                  @update:model-value="setFilterValue(filter.name, $event)"
                 />
               </template>
 
@@ -150,10 +161,11 @@ function handleCancel() {
                 <label :for="filter.name" class="block text-sm mb-1">{{ filter.label }}</label>
                 <Calendar
                   :id="filter.name"
-                  v-model="filterValues[filter.name]"
+                  :model-value="getFilterDate(filter.name)"
                   date-format="yy-mm-dd"
                   class="w-full"
                   show-icon
+                  @update:model-value="setFilterValue(filter.name, $event)"
                 />
               </template>
             </div>

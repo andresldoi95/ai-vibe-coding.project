@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useVuelidate } from '@vuelidate/core'
 import { helpers, maxLength, required } from '@vuelidate/validators'
+import type { Establishment } from '~/types/establishment'
 
 definePageMeta({
   middleware: ['auth', 'tenant'],
@@ -16,7 +17,7 @@ const { getAllEstablishments } = useEstablishment()
 
 const loading = ref(false)
 const loadingEstablishments = ref(false)
-const establishments = ref<{ id: string, code: string, name: string }[]>([])
+const establishments = ref<Establishment[]>([])
 
 const formData = reactive({
   emissionPointCode: '',

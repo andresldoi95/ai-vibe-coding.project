@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { InvoiceStatus } from '~/types/billing'
-import type { CreditNote } from '~/types/billing'
 
 definePageMeta({
   middleware: ['auth', 'tenant'],

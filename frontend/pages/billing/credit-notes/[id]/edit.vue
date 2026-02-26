@@ -23,7 +23,7 @@ const taxRates = ref<TaxRate[]>([])
 const creditNote = ref<CreditNote | null>(null)
 
 const formData = reactive({
-  issueDate: '',
+  issueDate: null as Date | null,
   reason: '',
   notes: '',
   items: [] as UpdateCreditNoteItemDto[],
@@ -48,7 +48,7 @@ onMounted(async () => {
     }
 
     // Populate form
-    formData.issueDate = new Date(creditNoteData.issueDate).toISOString().split('T')[0]
+    formData.issueDate = new Date(creditNoteData.issueDate)
     formData.reason = creditNoteData.reason
     formData.notes = creditNoteData.notes || ''
     formData.items = creditNoteData.items.map((item: CreditNoteItem) => ({
@@ -126,7 +126,8 @@ async function handleSubmit() {
   loading.value = true
   try {
     const payload: UpdateCreditNoteDto = {
-      issueDate: formData.issueDate,
+      customerId: creditNote.value!.customerId,
+      issueDate: formData.issueDate instanceof Date ? formData.issueDate.toISOString().split('T')[0] : '',
       reason: formData.reason,
       notes: formData.notes || undefined,
       items: formData.items,

@@ -10,12 +10,14 @@ interface CreateCustomerData {
   billingCity?: string
   billingState?: string
   billingPostalCode?: string
-  billingCountry?: string
+  billingCountryId?: string
+  billingCountryName?: string
   shippingStreet?: string
   shippingCity?: string
   shippingState?: string
   shippingPostalCode?: string
-  shippingCountry?: string
+  shippingCountryId?: string
+  shippingCountryName?: string
   notes?: string
   website?: string
   isActive?: boolean

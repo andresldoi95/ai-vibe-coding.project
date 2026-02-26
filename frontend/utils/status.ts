@@ -9,21 +9,21 @@ import type { InvoiceStatus, PaymentStatus, SubscriptionStatus } from '~/types/b
  * Get PrimeVue severity for invoice status
  */
 export function getInvoiceStatusSeverity(status: InvoiceStatus): string {
-  return INVOICE_STATUS_SEVERITY[status] || 'secondary'
+  return (INVOICE_STATUS_SEVERITY as Record<string, string>)[status as unknown as string] || 'secondary'
 }
 
 /**
  * Get PrimeVue severity for payment status
  */
 export function getPaymentStatusSeverity(status: PaymentStatus): string {
-  return PAYMENT_STATUS_SEVERITY[status] || 'secondary'
+  return (PAYMENT_STATUS_SEVERITY as Record<string, string>)[status as unknown as string] || 'secondary'
 }
 
 /**
  * Get PrimeVue severity for subscription status
  */
 export function getSubscriptionStatusSeverity(status: SubscriptionStatus): string {
-  return SUBSCRIPTION_STATUS_SEVERITY[status] || 'secondary'
+  return (SUBSCRIPTION_STATUS_SEVERITY as Record<string, string>)[status as unknown as string] || 'secondary'
 }
 
 /**

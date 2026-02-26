@@ -1,4 +1,5 @@
 // Billing module types
+import type { SriPaymentMethod } from './sri-enums'
 
 // Tax Rates
 export interface TaxRate {
@@ -208,19 +209,6 @@ export interface Payment {
   createdAt: string
   updatedAt: string
   createdBy?: string
-}
-
-// SRI Ecuador Payment Methods
-export enum SriPaymentMethod {
-  Cash = 1,
-  Check = 2,
-  BankTransfer = 3,
-  AccountDeposit = 4,
-  DebitCard = 16,
-  ElectronicMoney = 17,
-  PrepaidCard = 18,
-  CreditCard = 19,
-  Other = 20,
 }
 
 // Payment Status

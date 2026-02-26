@@ -2,7 +2,7 @@
 import { useVuelidate } from '@vuelidate/core'
 import { email, helpers, maxLength, required } from '@vuelidate/validators'
 import type { InviteUserData } from '~/types/user'
-import type { Role } from '~/types/role'
+import type { Role } from '~/types/auth'
 
 definePageMeta({
   middleware: ['auth', 'tenant'],
@@ -45,7 +45,8 @@ const rules = computed(() => ({
   },
 }))
 
-const v$ = useVuelidate(rules, formData)
+// eslint-disable-next-line ts/no-explicit-any
+const v$ = useVuelidate(rules, formData as any)
 
 async function loadRoles() {
   try {

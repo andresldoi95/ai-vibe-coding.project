@@ -1,23 +1,26 @@
-export default defineNuxtRouteMiddleware((to) => {
+import type { NavigationGuard, RouteLocationNormalized } from 'vue-router'
+import { navigateTo as _navigateTo } from '#app'
+
+export default defineNuxtRouteMiddleware((to: RouteLocationNormalized, _from: RouteLocationNormalized): ReturnType<NavigationGuard> => {
   // Skip during SSR to prevent hydration issues with localStorage
   if (import.meta.server) {
     return
   }
 
-  const authStore = useAuthStore()
+  const authStore = useAuthStore() as unknown as { isAuthenticated: boolean }
 
   // Allow access to public auth pages
   const publicAuthPages = ['/login', '/register', '/forgot-password', '/reset-password']
   if (publicAuthPages.includes(to.path)) {
     // Redirect to dashboard if already authenticated
     if (authStore.isAuthenticated) {
-      return navigateTo('/')
+      return _navigateTo('/')
     }
     return
   }
 
   // Require authentication for all other pages
   if (!authStore.isAuthenticated) {
-    return navigateTo('/login')
+    return _navigateTo('/login')
   }
 })

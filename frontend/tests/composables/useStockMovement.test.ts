@@ -393,7 +393,7 @@ describe('useStockMovement', () => {
       // Mock Date.toISOString
       const originalDate = Date
       globalThis.Date = class extends originalDate {
-        toISOString() {
+        override toISOString() {
           return `${mockDate}T00:00:00.000Z`
         }
       } as typeof Date

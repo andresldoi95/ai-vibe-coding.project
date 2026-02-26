@@ -32,7 +32,7 @@ const formData = reactive({
   totalCost: null as number | null,
   reference: '',
   notes: '',
-  movementDate: new Date().toISOString().split('T')[0],
+  movementDate: new Date() as Date | null,
 })
 
 // Movement type options
@@ -119,7 +119,7 @@ async function handleSubmit() {
       totalCost: formData.totalCost || undefined,
       reference: formData.reference || undefined,
       notes: formData.notes || undefined,
-      movementDate: formData.movementDate,
+      movementDate: formData.movementDate instanceof Date ? formData.movementDate.toISOString().split('T')[0] : undefined,
     })
 
     toast.showSuccess(t('messages.success_create'), t('stock_movements.created_successfully'))

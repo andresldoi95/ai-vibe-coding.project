@@ -22,7 +22,9 @@ describe('useWarehouse', () => {
           city: 'New York',
           state: 'NY',
           postalCode: '10001',
-          country: 'USA',
+          countryId: 'US',
+          countryName: 'United States',
+          countryCode: 'US',
           phone: '555-0100',
           email: 'main@warehouse.com',
           isActive: true,
@@ -40,7 +42,9 @@ describe('useWarehouse', () => {
           city: 'Los Angeles',
           state: 'CA',
           postalCode: '90001',
-          country: 'USA',
+          countryId: 'US',
+          countryName: 'United States',
+          countryCode: 'US',
           isActive: true,
           createdAt: '2024-01-02T00:00:00Z',
           updatedAt: '2024-01-02T00:00:00Z',
@@ -82,7 +86,9 @@ describe('useWarehouse', () => {
         city: 'New York',
         state: 'NY',
         postalCode: '10001',
-        country: 'USA',
+        countryId: 'US',
+        countryName: 'United States',
+        countryCode: 'US',
         phone: '555-0100',
         email: 'main@warehouse.com',
         isActive: true,
@@ -116,7 +122,9 @@ describe('useWarehouse', () => {
         city: 'Chicago',
         state: 'IL',
         postalCode: '60601',
-        country: 'USA',
+        countryId: 'US',
+        countryName: 'United States',
+        countryCode: 'US',
         phone: '555-0200',
         email: 'new@warehouse.com',
         isActive: true,
@@ -158,7 +166,9 @@ describe('useWarehouse', () => {
         city: 'New York',
         state: 'NY',
         postalCode: '10001',
-        country: 'USA',
+        countryId: 'US',
+        countryName: 'United States',
+        countryCode: 'US',
         phone: '555-0100',
         email: 'updated@warehouse.com',
         isActive: true,
@@ -224,13 +234,13 @@ describe('useWarehouse', () => {
         },
         blob: vi.fn().mockResolvedValue(mockBlob),
       })
-      globalThis.fetch = mockFetch
+      globalThis.fetch = mockFetch as unknown as typeof fetch
 
       // Mock DOM APIs
       mockCreateObjectURL = vi.fn().mockReturnValue('blob:mock-url')
       mockRevokeObjectURL = vi.fn()
-      globalThis.URL.createObjectURL = mockCreateObjectURL
-      globalThis.URL.revokeObjectURL = mockRevokeObjectURL
+      globalThis.URL.createObjectURL = mockCreateObjectURL as unknown as typeof URL.createObjectURL
+      globalThis.URL.revokeObjectURL = mockRevokeObjectURL as unknown as typeof URL.revokeObjectURL
 
       const mockAnchor = {
         href: '',
@@ -329,7 +339,8 @@ describe('useWarehouse', () => {
     })
 
     it('should throw error when no tenant selected', async () => {
-      const mockTenantStore = useTenantStore()
+      // eslint-disable-next-line ts/no-explicit-any
+      const mockTenantStore = useTenantStore() as any
       const originalTenantId = mockTenantStore.currentTenantId
       mockTenantStore.currentTenantId = null
 
@@ -341,7 +352,8 @@ describe('useWarehouse', () => {
     })
 
     it('should throw error when not authenticated', async () => {
-      const mockAuthStore = useAuthStore()
+      // eslint-disable-next-line ts/no-explicit-any
+      const mockAuthStore = useAuthStore() as any
       const originalToken = mockAuthStore.token
       mockAuthStore.token = null
 
@@ -407,7 +419,8 @@ describe('useWarehouse', () => {
 
       const { createWarehouse } = useWarehouse()
 
-      await expect(createWarehouse(newWarehouseData)).rejects.toThrow('Validation error')
+      // eslint-disable-next-line ts/no-explicit-any
+      await expect(createWarehouse(newWarehouseData as any)).rejects.toThrow('Validation error')
     })
   })
 })

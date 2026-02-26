@@ -1,4 +1,5 @@
-import type { Payment, PaymentStatus, SriPaymentMethod } from '~/types/billing'
+import type { Payment, PaymentStatus } from '~/types/billing'
+import type { SriPaymentMethod } from '~/types/sri-enums'
 
 interface CreatePaymentData {
   invoiceId: string

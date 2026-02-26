@@ -10,86 +10,86 @@ import type { InvoiceStatus, PaymentStatus, SubscriptionStatus } from '~/types/b
 describe('status utility', () => {
   describe('getInvoiceStatusSeverity', () => {
     it('should return correct severity for draft status', () => {
-      const severity = getInvoiceStatusSeverity('draft' as InvoiceStatus)
+      const severity = getInvoiceStatusSeverity('draft' as unknown as InvoiceStatus)
       expect(severity).toBe('secondary')
     })
 
     it('should return correct severity for sent status', () => {
-      const severity = getInvoiceStatusSeverity('sent' as InvoiceStatus)
+      const severity = getInvoiceStatusSeverity('sent' as unknown as InvoiceStatus)
       expect(severity).toBe('info')
     })
 
     it('should return correct severity for paid status', () => {
-      const severity = getInvoiceStatusSeverity('paid' as InvoiceStatus)
+      const severity = getInvoiceStatusSeverity('paid' as unknown as InvoiceStatus)
       expect(severity).toBe('success')
     })
 
     it('should return correct severity for overdue status', () => {
-      const severity = getInvoiceStatusSeverity('overdue' as InvoiceStatus)
+      const severity = getInvoiceStatusSeverity('overdue' as unknown as InvoiceStatus)
       expect(severity).toBe('danger')
     })
 
     it('should return correct severity for cancelled status', () => {
-      const severity = getInvoiceStatusSeverity('cancelled' as InvoiceStatus)
+      const severity = getInvoiceStatusSeverity('cancelled' as unknown as InvoiceStatus)
       expect(severity).toBe('warning')
     })
 
     it('should return secondary as fallback for unknown status', () => {
-      const severity = getInvoiceStatusSeverity('unknown' as InvoiceStatus)
+      const severity = getInvoiceStatusSeverity('unknown' as unknown as InvoiceStatus)
       expect(severity).toBe('secondary')
     })
   })
 
   describe('getPaymentStatusSeverity', () => {
     it('should return correct severity for pending status', () => {
-      const severity = getPaymentStatusSeverity('pending' as PaymentStatus)
+      const severity = getPaymentStatusSeverity('pending' as unknown as PaymentStatus)
       expect(severity).toBe('warning')
     })
 
     it('should return correct severity for completed status', () => {
-      const severity = getPaymentStatusSeverity('completed' as PaymentStatus)
+      const severity = getPaymentStatusSeverity('completed' as unknown as PaymentStatus)
       expect(severity).toBe('success')
     })
 
     it('should return correct severity for failed status', () => {
-      const severity = getPaymentStatusSeverity('failed' as PaymentStatus)
+      const severity = getPaymentStatusSeverity('failed' as unknown as PaymentStatus)
       expect(severity).toBe('danger')
     })
 
     it('should return correct severity for refunded status', () => {
-      const severity = getPaymentStatusSeverity('refunded' as PaymentStatus)
+      const severity = getPaymentStatusSeverity('refunded' as unknown as PaymentStatus)
       expect(severity).toBe('info')
     })
 
     it('should return secondary as fallback for unknown status', () => {
-      const severity = getPaymentStatusSeverity('unknown' as PaymentStatus)
+      const severity = getPaymentStatusSeverity('unknown' as unknown as PaymentStatus)
       expect(severity).toBe('secondary')
     })
   })
 
   describe('getSubscriptionStatusSeverity', () => {
     it('should return correct severity for active status', () => {
-      const severity = getSubscriptionStatusSeverity('active' as SubscriptionStatus)
+      const severity = getSubscriptionStatusSeverity('active' as unknown as SubscriptionStatus)
       expect(severity).toBe('success')
     })
 
     it('should return correct severity for cancelled status', () => {
-      const severity = getSubscriptionStatusSeverity('cancelled' as SubscriptionStatus)
+      const severity = getSubscriptionStatusSeverity('cancelled' as unknown as SubscriptionStatus)
       expect(severity).toBe('warning')
     })
 
     it('should return correct severity for expired status', () => {
-      const severity = getSubscriptionStatusSeverity('expired' as SubscriptionStatus)
+      const severity = getSubscriptionStatusSeverity('expired' as unknown as SubscriptionStatus)
       expect(severity).toBe('danger')
     })
 
     it('should return correct severity for trial status', () => {
-      const severity = getSubscriptionStatusSeverity('trial' as SubscriptionStatus)
+      const severity = getSubscriptionStatusSeverity('trial' as unknown as SubscriptionStatus)
       expect(severity).toBe('info')
     })
 
     it('should return secondary as fallback for unknown status', () => {
-      const severity = getSubscriptionStatusSeverity('unknown' as SubscriptionStatus)
+      const severity = getSubscriptionStatusSeverity('unknown' as unknown as SubscriptionStatus)
       expect(severity).toBe('secondary')
     })
   })

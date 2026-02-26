@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { CompanyUser } from '~/types/user'
-import type { Role } from '~/types/role'
+import type { Role } from '~/types/auth'
 
 definePageMeta({
   middleware: ['auth', 'tenant'],

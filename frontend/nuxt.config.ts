@@ -71,10 +71,7 @@ export default defineNuxtConfig({
     directives: {
       include: ['Tooltip', 'Ripple', 'StyleClass'],
     },
-    services: {
-      toast: true,
-      confirmationService: true,
-    },
+    // services: { toast: true, confirmationService: true }, // managed manually in plugins
   },
 
   // Tailwind CSS configuration

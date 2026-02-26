@@ -65,7 +65,7 @@ export function useCrudPage<T extends { id: string, name?: string }>(
   const selectedItem = ref<T | null>(null) as Ref<T | null>
 
   // Setup breadcrumbs
-  const breadcrumbs = []
+  const breadcrumbs: Array<{ label: string, to?: string }> = []
   if (options.parentRoute) {
     breadcrumbs.push({
       label: t(`nav.${options.parentRoute}`),

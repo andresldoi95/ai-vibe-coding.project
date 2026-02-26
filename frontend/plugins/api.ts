@@ -12,24 +12,20 @@ export default defineNuxtPlugin(() => {
       const authStore = useAuthStore()
       const tenantStore = useTenantStore()
 
-      // Initialize headers if not present
-      options.headers = options.headers || {}
+      // Initialize headers as a Headers instance so we can mutate safely
+      const headers = new Headers(options.headers as HeadersInit | undefined)
 
       // Add authorization token
       if (authStore.token) {
-        options.headers = {
-          ...options.headers,
-          Authorization: `Bearer ${authStore.token}`,
-        }
+        headers.set('Authorization', `Bearer ${authStore.token}`)
       }
 
       // Add tenant context
       if (tenantStore.currentTenantId) {
-        options.headers = {
-          ...options.headers,
-          'X-Tenant-Id': tenantStore.currentTenantId,
-        }
+        headers.set('X-Tenant-Id', tenantStore.currentTenantId)
       }
+
+      options.headers = headers
 
       // Log request for debugging
       if (import.meta.dev) {

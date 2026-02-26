@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { Establishment } from '~/types/establishment'
+
 definePageMeta({
   middleware: ['auth', 'tenant'],
   layout: 'default',
@@ -15,7 +17,7 @@ const selectedEstablishment = ref<string | undefined>(
   route.query.establishment as string | undefined,
 )
 const selectedStatus = ref<boolean | undefined>(undefined)
-const establishments = ref<{ id: string, code: string, name: string }[]>([])
+const establishments = ref<Establishment[]>([])
 
 // Using useCrudPage composable with custom load function
 const {

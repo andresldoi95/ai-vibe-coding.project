@@ -53,8 +53,10 @@ describe('useCrudPage', () => {
       resourceName: 'warehouses',
       parentRoute: 'inventory',
       basePath: '/inventory/warehouses',
-      loadItems: loadItemsMock,
-      deleteItem: deleteItemMock,
+      // eslint-disable-next-line ts/no-explicit-any
+      loadItems: loadItemsMock as any,
+      // eslint-disable-next-line ts/no-explicit-any
+      deleteItem: deleteItemMock as any,
     }
   })
 

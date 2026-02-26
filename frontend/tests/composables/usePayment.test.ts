@@ -1,7 +1,8 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { mockApiFetch } from '../setup'
 import { usePayment } from '~/composables/usePayment'
-import { type Payment, PaymentStatus, SriPaymentMethod } from '~/types/billing'
+import { type Payment, PaymentStatus } from '~/types/billing'
+import { SriPaymentMethod } from '~/types/sri-enums'
 
 describe('usePayment', () => {
   beforeEach(() => {

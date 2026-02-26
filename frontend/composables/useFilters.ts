@@ -53,7 +53,7 @@ export function useFilters<T extends Record<string, unknown>>(
 
   function applyFilters() {
     if (options.onChange) {
-      options.onChange(filters as T)
+      options.onChange(filters as unknown as T)
     }
   }
 
@@ -63,7 +63,7 @@ export function useFilters<T extends Record<string, unknown>>(
   }
 
   function setFilter<K extends keyof T>(key: K, value: T[K]) {
-    filters[key] = value
+    (filters as Record<string, unknown>)[key as string] = value
 
     if (options.debounceMs) {
       if (debounceTimeout.value) {
@@ -85,7 +85,7 @@ export function useFilters<T extends Record<string, unknown>>(
   }
 
   return {
-    filters,
+    filters: filters as unknown as T,
     activeFilterCount,
     hasActiveFilters,
     applyFilters,

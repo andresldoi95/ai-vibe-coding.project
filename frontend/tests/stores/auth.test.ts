@@ -2,7 +2,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createPinia, setActivePinia } from 'pinia'
 import { mockApiFetch, mockTenantStoreData } from '../setup'
 import { useAuthStore } from '~/stores/auth'
-import type { ApiResponse, LoginCredentials, LoginResponse, RegisterData, Role, SelectTenantResponse, User } from '~/types/auth'
+import type { LoginCredentials, LoginResponse, RegisterData, Role, SelectTenantResponse, User } from '~/types/auth'
+import type { ApiResponse } from '~/types/api'
 import type { Tenant } from '~/types/tenant'
 
 // Override global useTenantStore for auth tests
@@ -27,25 +28,22 @@ describe('auth store', () => {
     id: 'user-1',
     name: 'John Doe',
     email: 'john@example.com',
-    createdAt: '2024-01-01T00:00:00Z',
-    updatedAt: '2024-01-01T00:00:00Z',
+    isActive: true,
+    emailConfirmed: true,
   }
 
   const mockRole: Role = {
     id: 'role-1',
     name: 'Admin',
     description: 'Administrator role',
-    createdAt: '2024-01-01T00:00:00Z',
-    updatedAt: '2024-01-01T00:00:00Z',
+    priority: 1,
   }
 
   const mockTenant: Tenant = {
     id: 'tenant-1',
     name: 'Acme Corp',
     slug: 'acme-corp',
-    isActive: true,
-    createdAt: '2024-01-01T00:00:00Z',
-    updatedAt: '2024-01-01T00:00:00Z',
+    status: 'Active',
   }
 
   const mockLoginResponse: LoginResponse = {
@@ -163,8 +161,8 @@ describe('auth store', () => {
       }
 
       mockApiFetch
-        .mockResolvedValueOnce({ data: mockLoginResponse } as ApiResponse<LoginResponse>)
-        .mockResolvedValueOnce({ data: selectTenantResponse } as ApiResponse<SelectTenantResponse>)
+        .mockResolvedValueOnce({ data: mockLoginResponse } as unknown as ApiResponse<LoginResponse>)
+        .mockResolvedValueOnce({ data: selectTenantResponse } as unknown as ApiResponse<SelectTenantResponse>)
 
       // Mock console.log to suppress output
       const consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
@@ -197,7 +195,7 @@ describe('auth store', () => {
       }
 
       const loginResponseNoTenants = { ...mockLoginResponse, tenants: [] }
-      mockApiFetch.mockResolvedValue({ data: loginResponseNoTenants } as ApiResponse<LoginResponse>)
+      mockApiFetch.mockResolvedValue({ data: loginResponseNoTenants } as unknown as ApiResponse<LoginResponse>)
 
       // Mock console.log
       const consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
@@ -246,7 +244,7 @@ describe('auth store', () => {
         permissions: ['users.read', 'users.write'],
       }
 
-      mockApiFetch.mockResolvedValue({ data: selectTenantResponse } as ApiResponse<SelectTenantResponse>)
+      mockApiFetch.mockResolvedValue({ data: selectTenantResponse } as unknown as ApiResponse<SelectTenantResponse>)
 
       // Mock console.log
       const consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
@@ -368,7 +366,7 @@ describe('auth store', () => {
     it('should fetch current user successfully', async () => {
       // Arrange
       const store = useAuthStore()
-      mockApiFetch.mockResolvedValue({ data: mockUser } as ApiResponse<User>)
+      mockApiFetch.mockResolvedValue({ data: mockUser } as unknown as ApiResponse<User>)
 
       // Act
       await store.fetchCurrentUser()
@@ -405,6 +403,7 @@ describe('auth store', () => {
         name: 'John Doe',
         email: 'john@example.com',
         password: 'password123',
+        confirmPassword: 'password123',
       }
 
       const selectTenantResponse: SelectTenantResponse = {
@@ -414,8 +413,8 @@ describe('auth store', () => {
       }
 
       mockApiFetch
-        .mockResolvedValueOnce({ data: mockLoginResponse } as ApiResponse<LoginResponse>)
-        .mockResolvedValueOnce({ data: selectTenantResponse } as ApiResponse<SelectTenantResponse>)
+        .mockResolvedValueOnce({ data: mockLoginResponse } as unknown as ApiResponse<LoginResponse>)
+        .mockResolvedValueOnce({ data: selectTenantResponse } as unknown as ApiResponse<SelectTenantResponse>)
 
       // Mock console.log
       const consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
@@ -454,6 +453,7 @@ describe('auth store', () => {
         name: 'John Doe',
         email: 'john@example.com',
         password: 'password123',
+        confirmPassword: 'password123',
       }
 
       const error = new Error('Email already exists')

@@ -186,6 +186,7 @@ describe('useInvoice', () => {
       const newInvoiceData: CreateInvoiceDto = {
         customerId: 'customer-1',
         warehouseId: 'warehouse-1',
+        emissionPointId: 'ep-1',
         issueDate: '2024-01-01T00:00:00Z',
         notes: 'New invoice',
         items: [
@@ -686,6 +687,7 @@ describe('useInvoice', () => {
 
       const newInvoiceData: CreateInvoiceDto = {
         customerId: 'customer-1',
+        emissionPointId: 'ep-1',
         issueDate: '2024-01-01T00:00:00Z',
         items: [],
       }

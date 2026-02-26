@@ -211,11 +211,11 @@ onMounted(() => {
                   id="firstName"
                   v-model="formData.firstName"
                   class="w-full"
-                  :class="{ 'p-invalid': v$.firstName.$error }"
-                  @blur="v$.firstName.$touch()"
+                  :class="{ 'p-invalid': v$.firstName?.$error }"
+                  @blur="v$.firstName?.$touch()"
                 />
-                <small v-if="v$.firstName.$error" class="p-error">
-                  {{ v$.firstName.$errors[0].$message }}
+                <small v-if="v$.firstName?.$error" class="p-error">
+                  {{ v$.firstName?.$errors[0]?.$message }}
                 </small>
               </div>
 
@@ -228,11 +228,11 @@ onMounted(() => {
                   id="lastName"
                   v-model="formData.lastName"
                   class="w-full"
-                  :class="{ 'p-invalid': v$.lastName.$error }"
-                  @blur="v$.lastName.$touch()"
+                  :class="{ 'p-invalid': v$.lastName?.$error }"
+                  @blur="v$.lastName?.$touch()"
                 />
-                <small v-if="v$.lastName.$error" class="p-error">
-                  {{ v$.lastName.$errors[0].$message }}
+                <small v-if="v$.lastName?.$error" class="p-error">
+                  {{ v$.lastName?.$errors[0]?.$message }}
                 </small>
               </div>
 
@@ -248,11 +248,11 @@ onMounted(() => {
                   :feedback="true"
                   class="w-full"
                   inputClass="w-full"
-                  :class="{ 'p-invalid': v$.password.$error }"
-                  @blur="v$.password.$touch()"
+                  :class="{ 'p-invalid': v$.password?.$error }"
+                  @blur="v$.password?.$touch()"
                 />
-                <small v-if="v$.password.$error" class="p-error">
-                  {{ v$.password.$errors[0].$message }}
+                <small v-if="v$.password?.$error" class="p-error">
+                  {{ v$.password?.$errors[0]?.$message }}
                 </small>
               </div>
 
@@ -268,11 +268,11 @@ onMounted(() => {
                   :feedback="false"
                   class="w-full"
                   inputClass="w-full"
-                  :class="{ 'p-invalid': v$.confirmPassword.$error }"
-                  @blur="v$.confirmPassword.$touch()"
+                  :class="{ 'p-invalid': v$.confirmPassword?.$error }"
+                  @blur="v$.confirmPassword?.$touch()"
                 />
-                <small v-if="v$.confirmPassword.$error" class="p-error">
-                  {{ v$.confirmPassword.$errors[0].$message }}
+                <small v-if="v$.confirmPassword?.$error" class="p-error">
+                  {{ v$.confirmPassword?.$errors[0]?.$message }}
                 </small>
               </div>
             </template>

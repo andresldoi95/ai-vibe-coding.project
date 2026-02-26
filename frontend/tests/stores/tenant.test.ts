@@ -14,18 +14,14 @@ describe('tenant store', () => {
     id: 'tenant-1',
     name: 'Acme Corp',
     slug: 'acme-corp',
-    isActive: true,
-    createdAt: '2024-01-01T00:00:00Z',
-    updatedAt: '2024-01-01T00:00:00Z',
+    status: 'Active',
   }
 
   const mockTenant2: Tenant = {
     id: 'tenant-2',
     name: 'Tech Inc',
     slug: 'tech-inc',
-    isActive: true,
-    createdAt: '2024-01-02T00:00:00Z',
-    updatedAt: '2024-01-02T00:00:00Z',
+    status: 'Active',
   }
 
   describe('initial state', () => {

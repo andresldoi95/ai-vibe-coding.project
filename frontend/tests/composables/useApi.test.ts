@@ -36,7 +36,7 @@ describe('useApi', () => {
       mockApiFetch.mockResolvedValue({ success: true })
 
       const { apiFetch } = useApi()
-      const options = { method: 'POST', body: { name: 'Test' } }
+      const options = { method: 'POST' as const, body: { name: 'Test' } }
       await apiFetch('/api/items', options)
 
       expect(mockApiFetch).toHaveBeenCalledWith('/api/items', options)

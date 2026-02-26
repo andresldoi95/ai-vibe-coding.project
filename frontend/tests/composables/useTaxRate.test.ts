@@ -20,7 +20,7 @@ describe('useTaxRate', () => {
           rate: 0.12,
           isDefault: true,
           isActive: true,
-          country: 'Ecuador',
+          countryId: 'ECU',
           createdAt: '2024-01-01T00:00:00Z',
           updatedAt: '2024-01-01T00:00:00Z',
         },
@@ -32,7 +32,7 @@ describe('useTaxRate', () => {
           rate: 0.00,
           isDefault: false,
           isActive: true,
-          country: 'Ecuador',
+          countryId: 'ECU',
           createdAt: '2024-01-02T00:00:00Z',
           updatedAt: '2024-01-02T00:00:00Z',
         },
@@ -71,7 +71,7 @@ describe('useTaxRate', () => {
         rate: 0.12,
         isDefault: true,
         isActive: true,
-        country: 'Ecuador',
+        countryId: 'ECU',
         createdAt: '2024-01-01T00:00:00Z',
         updatedAt: '2024-01-01T00:00:00Z',
       }
@@ -99,7 +99,7 @@ describe('useTaxRate', () => {
         rate: 0.20,
         isDefault: false,
         isActive: true,
-        country: 'UK',
+        countryId: 'GBR',
       }
 
       const mockCreatedTaxRate: TaxRate = {
@@ -135,7 +135,7 @@ describe('useTaxRate', () => {
         rate: 0.15,
         isDefault: true,
         isActive: true,
-        country: 'Ecuador',
+        countryId: 'ECU',
       }
 
       const mockUpdatedTaxRate: TaxRate = {

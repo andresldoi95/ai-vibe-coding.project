@@ -14,6 +14,8 @@ interface CreateProductData {
   weight?: number
   dimensions?: string
   isActive?: boolean
+  initialQuantity?: number
+  initialWarehouseId?: string
 }
 
 interface UpdateProductData extends CreateProductData {

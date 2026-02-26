@@ -34,7 +34,7 @@ const formData = reactive({
   totalCost: null as number | null,
   reference: '',
   notes: '',
-  movementDate: '',
+  movementDate: null as Date | null,
 })
 
 // Movement type options
@@ -107,7 +107,7 @@ async function loadData() {
     formData.totalCost = movementData.totalCost || null
     formData.reference = movementData.reference || ''
     formData.notes = movementData.notes || ''
-    formData.movementDate = movementData.movementDate.split('T')[0]
+    formData.movementDate = new Date(movementData.movementDate)
 
     // Set breadcrumbs
     uiStore.setBreadcrumbs([
@@ -147,7 +147,7 @@ async function handleSubmit() {
       totalCost: formData.totalCost || undefined,
       reference: formData.reference || undefined,
       notes: formData.notes || undefined,
-      movementDate: formData.movementDate,
+      movementDate: formData.movementDate instanceof Date ? formData.movementDate.toISOString().split('T')[0] : undefined,
     })
 
     toast.showSuccess(t('messages.success_update'), t('stock_movements.updated_successfully'))

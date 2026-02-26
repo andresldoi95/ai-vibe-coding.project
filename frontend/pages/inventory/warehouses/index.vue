@@ -38,10 +38,10 @@ function openExportDialog() {
   exportDialog.value = true
 }
 
-async function handleExport({ format }: { format: string }) {
+async function handleExport({ format }: { format: string, filters?: Record<string, unknown> }) {
   exporting.value = true
   try {
-    await exportWarehouseStockSummary({ format })
+    await exportWarehouseStockSummary({ format: format as 'csv' | 'excel' })
     const toast = useNotification()
     toast.showSuccess(t('warehouses.export_success'))
     exportDialog.value = false
