@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using SaaS.Application.Common.Interfaces;
 using SaaS.Application.DTOs.Sri;
+using SaaS.Application.Features.CreditNotes.Commands.CheckCreditNoteAuthorizationStatus;
 using SaaS.Application.Features.Invoices.Commands.CheckAuthorizationStatus;
 using SaaS.Domain.Entities;
 using SaaS.Domain.Enums;
@@ -15,6 +16,7 @@ namespace SaaS.Application.Jobs;
 public class CheckPendingAuthorizationsJob
 {
     private readonly IInvoiceRepository _invoiceRepository;
+    private readonly ICreditNoteRepository _creditNoteRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ITenantContext _tenantContext;
     private readonly IMediator _mediator;
@@ -22,12 +24,14 @@ public class CheckPendingAuthorizationsJob
 
     public CheckPendingAuthorizationsJob(
         IInvoiceRepository invoiceRepository,
+        ICreditNoteRepository creditNoteRepository,
         IUnitOfWork unitOfWork,
         ITenantContext tenantContext,
         IMediator mediator,
         ILogger<CheckPendingAuthorizationsJob> logger)
     {
         _invoiceRepository = invoiceRepository;
+        _creditNoteRepository = creditNoteRepository;
         _unitOfWork = unitOfWork;
         _tenantContext = tenantContext;
         _mediator = mediator;
@@ -123,8 +127,11 @@ public class CheckPendingAuthorizationsJob
             }
 
             _logger.LogInformation(
-                "CheckPendingAuthorizationsJob completed. Success: {SuccessCount}, Errors: {ErrorCount}, Still Pending: {PendingCount}",
+                "CheckPendingAuthorizationsJob (Invoices) completed. Success: {SuccessCount}, Errors: {ErrorCount}, Still Pending: {PendingCount}",
                 successCount, errorCount, pendingInvoices.Count - successCount - errorCount);
+
+            // ── Credit Notes ──────────────────────────────────────────────────
+            await ProcessPendingCreditNotesAsync();
         }
         catch (Exception ex)
         {
@@ -132,4 +139,78 @@ public class CheckPendingAuthorizationsJob
             throw;
         }
     }
+
+    private async Task ProcessPendingCreditNotesAsync()
+    {
+        var pendingCreditNotes = await _creditNoteRepository.GetAllByStatusAsync(InvoiceStatus.PendingAuthorization);
+
+        if (!pendingCreditNotes.Any())
+        {
+            _logger.LogInformation("No credit notes pending authorization found");
+            return;
+        }
+
+        _logger.LogInformation("Found {Count} credit notes pending authorization", pendingCreditNotes.Count);
+
+        var successCount = 0;
+        var errorCount = 0;
+
+        foreach (var creditNote in pendingCreditNotes)
+        {
+            if (string.IsNullOrEmpty(creditNote.AccessKey))
+            {
+                _logger.LogWarning("CreditNote {CreditNoteId} has PendingAuthorization status but no AccessKey", creditNote.Id);
+                continue;
+            }
+
+            try
+            {
+                var tenant = await _unitOfWork.Tenants.GetByIdAsync(creditNote.TenantId);
+                if (tenant == null)
+                {
+                    _logger.LogWarning("Tenant {TenantId} not found for credit note {CreditNoteId}. Skipping.", creditNote.TenantId, creditNote.Id);
+                    errorCount++;
+                    continue;
+                }
+
+                var schemaName = tenant.SchemaName ?? $"tenant_{tenant.Slug}";
+                _tenantContext.SetTenant(creditNote.TenantId, schemaName);
+
+                var command = new CheckCreditNoteAuthorizationStatusCommand { CreditNoteId = creditNote.Id };
+                var result = await _mediator.Send(command);
+
+                if (result.IsSuccess && result.Value != null)
+                {
+                    var response = result.Value;
+                    if (response.IsAuthorized && response.AuthorizationNumber != null)
+                    {
+                        _logger.LogInformation("CreditNote {CreditNoteId} was authorized by SRI. Authorization: {AuthNumber}",
+                            creditNote.Id, response.AuthorizationNumber);
+                        successCount++;
+                    }
+                    else if (!response.IsAuthorized && response.Errors.Any())
+                    {
+                        _logger.LogWarning("CreditNote {CreditNoteId} was rejected by SRI", creditNote.Id);
+                        errorCount++;
+                    }
+                }
+                else
+                {
+                    _logger.LogError("Failed to check authorization for credit note {CreditNoteId}: {Error}",
+                        creditNote.Id, result.Error);
+                    errorCount++;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error checking authorization for credit note {CreditNoteId}", creditNote.Id);
+                errorCount++;
+            }
+
+            await Task.Delay(500);
+        }
+
+        _logger.LogInformation(
+            "CheckPendingAuthorizationsJob (CreditNotes) completed. Success: {SuccessCount}, Errors: {ErrorCount}",
+            successCount, errorCount);    }
 }

@@ -113,6 +113,14 @@ export function usePermissions() {
     // SRI Configuration
     viewSriConfiguration: () => hasPermission('sri_configuration.read'),
     updateSriConfiguration: () => hasPermission('sri_configuration.update'),
+
+    // Credit Notes
+    viewCreditNotes: () => hasPermission('credit-notes.read'),
+    readCreditNote: () => hasPermission('credit-notes.read'),
+    createCreditNote: () => hasPermission('credit-notes.create'),
+    updateCreditNote: () => hasPermission('credit-notes.update'),
+    deleteCreditNote: () => hasPermission('credit-notes.delete'),
+    manageCreditNote: () => hasPermission('credit-notes.manage'),
   }
 
   return {

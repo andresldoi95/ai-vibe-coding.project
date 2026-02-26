@@ -1,0 +1,129 @@
+<notaCredito id="comprobante" version="1.1.0">
+  <infoTributaria>
+    <ambiente>1</ambiente>
+    <tipoEmision>1</tipoEmision>
+    <razonSocial>Andres Leon</razonSocial>
+    <nombreComercial>Andres Leon</nombreComercial>
+    <ruc>0929866168001</ruc>
+    <claveAcceso>2602202604092986616800110010010000000024130852115</claveAcceso>
+    <codDoc>04</codDoc>
+    <estab>001</estab>
+    <ptoEmi>001</ptoEmi>
+    <secuencial>000000002</secuencial>
+    <dirMatriz>Av. Vernaza y Calle Guayaquil</dirMatriz>
+  </infoTributaria>
+  <infoNotaCredito>
+    <fechaEmision>26/02/2026</fechaEmision>
+    <dirEstablecimiento>Av. Amazonas N123-456, Quito</dirEstablecimiento>
+    <tipoIdentificacionComprador>04</tipoIdentificacionComprador>
+    <razonSocialComprador>Acme Corporation NYC</razonSocialComprador>
+    <identificacionComprador>1790123456001</identificacionComprador>
+    <obligadoContabilidad>NO</obligadoContabilidad>
+    <codDocModificado>01</codDocModificado>
+    <numDocModificado>002-001-000000008</numDocModificado>
+    <fechaEmisionDocSustento>20/02/2026</fechaEmisionDocSustento>
+    <totalSinImpuestos>14279.72</totalSinImpuestos>
+    <valorModificacion>16421.68</valorModificacion>
+    <moneda>DOLAR</moneda>
+    <totalConImpuestos>
+      <totalImpuesto>
+        <codigo>2</codigo>
+        <codigoPorcentaje>0</codigoPorcentaje>
+        <baseImponible>14279.72</baseImponible>
+        <valor>2141.96</valor>
+      </totalImpuesto>
+    </totalConImpuestos>
+    <motivo>Devolucion</motivo>
+  </infoNotaCredito>
+  <detalles>
+    <detalle>
+      <codigoPrincipal>PROD-DEMOCOMPANY-004</codigoPrincipal>
+      <descripcion>Mechanical gaming keyboard with RGB backlighting and programmable macro keys</descripcion>
+      <cantidad>6.000000</cantidad>
+      <precioUnitario>179.990000</precioUnitario>
+      <descuento>0.00</descuento>
+      <precioTotalSinImpuesto>1079.94</precioTotalSinImpuesto>
+      <impuestos>
+        <impuesto>
+          <codigo>2</codigo>
+          <codigoPorcentaje>0</codigoPorcentaje>
+          <tarifa>0.15</tarifa>
+          <baseImponible>1079.94</baseImponible>
+          <valor>161.99</valor>
+        </impuesto>
+      </impuestos>
+    </detalle>
+    <detalle>
+      <codigoPrincipal>PROD-DEMOCOMPANY-001</codigoPrincipal>
+      <descripcion>High-performance laptop with 15.6" display, Intel i7, 16GB RAM, 512GB SSD</descripcion>
+      <cantidad>3.000000</cantidad>
+      <precioUnitario>1499.990000</precioUnitario>
+      <descuento>0.00</descuento>
+      <precioTotalSinImpuesto>4499.97</precioTotalSinImpuesto>
+      <impuestos>
+        <impuesto>
+          <codigo>2</codigo>
+          <codigoPorcentaje>0</codigoPorcentaje>
+          <tarifa>0.15</tarifa>
+          <baseImponible>4499.97</baseImponible>
+          <valor>675.00</valor>
+        </impuesto>
+      </impuestos>
+    </detalle>
+    <detalle>
+      <codigoPrincipal>PROD-DEMOCOMPANY-004</codigoPrincipal>
+      <descripcion>Mechanical gaming keyboard with RGB backlighting and programmable macro keys</descripcion>
+      <cantidad>8.000000</cantidad>
+      <precioUnitario>179.990000</precioUnitario>
+      <descuento>0.00</descuento>
+      <precioTotalSinImpuesto>1439.92</precioTotalSinImpuesto>
+      <impuestos>
+        <impuesto>
+          <codigo>2</codigo>
+          <codigoPorcentaje>0</codigoPorcentaje>
+          <tarifa>0.15</tarifa>
+          <baseImponible>1439.92</baseImponible>
+          <valor>215.99</valor>
+        </impuesto>
+      </impuestos>
+    </detalle>
+    <detalle>
+      <codigoPrincipal>PROD-DEMOCOMPANY-001</codigoPrincipal>
+      <descripcion>High-performance laptop with 15.6" display, Intel i7, 16GB RAM, 512GB SSD</descripcion>
+      <cantidad>4.000000</cantidad>
+      <precioUnitario>1499.990000</precioUnitario>
+      <descuento>0.00</descuento>
+      <precioTotalSinImpuesto>5999.96</precioTotalSinImpuesto>
+      <impuestos>
+        <impuesto>
+          <codigo>2</codigo>
+          <codigoPorcentaje>0</codigoPorcentaje>
+          <tarifa>0.15</tarifa>
+          <baseImponible>5999.96</baseImponible>
+          <valor>899.99</valor>
+        </impuesto>
+      </impuestos>
+    </detalle>
+    <detalle>
+      <codigoPrincipal>PROD-DEMOCOMPANY-004</codigoPrincipal>
+      <descripcion>Mechanical gaming keyboard with RGB backlighting and programmable macro keys</descripcion>
+      <cantidad>7.000000</cantidad>
+      <precioUnitario>179.990000</precioUnitario>
+      <descuento>0.00</descuento>
+      <precioTotalSinImpuesto>1259.93</precioTotalSinImpuesto>
+      <impuestos>
+        <impuesto>
+          <codigo>2</codigo>
+          <codigoPorcentaje>0</codigoPorcentaje>
+          <tarifa>0.15</tarifa>
+          <baseImponible>1259.93</baseImponible>
+          <valor>188.99</valor>
+        </impuesto>
+      </impuestos>
+    </detalle>
+  </detalles>
+  <infoAdicional>
+    <campoAdicional nombre="Email">contact@acme-demo-company.example.com</campoAdicional>
+    <campoAdicional nombre="Telefono">+1 (555) 123-4567</campoAdicional>
+  </infoAdicional>
+</notaCredito>

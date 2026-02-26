@@ -37,6 +37,7 @@ public class SriErrorLogConfiguration : IEntityTypeConfiguration<SriErrorLog>
 
         // Indexes for performance
         builder.HasIndex(e => e.InvoiceId);
+        builder.HasIndex(e => e.CreditNoteId);
         builder.HasIndex(e => e.Operation);
         builder.HasIndex(e => e.OccurredAt);
         builder.HasIndex(e => new { e.TenantId, e.OccurredAt });
@@ -45,6 +46,11 @@ public class SriErrorLogConfiguration : IEntityTypeConfiguration<SriErrorLog>
         builder.HasOne(e => e.Invoice)
             .WithMany()
             .HasForeignKey(e => e.InvoiceId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(e => e.CreditNote)
+            .WithMany()
+            .HasForeignKey(e => e.CreditNoteId)
             .OnDelete(DeleteBehavior.Restrict);
 
         // Soft delete filter

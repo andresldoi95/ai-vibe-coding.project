@@ -9,9 +9,14 @@ namespace SaaS.Domain.Entities;
 public class SriErrorLog : TenantEntity
 {
     /// <summary>
-    /// Reference to the invoice that encountered the error
+    /// Reference to the invoice that encountered the error (nullable for non-invoice documents)
     /// </summary>
-    public Guid InvoiceId { get; set; }
+    public Guid? InvoiceId { get; set; }
+
+    /// <summary>
+    /// Reference to the credit note that encountered the error
+    /// </summary>
+    public Guid? CreditNoteId { get; set; }
 
     /// <summary>
     /// Type of operation that failed (e.g., "GenerateXml", "SignDocument", "SubmitToSRI", "CheckAuthorization", "GenerateRIDE")
@@ -54,5 +59,6 @@ public class SriErrorLog : TenantEntity
     public bool? RetrySucceeded { get; set; }
 
     // Navigation properties
-    public virtual Invoice Invoice { get; set; } = null!;
+    public virtual Invoice? Invoice { get; set; }
+    public virtual CreditNote? CreditNote { get; set; }
 }

@@ -37,6 +37,8 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     // public DbSet<InvoiceConfiguration> InvoiceConfigurations => Set<InvoiceConfiguration>(); // TODO: Create InvoiceConfiguration entity or remove
     public DbSet<Invoice> Invoices => Set<Invoice>();
     public DbSet<InvoiceItem> InvoiceItems => Set<InvoiceItem>();
+    public DbSet<CreditNote> CreditNotes => Set<CreditNote>();
+    public DbSet<CreditNoteItem> CreditNoteItems => Set<CreditNoteItem>();
     public DbSet<Payment> Payments => Set<Payment>();
     public DbSet<Country> Countries => Set<Country>();
 
@@ -64,6 +66,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
         modelBuilder.Entity<EmissionPoint>().HasQueryFilter(e => !e.IsDeleted);
         modelBuilder.Entity<SriConfiguration>().HasQueryFilter(s => !s.IsDeleted);
         modelBuilder.Entity<Invoice>().HasQueryFilter(i => !i.IsDeleted);
+        modelBuilder.Entity<CreditNote>().HasQueryFilter(cn => !cn.IsDeleted);
         modelBuilder.Entity<TaxRate>().HasQueryFilter(t => !t.IsDeleted);
     }
 

@@ -16,6 +16,13 @@ const modules = [
     color: 'bg-blue-500',
   },
   {
+    title: 'nav.credit_notes',
+    description: 'module_descriptions.credit_notes',
+    icon: 'pi pi-file-minus',
+    to: '/billing/credit-notes',
+    color: 'bg-amber-500',
+  },
+  {
     title: 'nav.payments',
     description: 'module_descriptions.payments',
     icon: 'pi pi-money-bill',

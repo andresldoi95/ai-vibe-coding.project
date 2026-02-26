@@ -10,6 +10,11 @@ public interface ISriErrorLogRepository : IRepository<SriErrorLog>
     Task<List<SriErrorLog>> GetByInvoiceIdAsync(Guid invoiceId, Guid tenantId, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Gets all error logs for a specific credit note
+    /// </summary>
+    Task<List<SriErrorLog>> GetByCreditNoteIdAsync(Guid creditNoteId, Guid tenantId, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Gets error logs for a specific operation type
     /// </summary>
     Task<List<SriErrorLog>> GetByOperationAsync(string operation, Guid tenantId, CancellationToken cancellationToken = default);

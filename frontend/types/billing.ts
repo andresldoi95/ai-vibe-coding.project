@@ -253,3 +253,107 @@ export interface SriErrorLog {
   additionalData?: string
   occurredAt: string
 }
+
+// ── Credit Notes ─────────────────────────────────────────────────────────────
+
+export interface CreditNote {
+  id: string
+  tenantId: string
+  creditNoteNumber: string
+  customerId: string
+  customerName: string
+  customerTaxId?: string
+  issueDate: string
+  subtotalAmount: number
+  taxAmount: number
+  totalAmount: number
+  valueModification: number
+  reason: string
+  status: InvoiceStatus
+  notes?: string
+
+  // Original document reference
+  originalInvoiceId?: string
+  originalInvoiceNumber: string
+  originalInvoiceDate: string
+
+  // SRI Ecuador fields - Emission Point
+  emissionPointId?: string
+  emissionPointCode?: string
+  emissionPointName?: string
+  establishmentCode?: string
+
+  // SRI Ecuador fields - Document
+  documentType: number
+  accessKey?: string
+  paymentMethod: number
+  xmlFilePath?: string
+  signedXmlFilePath?: string
+  rideFilePath?: string
+  environment: number
+  sriAuthorization?: string
+  authorizationDate?: string
+
+  items: CreditNoteItem[]
+  isEditable: boolean
+  createdAt: string
+  updatedAt: string
+}
+
+export interface CreditNoteItem {
+  id: string
+  creditNoteId: string
+  productId: string
+  productCode: string
+  productName: string
+  description?: string
+  quantity: number
+  unitPrice: number
+  taxRateId: string
+  taxRate: number
+  subtotalAmount: number
+  taxAmount: number
+  totalAmount: number
+}
+
+export interface CreateCreditNoteItemDto {
+  productId: string
+  quantity: number
+  unitPrice: number
+  taxRateId: string
+  description?: string
+}
+
+export interface UpdateCreditNoteItemDto {
+  id?: string
+  productId: string
+  quantity: number
+  unitPrice: number
+  taxRateId: string
+  description?: string
+}
+
+export interface CreateCreditNoteDto {
+  customerId: string
+  originalInvoiceId: string
+  emissionPointId: string
+  issueDate: string
+  reason: string
+  notes?: string
+  items: CreateCreditNoteItemDto[]
+}
+
+export interface UpdateCreditNoteDto {
+  customerId: string
+  issueDate: string
+  reason: string
+  notes?: string
+  items: UpdateCreditNoteItemDto[]
+}
+
+export interface CreditNoteFilters {
+  customerId?: string
+  status?: InvoiceStatus
+  dateFrom?: string
+  dateTo?: string
+}

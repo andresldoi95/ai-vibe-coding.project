@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.Extensions.Logging;
 using SaaS.Application.Common.Interfaces;
+using SaaS.Application.Features.CreditNotes.Commands.GenerateCreditNoteRide;
 using SaaS.Application.Features.Invoices.Commands.GenerateRide;
 using SaaS.Domain.Enums;
 
@@ -13,15 +14,18 @@ namespace SaaS.Application.Jobs;
 public class GenerateRideForAuthorizedInvoicesJob
 {
     private readonly IInvoiceRepository _invoiceRepository;
+    private readonly ICreditNoteRepository _creditNoteRepository;
     private readonly IMediator _mediator;
     private readonly ILogger<GenerateRideForAuthorizedInvoicesJob> _logger;
 
     public GenerateRideForAuthorizedInvoicesJob(
         IInvoiceRepository invoiceRepository,
+        ICreditNoteRepository creditNoteRepository,
         IMediator mediator,
         ILogger<GenerateRideForAuthorizedInvoicesJob> logger)
     {
         _invoiceRepository = invoiceRepository;
+        _creditNoteRepository = creditNoteRepository;
         _mediator = mediator;
         _logger = logger;
     }
@@ -101,8 +105,11 @@ public class GenerateRideForAuthorizedInvoicesJob
             }
 
             _logger.LogInformation(
-                "GenerateRideForAuthorizedInvoicesJob completed. Success: {SuccessCount}, Errors: {ErrorCount}",
+                "GenerateRideForAuthorizedInvoicesJob (Invoices) completed. Success: {SuccessCount}, Errors: {ErrorCount}",
                 successCount, errorCount);
+
+            // ── Credit Notes ──────────────────────────────────────────────────
+            await ProcessAuthorizedCreditNotesAsync();
         }
         catch (Exception ex)
         {
@@ -110,4 +117,61 @@ public class GenerateRideForAuthorizedInvoicesJob
             throw;
         }
     }
+
+    private async Task ProcessAuthorizedCreditNotesAsync()
+    {
+        var authorizedCreditNotes = await _creditNoteRepository.GetAllByStatusAsync(InvoiceStatus.Authorized);
+        var creditNotesNeedingRide = authorizedCreditNotes
+            .Where(cn => string.IsNullOrEmpty(cn.RideFilePath))
+            .ToList();
+
+        if (!creditNotesNeedingRide.Any())
+        {
+            _logger.LogInformation("All authorized credit notes already have RIDE PDFs");
+            return;
+        }
+
+        _logger.LogInformation("Found {Count} authorized credit notes needing RIDE generation", creditNotesNeedingRide.Count);
+
+        var successCount = 0;
+        var errorCount = 0;
+
+        foreach (var creditNote in creditNotesNeedingRide)
+        {
+            if (string.IsNullOrEmpty(creditNote.AccessKey) || string.IsNullOrEmpty(creditNote.SriAuthorization))
+            {
+                _logger.LogWarning("CreditNote {CreditNoteId} is authorized but missing AccessKey or SriAuthorization", creditNote.Id);
+                continue;
+            }
+
+            try
+            {
+                var command = new GenerateCreditNoteRideCommand { CreditNoteId = creditNote.Id };
+                var result = await _mediator.Send(command);
+
+                if (result.IsSuccess)
+                {
+                    _logger.LogInformation("Successfully generated RIDE PDF for credit note {CreditNoteId}. Path: {FilePath}",
+                        creditNote.Id, result.Value);
+                    successCount++;
+                }
+                else
+                {
+                    _logger.LogError("Failed to generate RIDE for credit note {CreditNoteId}: {Error}",
+                        creditNote.Id, result.Error);
+                    errorCount++;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error generating RIDE for credit note {CreditNoteId}", creditNote.Id);
+                errorCount++;
+            }
+
+            await Task.Delay(200);
+        }
+
+        _logger.LogInformation(
+            "GenerateRideForAuthorizedInvoicesJob (CreditNotes) completed. Success: {SuccessCount}, Errors: {ErrorCount}",
+            successCount, errorCount);    }
 }

@@ -1,0 +1,129 @@
+<notaCredito id="comprobante" version="1.1.0">
+  <infoTributaria>
+    <ambiente>1</ambiente>
+    <tipoEmision>1</tipoEmision>
+    <razonSocial>Andres Leon</razonSocial>
+    <nombreComercial>Andres Leon</nombreComercial>
+    <ruc>0929866168001</ruc>
+    <claveAcceso>2602202604092986616800110010010000000024130852115</claveAcceso>
+    <codDoc>04</codDoc>
+    <estab>001</estab>
+    <ptoEmi>001</ptoEmi>
+    <secuencial>000000002</secuencial>
+    <dirMatriz>Av. Vernaza y Calle Guayaquil</dirMatriz>
+  </infoTributaria>
+  <infoNotaCredito>
+    <fechaEmision>26/02/2026</fechaEmision>
+    <dirEstablecimiento>Av. Amazonas N123-456, Quito</dirEstablecimiento>
+    <tipoIdentificacionComprador>04</tipoIdentificacionComprador>
+    <razonSocialComprador>Acme Corporation NYC</razonSocialComprador>
+    <identificacionComprador>1790123456001</identificacionComprador>
+    <obligadoContabilidad>NO</obligadoContabilidad>
+    <codDocModificado>01</codDocModificado>
+    <numDocModificado>002-001-000000008</numDocModificado>
+    <fechaEmisionDocSustento>20/02/2026</fechaEmisionDocSustento>
+    <totalSinImpuestos>14279.72</totalSinImpuestos>
+    <valorModificacion>16421.68</valorModificacion>
+    <moneda>DOLAR</moneda>
+    <totalConImpuestos>
+      <totalImpuesto>
+        <codigo>2</codigo>
+        <codigoPorcentaje>0</codigoPorcentaje>
+        <baseImponible>14279.72</baseImponible>
+        <valor>2141.96</valor>
+      </totalImpuesto>
+    </totalConImpuestos>
+    <motivo>Devolucion</motivo>
+  </infoNotaCredito>
+  <detalles>
+    <detalle>
+      <codigoPrincipal>PROD-DEMOCOMPANY-004</codigoPrincipal>
+      <descripcion>Mechanical gaming keyboard with RGB backlighting and programmable macro keys</descripcion>
+      <cantidad>6.000000</cantidad>
+      <precioUnitario>179.990000</precioUnitario>
+      <descuento>0.00</descuento>
+      <precioTotalSinImpuesto>1079.94</precioTotalSinImpuesto>
+      <impuestos>
+        <impuesto>
+          <codigo>2</codigo>
+          <codigoPorcentaje>0</codigoPorcentaje>
+          <tarifa>0.15</tarifa>
+          <baseImponible>1079.94</baseImponible>
+          <valor>161.99</valor>
+        </impuesto>
+      </impuestos>
+    </detalle>
+    <detalle>
+      <codigoPrincipal>PROD-DEMOCOMPANY-001</codigoPrincipal>
+      <descripcion>High-performance laptop with 15.6" display, Intel i7, 16GB RAM, 512GB SSD</descripcion>
+      <cantidad>3.000000</cantidad>
+      <precioUnitario>1499.990000</precioUnitario>
+      <descuento>0.00</descuento>
+      <precioTotalSinImpuesto>4499.97</precioTotalSinImpuesto>
+      <impuestos>
+        <impuesto>
+          <codigo>2</codigo>
+          <codigoPorcentaje>0</codigoPorcentaje>
+          <tarifa>0.15</tarifa>
+          <baseImponible>4499.97</baseImponible>
+          <valor>675.00</valor>
+        </impuesto>
+      </impuestos>
+    </detalle>
+    <detalle>
+      <codigoPrincipal>PROD-DEMOCOMPANY-004</codigoPrincipal>
+      <descripcion>Mechanical gaming keyboard with RGB backlighting and programmable macro keys</descripcion>
+      <cantidad>8.000000</cantidad>
+      <precioUnitario>179.990000</precioUnitario>
+      <descuento>0.00</descuento>
+      <precioTotalSinImpuesto>1439.92</precioTotalSinImpuesto>
+      <impuestos>
+        <impuesto>
+          <codigo>2</codigo>
+          <codigoPorcentaje>0</codigoPorcentaje>
+          <tarifa>0.15</tarifa>
+          <baseImponible>1439.92</baseImponible>
+          <valor>215.99</valor>
+        </impuesto>
+      </impuestos>
+    </detalle>
+    <detalle>
+      <codigoPrincipal>PROD-DEMOCOMPANY-001</codigoPrincipal>
+      <descripcion>High-performance laptop with 15.6" display, Intel i7, 16GB RAM, 512GB SSD</descripcion>
+      <cantidad>4.000000</cantidad>
+      <precioUnitario>1499.990000</precioUnitario>
+      <descuento>0.00</descuento>
+      <precioTotalSinImpuesto>5999.96</precioTotalSinImpuesto>
+      <impuestos>
+        <impuesto>
+          <codigo>2</codigo>
+          <codigoPorcentaje>0</codigoPorcentaje>
+          <tarifa>0.15</tarifa>
+          <baseImponible>5999.96</baseImponible>
+          <valor>899.99</valor>
+        </impuesto>
+      </impuestos>
+    </detalle>
+    <detalle>
+      <codigoPrincipal>PROD-DEMOCOMPANY-004</codigoPrincipal>
+      <descripcion>Mechanical gaming keyboard with RGB backlighting and programmable macro keys</descripcion>
+      <cantidad>7.000000</cantidad>
+      <precioUnitario>179.990000</precioUnitario>
+      <descuento>0.00</descuento>
+      <precioTotalSinImpuesto>1259.93</precioTotalSinImpuesto>
+      <impuestos>
+        <impuesto>
+          <codigo>2</codigo>
+          <codigoPorcentaje>0</codigoPorcentaje>
+          <tarifa>0.15</tarifa>
+          <baseImponible>1259.93</baseImponible>
+          <valor>188.99</valor>
+        </impuesto>
+      </impuestos>
+    </detalle>
+  </detalles>
+  <infoAdicional>
+    <campoAdicional nombre="Email">contact@acme-demo-company.example.com</campoAdicional>
+    <campoAdicional nombre="Telefono">+1 (555) 123-4567</campoAdicional>
+  </infoAdicional>
+<Signature xmlns="http://www.w3.org/2000/09/xmldsig#"><SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315" /><SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256" /><Reference URI="#comprobante"><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature" /></Transforms><DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256" /><DigestValue>z9bp/eGmate3EUTsebGAqlHehq0lvt/9UZ0w6Rf1gCw=</DigestValue></Reference></SignedInfo><SignatureValue>XeZb5TA0rOxtUZuKMgPT+Sn2ExmKOC+l5Vbnn4UHaBnl7oMMIx98qb6LOrIc2B50u2LI2fxipj3g04xUzWX/haXib9ZlGFizjvEEXw9KIkEVxtPTFFY1MpVF3/keprDHk0hsaPhKokix08tYbVghwmDR7q6VZrp0HLrVCo2lLTPZNsAmaxwmPSiGUsjTl0dyRn3IMGOR96mSgCLxvAoYBH0NbQOkEZTtKy5hVgnkRsknZqyCRLvqXWw5m+nXQw6BmyyxxCWtCUreFivpmkqkMI4U6pHhJWIOGHCv7SzPnut+eKDxkhC7g0xDtX0VoXhuaFJn98cJTy9xmmiNKqM74Q==</SignatureValue><KeyInfo><X509Data><X509Certificate>MIIKsTCCCJmgAwIBAgIISV88QO6YmG8wDQYJKoZIhvcNAQELBQAwgZkxCzAJBgNVBAYTAkVDMR0wGwYDVQQKDBRTRUNVUklUWSBEQVRBIFMuQS4gMjEwMC4GA1UECwwnRU5USURBRCBERSBDRVJUSUZJQ0FDSU9OIERFIElORk9STUFDSU9OMTkwNwYDVQQDDDBBVVRPUklEQUQgREUgQ0VSVElGSUNBQ0lPTiBTVUJDQS0yIFNFQ1VSSVRZIERBVEEwHhcNMjUxMDIyMjIzMDE0WhcNMjYxMDIyMjIzMDE0WjCBpzElMCMGA1UEAwwcQU5EUkVTIEFMRVhBTkRFUiBMRU9OIERPWUxFVDEgMB4GA1UEBRMXMDkyOTg2NjE2OC0yMjEwMjUxNzQwMDUxMDAuBgNVBAsMJ0VOVElEQUQgREUgQ0VSVElGSUNBQ0lPTiBERSBJTkZPUk1BQ0lPTjEdMBsGA1UECgwUU0VDVVJJVFkgREFUQSBTLkEuIDIxCzAJBgNVBAYTAkVDMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvVKY650xaUsHnRhWzFHp7cCfKCJVMMeRRzJPp5c7RtAXfsqZXGR6Tw60qvPRX2kOMDl+mSsQlCzL2fWbHulPt9JXOJAvxqXt/eEgpXXhz9VlZ9y3d8ipG8edTy2swRSgJt0klOmpbnOkrXGTXr4pI/g1wIfMHpOMserNL3wrbv1Cgl2B2q2pL1zAFXFvA2QyIwMe8WZAtBvhlj2Kzk/1Kck1CcaqhfHuyKdQOXPQ3jNMy9VES8bL/LTvH5qZHdWoa9/df2/qHHq1NY2Ah18nsbGPB3vSIxeqUB0XDuCgjY2IUuvnt0AoXl5+YlSnktWZ44ST+tZK7o6YEtxmrY0NaQIDAQABo4IF6zCCBecwDAYDVR0TAQH/BAIwADAfBgNVHSMEGDAWgBSMusoRV3glgB1rCktVv42uYt29jzBZBggrBgEFBQcBAQRNMEswSQYIKwYBBQUHMAGGPWh0dHA6Ly9vY3NwZ3cuc2VjdXJpdHlkYXRhLm5ldC5lYy9lamJjYS9wdWJsaWN3ZWIvc3RhdHVzL29jc3AwJQYDVR0RBB4wHIEaYW5kcmVzbGVvbmRveWxldEBnbWFpbC5jb20wggEGBgNVHSAEgf4wgfswWgYKKwYBBAGCpnICBzBMMEoGCCsGAQUFBwICMD4ePABDAGUAcgB0AGkAZgBpAGMAYQBkAG8AIABkAGUAIABQAGUAcgBzAG8AbgBhACAATgBhAHQAdQByAGEAbDCBnAYKKwYBBAGCpnICATCBjTCBigYIKwYBBQUHAgEWfmh0dHBzOi8vd3d3LnNlY3VyaXR5ZGF0YS5uZXQuZWMvd3AtY29udGVudC9kb3dubG9hZHMvTm9ybWF0aXZhcy9QX2RlX0NlcnRpZmljYWRvcy9Qb2xpdGljYXMgZGUgQ2VydGlmaWNhZG8gUGVyc29uYSBOYXR1cmFsLnBkZjAdBgNVHSUEFjAUBggrBgEFBQcDAgYIKwYBBQUHAwQwggIPBgNVHR8EggIGMIICAjCB3qA6oDiGNmh0dHA6Ly9jcmwxLnNlY3VyaXR5ZGF0YS5uZXQuZWMvc3ViY2EyY3JsMS9jcmxmaWxlLmNybKKBn6SBnDCBmTE5MDcGA1UEAwwwQVVUT1JJREFEIERFIENFUlRJRklDQUNJT04gU1VCQ0EtMiBTRUNVUklUWSBEQVRBMTAwLgYDVQQLDCdFTlRJREFEIERFIENFUlRJRklDQUNJT04gREUgSU5GT1JNQUNJT04xHTAbBgNVBAoMFFNFQ1VSSVRZIERBVEEgUy5BLiAyMQswCQYDVQQGEwJFQzA8oDqgOIY2aHR0cDovL2NybDIuc2VjdXJpdHlkYXRhLm5ldC5lYy9zdWJjYTJjcmwyL2NybGZpbGUuY3JsMIHgoIHdoIHahoHXaHR0cHM6Ly9wb3J0YWwtb3BlcmFkb3IyLnNlY3VyaXR5ZGF0YS5uZXQuZWMvZWpiY2EvcHVibGljd2ViL3dlYmRpc3QvY2VydGRpc3Q/Y21kPWNybCZpc3N1ZXI9Q049QVVUT1JJREFEIERFIENFUlRJRklDQUNJT04gU1VCQ0EtMiBTRUNVUklUWSBEQVRBLE9VPUVOVElEQUQgREUgQ0VSVElGSUNBQ0lPTiBERSBJTkZPUk1BQ0lPTixPPVNFQ1VSSVRZIERBVEEgUy5BLiAyLEM9RUMwHQYDVR0OBBYEFDu9rD5fxCcEtf70lJsHH+aI8u/JMCsGA1UdEAQkMCKADzIwMjUxMDIyMjIzMDE0WoEPMjAyNjEwMjIyMjMwMTRaMAsGA1UdDwQEAwIF4DAaBgorBgEEAYKmcgMBBAwMCjA5Mjk4NjYxNjgwNgYKKwYBBAGCpnIDCQQoDCZFTCBTQUxJVFJFIExBUyBSQU1BUyBDQUJFQ0VSQSBDQU5UT05BTDARBgorBgEEAYKmcgMiBAMMAS4wLAYKKwYBBAGCpnIDBwQeDBxBViBWRVJOQVpBIFkgQ0FMTEUgR1VBWUFRVUlMMCAGCisGAQQBgqZyAwIEEgwQQU5EUkVTIEFMRVhBTkRFUjAQBgorBgEEAYKmcgMgBAIMADARBgorBgEEAYKmcgMjBAMMAS4wEwYKKwYBBAGCpnIDIQQFDANQRlgwFwYKKwYBBAGCpnIDDAQJDAdFQ1VBRE9SMBQGCisGAQQBgqZyAwMEBgwETEVPTjAZBgorBgEEAYKmcgMeBAsMCUlOR0VOSUVSTzAdBgorBgEEAYKmcgMLBA8MDTA5Mjk4NjYxNjgwMDEwEQYKKwYBBAGCpnIDHQQDDAEuMBYGCisGAQQBgqZyAwQECAwGRE9ZTEVUMBoGCisGAQQBgqZyAwgEDAwKMDk5NzYwNDM3NjANBgkqhkiG9w0BAQsFAAOCAgEAswzAWdkTAe/c9kCU3taIixxX151hqD2STJABMNJbZ+xRF/K5AWF/Y/EUfGL1yLIvG5sbjg/7YxfSFBkVbZYIwVpY3zm9pxvAoihwBYO99Ta1p7a8otICk8b3cKV+VuxkW2u9A/lYC0OQ7PVTxFcEWqtiiy+qoNzuiSE95Ueqp3k91IVmwpfSU79Q0yU8CD4FkqU3gRKRz/xSYfes0ye3DF7jq/oK2kzBWQVLECZk9HyiXoxGdvEZRyBLbMU0JnHmXlL05TxvORkaU3FyghQE5/MGY74qGf3XlMD3SCCX1qOTf2YFVEbzJ8SchFD/hyqk5ki2wMNuuR8cqzRQck+4eRjMxhYwD7d70cXPSeig9cn178Yl+Ya2FMwXTEelOIap8u4PVfK0Gbf3OmTKPd4jTHpqLcMg2GYVarmUzVWRIZo8Z6hcPa82HiIXpbKq34bYO+t1wrqIbZR3q0S9yBzmfWRKOq771TVQj/f3hULl85IDFOs5PrCjnbr2NsQ2oLn8SvNvi7RkPfm8Mh2/fMbveazVEoAzVQJmtMu5/WsKf2gZceLGFn0B9/1pcUXQXzrgOKhryZMrW4WrHxoKTCn3pmPg/1Xcbs+QeDVhF8GiMZNK5AVGFjDLTIh/MY2cpBVFWTUwILYz4d2dlLu1OiBRRg1zZ2Td4Ic23+8kMyxtCao=</X509Certificate></X509Data></KeyInfo></Signature></notaCredito>

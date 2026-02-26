@@ -66,6 +66,224 @@ namespace SaaS.Infrastructure.Persistence.Migrations
                     b.ToTable("Countries", (string)null);
                 });
 
+            modelBuilder.Entity("SaaS.Domain.Entities.CreditNote", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("AccessKey")
+                        .HasMaxLength(49)
+                        .HasColumnType("character varying(49)");
+
+                    b.Property<DateTime?>("AuthorizationDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("CreditNoteNumber")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("DocumentType")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(4);
+
+                    b.Property<Guid?>("EmissionPointId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Environment")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(1);
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("IssueDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<DateTime>("OriginalInvoiceDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("OriginalInvoiceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("OriginalInvoiceNumber")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<int>("PaymentMethod")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(1);
+
+                    b.Property<string>("Reason")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)");
+
+                    b.Property<string>("RideFilePath")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("SignedXmlFilePath")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("SriAuthorization")
+                        .HasMaxLength(49)
+                        .HasColumnType("character varying(49)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("SubtotalAmount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal>("TaxAmount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("ValueModification")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<string>("XmlFilePath")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccessKey")
+                        .IsUnique()
+                        .HasDatabaseName("IX_CreditNotes_AccessKey")
+                        .HasFilter("\"AccessKey\" IS NOT NULL");
+
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("EmissionPointId")
+                        .HasDatabaseName("IX_CreditNotes_EmissionPointId");
+
+                    b.HasIndex("OriginalInvoiceId")
+                        .HasDatabaseName("IX_CreditNotes_OriginalInvoiceId");
+
+                    b.HasIndex("TenantId")
+                        .HasDatabaseName("IX_CreditNotes_TenantId");
+
+                    b.HasIndex("TenantId", "CreditNoteNumber")
+                        .IsUnique()
+                        .HasDatabaseName("IX_CreditNotes_TenantId_CreditNoteNumber");
+
+                    b.HasIndex("TenantId", "CustomerId")
+                        .HasDatabaseName("IX_CreditNotes_TenantId_CustomerId");
+
+                    b.HasIndex("TenantId", "IssueDate")
+                        .HasDatabaseName("IX_CreditNotes_TenantId_IssueDate");
+
+                    b.HasIndex("TenantId", "Status")
+                        .HasDatabaseName("IX_CreditNotes_TenantId_Status");
+
+                    b.ToTable("CreditNotes", (string)null);
+                });
+
+            modelBuilder.Entity("SaaS.Domain.Entities.CreditNoteItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CreditNoteId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<string>("ProductCode")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ProductName")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("SubtotalAmount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal>("TaxAmount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal>("TaxRate")
+                        .HasPrecision(5, 4)
+                        .HasColumnType("numeric(5,4)");
+
+                    b.Property<Guid>("TaxRateId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreditNoteId")
+                        .HasDatabaseName("IX_CreditNoteItems_CreditNoteId");
+
+                    b.HasIndex("ProductId")
+                        .HasDatabaseName("IX_CreditNoteItems_ProductId");
+
+                    b.HasIndex("TaxRateId");
+
+                    b.ToTable("CreditNoteItems", (string)null);
+                });
+
             modelBuilder.Entity("SaaS.Domain.Entities.Customer", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1137,6 +1355,9 @@ namespace SaaS.Infrastructure.Persistence.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("text");
 
+                    b.Property<Guid?>("CreditNoteId")
+                        .HasColumnType("uuid");
+
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -1149,7 +1370,7 @@ namespace SaaS.Infrastructure.Persistence.Migrations
                         .HasMaxLength(2000)
                         .HasColumnType("character varying(2000)");
 
-                    b.Property<Guid>("InvoiceId")
+                    b.Property<Guid?>("InvoiceId")
                         .HasColumnType("uuid");
 
                     b.Property<bool>("IsDeleted")
@@ -1184,6 +1405,8 @@ namespace SaaS.Infrastructure.Persistence.Migrations
                         .HasDefaultValue(false);
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CreditNoteId");
 
                     b.HasIndex("InvoiceId");
 
@@ -1709,6 +1932,59 @@ namespace SaaS.Infrastructure.Persistence.Migrations
                     b.ToTable("WarehouseInventory", (string)null);
                 });
 
+            modelBuilder.Entity("SaaS.Domain.Entities.CreditNote", b =>
+                {
+                    b.HasOne("SaaS.Domain.Entities.Customer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SaaS.Domain.Entities.EmissionPoint", "EmissionPoint")
+                        .WithMany("CreditNotes")
+                        .HasForeignKey("EmissionPointId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("SaaS.Domain.Entities.Invoice", "OriginalInvoice")
+                        .WithMany()
+                        .HasForeignKey("OriginalInvoiceId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("EmissionPoint");
+
+                    b.Navigation("OriginalInvoice");
+                });
+
+            modelBuilder.Entity("SaaS.Domain.Entities.CreditNoteItem", b =>
+                {
+                    b.HasOne("SaaS.Domain.Entities.CreditNote", "CreditNote")
+                        .WithMany("Items")
+                        .HasForeignKey("CreditNoteId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SaaS.Domain.Entities.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SaaS.Domain.Entities.TaxRate", "TaxRateEntity")
+                        .WithMany()
+                        .HasForeignKey("TaxRateId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("CreditNote");
+
+                    b.Navigation("Product");
+
+                    b.Navigation("TaxRateEntity");
+                });
+
             modelBuilder.Entity("SaaS.Domain.Entities.Customer", b =>
                 {
                     b.HasOne("SaaS.Domain.Entities.Country", "BillingCountry")
@@ -1842,11 +2118,17 @@ namespace SaaS.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("SaaS.Domain.Entities.SriErrorLog", b =>
                 {
+                    b.HasOne("SaaS.Domain.Entities.CreditNote", "CreditNote")
+                        .WithMany()
+                        .HasForeignKey("CreditNoteId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("SaaS.Domain.Entities.Invoice", "Invoice")
                         .WithMany()
                         .HasForeignKey("InvoiceId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("CreditNote");
 
                     b.Navigation("Invoice");
                 });
@@ -1977,8 +2259,15 @@ namespace SaaS.Infrastructure.Persistence.Migrations
                     b.Navigation("Warehouses");
                 });
 
+            modelBuilder.Entity("SaaS.Domain.Entities.CreditNote", b =>
+                {
+                    b.Navigation("Items");
+                });
+
             modelBuilder.Entity("SaaS.Domain.Entities.EmissionPoint", b =>
                 {
+                    b.Navigation("CreditNotes");
+
                     b.Navigation("Invoices");
                 });
 

@@ -28,6 +28,8 @@ public class UnitOfWork : IUnitOfWork
     public ITaxRateRepository TaxRates { get; }
     public IInvoiceRepository Invoices { get; }
     public IRepository<InvoiceItem> InvoiceItems { get; }
+    public ICreditNoteRepository CreditNotes { get; }
+    public IRepository<CreditNoteItem> CreditNoteItems { get; }
     public IPaymentRepository Payments { get; }
     public ICountryRepository Countries { get; }
     public IEstablishmentRepository Establishments { get; }
@@ -52,6 +54,8 @@ public class UnitOfWork : IUnitOfWork
         ITaxRateRepository taxRateRepository,
         IInvoiceRepository invoiceRepository,
         IRepository<InvoiceItem> invoiceItemRepository,
+        ICreditNoteRepository creditNoteRepository,
+        IRepository<CreditNoteItem> creditNoteItemRepository,
         IPaymentRepository paymentRepository,
         ICountryRepository countryRepository,
         IEstablishmentRepository establishmentRepository,
@@ -71,6 +75,8 @@ public class UnitOfWork : IUnitOfWork
         TaxRates = taxRateRepository;
         Invoices = invoiceRepository;
         InvoiceItems = invoiceItemRepository;
+        CreditNotes = creditNoteRepository;
+        CreditNoteItems = creditNoteItemRepository;
         Payments = paymentRepository;
         Countries = countryRepository;
         StockMovements = stockMovementRepository;

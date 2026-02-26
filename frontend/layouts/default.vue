@@ -39,6 +39,11 @@ const menuItems = computed(() => {
       items: [
         { label: t('nav.invoices'), icon: 'pi pi-file', command: () => navigateTo('/billing/invoices') },
         {
+          label: t('nav.credit_notes'),
+          icon: 'pi pi-file-minus',
+          command: () => navigateTo('/billing/credit-notes'),
+        },
+        {
           label: t('nav.customers'),
           icon: 'pi pi-users',
           command: () => navigateTo('/billing/customers'),

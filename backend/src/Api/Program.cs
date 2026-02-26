@@ -151,6 +151,8 @@ builder.Services.AddAuthorization(options =>
         // Invoices
         "invoices.read", "invoices.create", "invoices.update", "invoices.delete",
         "invoices.send", "invoices.void", "invoices.export", "invoices.manage",
+        // Credit Notes
+        "credit-notes.read", "credit-notes.create", "credit-notes.update", "credit-notes.delete", "credit-notes.manage",
         // Payments
         "payments.read", "payments.create", "payments.update", "payments.void", "payments.complete", "payments.delete",
         // SRI - Establishments
@@ -209,9 +211,11 @@ builder.Services.AddScoped<IInvoiceNumberService, InvoiceNumberService>();
 // Register SRI Services for electronic invoicing
 builder.Services.AddScoped<ISriAccessKeyService, SriAccessKeyService>();
 builder.Services.AddScoped<IInvoiceXmlService, InvoiceXmlService>();
+builder.Services.AddScoped<ICreditNoteXmlService, CreditNoteXmlService>();
 builder.Services.AddScoped<IXmlSignatureService, XmlSignatureService>();
 builder.Services.AddScoped<ISriWebServiceClient, SriSoapClient>();
 builder.Services.AddScoped<IRideGenerationService, RideGenerationService>();
+builder.Services.AddScoped<ICreditNoteRideService, CreditNoteRideService>();
 
 // Configure Email Settings
 builder.Services.Configure<SaaS.Application.Common.Models.EmailSettings>(
@@ -238,6 +242,8 @@ builder.Services.AddScoped<IPermissionRepository, PermissionRepository>();
 builder.Services.AddScoped<ITaxRateRepository, TaxRateRepository>();
 builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
 builder.Services.AddScoped<IRepository<SaaS.Domain.Entities.InvoiceItem>, Repository<SaaS.Domain.Entities.InvoiceItem>>();
+builder.Services.AddScoped<ICreditNoteRepository, CreditNoteRepository>();
+builder.Services.AddScoped<IRepository<SaaS.Domain.Entities.CreditNoteItem>, Repository<SaaS.Domain.Entities.CreditNoteItem>>();
 builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 builder.Services.AddScoped<ICountryRepository, CountryRepository>();
 builder.Services.AddScoped<IEstablishmentRepository, EstablishmentRepository>();

@@ -18,6 +18,14 @@ public class SriErrorLogRepository : Repository<SriErrorLog>, ISriErrorLogReposi
             .ToListAsync(cancellationToken);
     }
 
+    public async Task<List<SriErrorLog>> GetByCreditNoteIdAsync(Guid creditNoteId, Guid tenantId, CancellationToken cancellationToken = default)
+    {
+        return await _dbSet
+            .Where(e => e.CreditNoteId == creditNoteId && e.TenantId == tenantId && !e.IsDeleted)
+            .OrderByDescending(e => e.OccurredAt)
+            .ToListAsync(cancellationToken);
+    }
+
     public async Task<List<SriErrorLog>> GetByOperationAsync(string operation, Guid tenantId, CancellationToken cancellationToken = default)
     {
         return await _dbSet

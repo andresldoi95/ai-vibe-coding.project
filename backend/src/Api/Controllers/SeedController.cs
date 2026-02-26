@@ -327,6 +327,11 @@ public class SeedController : ControllerBase
         var requiredPermissions = new[]
         {
             ("invoices.manage", "Manage invoice SRI workflow (XML generation, signing, submission)", "invoices", "manage"),
+            ("credit-notes.read", "View credit notes", "credit-notes", "read"),
+            ("credit-notes.create", "Create credit notes", "credit-notes", "create"),
+            ("credit-notes.update", "Update credit notes", "credit-notes", "update"),
+            ("credit-notes.delete", "Delete credit notes", "credit-notes", "delete"),
+            ("credit-notes.manage", "Manage credit note SRI workflow (XML generation, signing, submission)", "credit-notes", "manage"),
         };
 
         foreach (var (name, description, resource, action) in requiredPermissions)
@@ -447,6 +452,7 @@ public class SeedController : ControllerBase
         var managerPermissions = allPermissions
             .Where(p =>
                 new[] { "warehouses", "products", "customers", "stock", "establishments", "emission_points" }.Contains(p.Resource) ||
+                (p.Resource == "credit-notes" && new[] { "read", "create", "update", "delete", "manage" }.Contains(p.Action)) ||
                 (p.Resource == "invoices" && new[] { "read", "create", "update", "send", "export", "manage" }.Contains(p.Action)) ||
                 (p.Resource == "payments" && new[] { "read", "create", "update", "void", "complete" }.Contains(p.Action)) ||
                 (p.Resource == "tax-rates" && new[] { "read", "create", "update" }.Contains(p.Action)) ||

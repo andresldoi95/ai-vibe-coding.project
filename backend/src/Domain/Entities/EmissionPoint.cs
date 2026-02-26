@@ -57,6 +57,11 @@ public class EmissionPoint : TenantEntity
     public ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();
 
     /// <summary>
+    /// Credit notes generated at this emission point
+    /// </summary>
+    public ICollection<CreditNote> CreditNotes { get; set; } = new List<CreditNote>();
+
+    /// <summary>
     /// Validates the emission point code format (must be exactly 3 digits)
     /// </summary>
     public bool IsValidCode()
