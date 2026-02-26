@@ -6,6 +6,7 @@ Before generating any code, **always**:
 
 1. **Read `docs/COMMON_MISTAKES_AND_PATTERNS.md`** — catalogs recurring errors and established patterns
 2. **Read the scoped instruction file** for the domain you are working on (see table below)
+   - For any SRI feature: **always read `.github/instructions/sri.instructions.md`** first
 3. **Read the relevant `docs/` file** for deep-dive reference
 4. **Use `docs/WAREHOUSE_IMPLEMENTATION_REFERENCE.md`** as the canonical template for any new CRUD module
 5. **Read `docs/i18n-standards.md`** before adding any translation keys
@@ -20,6 +21,7 @@ Before generating any code, **always**:
 | File | Applies To | Covers |
 |---|---|---|
 | `.github/instructions/architecture.instructions.md` | `**` (always) | Clean Architecture layers, multi-tenancy, CQRS, security |
+| `.github/instructions/sri.instructions.md` | `**` (always) | SRI XML schemas, access key, signing (XAdES-BES), SOAP, RIDE PDF, status machine |
 | `.github/instructions/backend.instructions.md` | `backend/**` | .NET 8, EF Core, CQRS, Auth (JWT/RBAC/BCrypt), Email (MailKit) |
 | `.github/instructions/frontend.instructions.md` | `frontend/**` | Nuxt 3, PrimeVue v4, Tailwind, `useApi()`, UX patterns |
 | `.github/instructions/testing.instructions.md` | `backend/tests/**` | xUnit, FluentAssertions, Moq, AAA pattern |
@@ -38,6 +40,7 @@ Before generating any code, **always**:
 | `docs/auth-agent.md` | Auth, JWT, RBAC, BCrypt patterns |
 | `docs/email-agent.md` | MailKit, Mailpit, email templates |
 | `docs/backend-unit-testing-agent.md` | xUnit test patterns, coverage checklists |
+| `.github/instructions/sri.instructions.md` | Any SRI feature: XML generation, signing, SOAP, RIDE, new document type |
 
 ---
 
