@@ -1,4 +1,4 @@
-import type { CreditNote, CreditNoteFilters, CreateCreditNoteDto, SriErrorLog, UpdateCreditNoteDto } from '~/types/billing'
+import type { CreateCreditNoteDto, CreditNote, CreditNoteFilters, SriErrorLog, UpdateCreditNoteDto } from '~/types/billing'
 
 interface ApiResponse<T> {
   data: T
