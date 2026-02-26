@@ -200,7 +200,7 @@ onMounted(() => {
                   {{ t('stock_movements.movement_type') }}
                   <span class="text-red-500">*</span>
                 </label>
-                <Dropdown
+                <Select
                   id="movementType"
                   v-model="formData.movementType"
                   :options="movementTypeOptions"
@@ -221,7 +221,7 @@ onMounted(() => {
                   {{ t('stock_movements.product') }}
                   <span class="text-red-500">*</span>
                 </label>
-                <Dropdown
+                <Select
                   id="productId"
                   v-model="formData.productId"
                   :options="products"
@@ -243,7 +243,7 @@ onMounted(() => {
                   {{ t('stock_movements.warehouse') }}
                   <span class="text-red-500">*</span>
                 </label>
-                <Dropdown
+                <Select
                   id="warehouseId"
                   v-model="formData.warehouseId"
                   :options="warehouses"
@@ -264,7 +264,7 @@ onMounted(() => {
                 <label for="destinationWarehouseId" class="font-medium">
                   {{ t('stock_movements.destination_warehouse') }}
                 </label>
-                <Dropdown
+                <Select
                   id="destinationWarehouseId"
                   v-model="formData.destinationWarehouseId"
                   :options="warehouses.filter(w => w.id !== formData.warehouseId)"
@@ -282,7 +282,7 @@ onMounted(() => {
                   {{ t('stock_movements.movement_date') }}
                   <span class="text-red-500">*</span>
                 </label>
-                <Calendar
+                <DatePicker
                   id="movementDate"
                   v-model="formData.movementDate"
                   date-format="yy-mm-dd"

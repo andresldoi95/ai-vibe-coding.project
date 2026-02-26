@@ -154,7 +154,7 @@ onMounted(() => {
             <label for="roleId" class="block text-base font-medium mb-2">
               {{ t('users.invite.role') }} <span class="text-red-500">*</span>
             </label>
-            <Dropdown
+            <Select
               id="roleId"
               v-model="formData.roleId"
               :options="roles"

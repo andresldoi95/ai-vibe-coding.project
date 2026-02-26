@@ -231,7 +231,7 @@ function handleCancel() {
                 <label class="block text-sm font-medium mb-2">
                   {{ t('creditNotes.customer') }} *
                 </label>
-                <Dropdown
+                <Select
                   v-model="formData.customerId"
                   :options="customers"
                   option-label="name"
@@ -249,7 +249,7 @@ function handleCancel() {
                 <label class="block text-sm font-medium mb-2">
                   {{ t('creditNotes.emission_point') }} *
                 </label>
-                <Dropdown
+                <Select
                   v-model="formData.emissionPointId"
                   :options="emissionPoints"
                   option-label="name"
@@ -266,7 +266,7 @@ function handleCancel() {
                 <label class="block text-sm font-medium mb-2">
                   {{ t('creditNotes.issue_date') }} *
                 </label>
-                <Calendar
+                <DatePicker
                   v-model="formData.issueDate"
                   date-format="yy-mm-dd"
                   class="w-full"
@@ -287,7 +287,7 @@ function handleCancel() {
                 <label class="block text-sm font-medium mb-2">
                   {{ t('creditNotes.original_invoice') }} *
                 </label>
-                <Dropdown
+                <Select
                   v-model="formData.originalInvoiceId"
                   :options="availableInvoices"
                   :option-label="(inv: Invoice) => `${inv.invoiceNumber} — ${formatCurrency(inv.totalAmount)}`"
@@ -425,7 +425,7 @@ function handleCancel() {
               </Column>
               <Column :header="t('creditNotes.item_tax_rate')" style="width: 10rem">
                 <template #body="{ index }">
-                  <Dropdown
+                  <Select
                     v-model="formData.items[index].taxRateId"
                     :options="taxRates"
                     option-label="name"

@@ -324,7 +324,7 @@ onMounted(() => {
                   <label for="country" class="font-semibold text-slate-700 dark:text-slate-200">
                     {{ t('common.country') }} *
                   </label>
-                  <Dropdown
+                  <Select
                     id="country"
                     v-model="formData.countryId"
                     :options="getCountryOptions()"

@@ -143,7 +143,7 @@ onMounted(() => {
                 <label for="establishment" class="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">
                   {{ t('emissionPoints.establishment') }} <span class="text-red-500">*</span>
                 </label>
-                <Dropdown
+                <Select
                   id="establishment"
                   v-model="formData.establishmentId"
                   :options="establishmentOptions"

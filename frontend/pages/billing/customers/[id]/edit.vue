@@ -362,7 +362,7 @@ onMounted(() => {
                     <label for="billingCountry" class="font-semibold text-slate-700 dark:text-slate-200">
                       {{ t('common.country') }}
                     </label>
-                    <Dropdown
+                    <Select
                       id="billingCountry"
                       v-model="formData.billingCountryId"
                       :options="getCountryOptions()"
@@ -439,7 +439,7 @@ onMounted(() => {
                     <label for="shippingCountry" class="font-semibold text-slate-700 dark:text-slate-200">
                       {{ t('common.country') }}
                     </label>
-                    <Dropdown
+                    <Select
                       id="shippingCountry"
                       v-model="formData.shippingCountryId"
                       :options="getCountryOptions()"

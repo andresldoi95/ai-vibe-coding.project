@@ -205,7 +205,7 @@ onMounted(async () => {
 
           <Column field="role.name" :header="t('users.list.role')" sortable>
             <template #body="{ data }">
-              <Dropdown
+              <Select
                 v-model="data.roleId"
                 :options="roles"
                 optionLabel="name"

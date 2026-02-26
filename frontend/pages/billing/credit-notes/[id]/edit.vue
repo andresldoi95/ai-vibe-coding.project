@@ -189,7 +189,7 @@ function handleCancel() {
               <label class="block text-sm font-medium mb-2">
                 {{ t('creditNotes.issue_date') }} *
               </label>
-              <Calendar
+              <DatePicker
                 v-model="formData.issueDate"
                 date-format="yy-mm-dd"
                 class="w-full"
@@ -283,7 +283,7 @@ function handleCancel() {
               </Column>
               <Column :header="t('creditNotes.item_tax_rate')" style="width: 10rem">
                 <template #body="{ index }">
-                  <Dropdown
+                  <Select
                     v-model="formData.items[index].taxRateId"
                     :options="taxRates"
                     option-label="name"

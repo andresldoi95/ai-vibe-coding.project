@@ -203,7 +203,7 @@ function getActiveFilterCount(): number {
               <label for="status" class="font-semibold text-slate-700 dark:text-slate-200">
                 {{ t('common.status') }}
               </label>
-              <Dropdown
+              <Select
                 id="status"
                 v-model="filters.isActive"
                 :options="[

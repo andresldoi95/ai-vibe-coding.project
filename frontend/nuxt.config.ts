@@ -4,6 +4,11 @@ import Aura from '@primeuix/themes/aura'
 export default defineNuxtConfig({
   devtools: { enabled: true },
 
+  // Disable SSR — this is an authenticated SaaS admin app, no SSO benefit.
+  // Disabling SSR eliminates all Vue hydration mismatch warnings caused by
+  // auth-dependent computed menu items and PrimeVue sequential ID drift.
+  ssr: false,
+
   // Disable app manifest to avoid build warnings
   experimental: {
     appManifest: false,

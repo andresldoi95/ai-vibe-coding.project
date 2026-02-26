@@ -109,7 +109,7 @@ onMounted(() => {
             <label for="establishment-filter" class="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">
               {{ t('emissionPoints.filter_by_establishment') }}
             </label>
-            <Dropdown
+            <Select
               id="establishment-filter"
               v-model="selectedEstablishment"
               :options="establishmentOptions"
@@ -125,7 +125,7 @@ onMounted(() => {
             <label for="status-filter" class="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">
               {{ t('common.status') }}
             </label>
-            <Dropdown
+            <Select
               id="status-filter"
               v-model="selectedStatus"
               :options="statusOptions"

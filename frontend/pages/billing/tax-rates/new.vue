@@ -150,7 +150,7 @@ function handleCancel() {
               <label for="country" class="font-semibold">
                 {{ t('taxRates.country') }}
               </label>
-              <Dropdown
+              <Select
                 id="country"
                 v-model="formData.countryId"
                 :options="getCountryOptions()"

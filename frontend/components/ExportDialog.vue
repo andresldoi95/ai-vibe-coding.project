@@ -144,7 +144,7 @@ function handleCancel() {
               <!-- Select Filter -->
               <template v-else-if="filter.type === 'select'">
                 <label :for="filter.name" class="block text-sm mb-1">{{ filter.label }}</label>
-                <Dropdown
+                <Select
                   :id="filter.name"
                   v-model="filterValues[filter.name]"
                   :options="filter.options || []"
@@ -159,7 +159,7 @@ function handleCancel() {
               <!-- Date Filter -->
               <template v-else-if="filter.type === 'date'">
                 <label :for="filter.name" class="block text-sm mb-1">{{ filter.label }}</label>
-                <Calendar
+                <DatePicker
                   :id="filter.name"
                   :model-value="getFilterDate(filter.name)"
                   date-format="yy-mm-dd"

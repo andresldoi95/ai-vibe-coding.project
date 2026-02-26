@@ -387,7 +387,7 @@ onMounted(() => {
                   {{ t('products.initial_warehouse') }}
                   <span v-if="formData.initialQuantity" class="text-red-600">*</span>
                 </label>
-                <Dropdown
+                <Select
                   id="initialWarehouseId"
                   v-model="formData.initialWarehouseId"
                   :options="warehouses"
