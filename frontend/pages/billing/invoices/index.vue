@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { InvoiceStatus } from '~/types/billing'
+import type { InvoiceFilters } from '~/types/billing'
 
 definePageMeta({
   middleware: ['auth', 'tenant'],
@@ -10,9 +11,29 @@ const { t } = useI18n()
 const { getAllInvoices, deleteInvoice } = useInvoice()
 const { can } = usePermissions()
 
+// ── Filter state ──────────────────────────────────────────────────────────────
+const showFilters = ref(true)
+const searchTerm = ref('')
+const statusFilter = ref<InvoiceStatus | undefined>(undefined)
+const dateFromFilter = ref<Date | undefined>(undefined)
+const dateToFilter = ref<Date | undefined>(undefined)
+
+// Server-side filter loader
+async function loadWithFilters() {
+  const active: InvoiceFilters = {}
+  if (statusFilter.value !== undefined)
+    active.status = statusFilter.value
+  if (dateFromFilter.value)
+    active.dateFrom = dateFromFilter.value.toISOString()
+  if (dateToFilter.value)
+    active.dateTo = dateToFilter.value.toISOString()
+  return await getAllInvoices(active)
+}
+
 const {
   items: invoices,
   loading,
+  loadData,
   deleteDialog,
   selectedItem: selectedInvoice,
   handleCreate,
@@ -24,24 +45,76 @@ const {
   resourceName: 'invoices',
   parentRoute: 'billing',
   basePath: '/billing/invoices',
-  loadItems: getAllInvoices,
+  loadItems: loadWithFilters,
   deleteItem: deleteInvoice,
 })
 
+// Client-side text search on top of server results
+const filteredInvoices = computed(() => {
+  const q = searchTerm.value.trim().toLowerCase()
+  if (!q)
+    return invoices.value
+  return invoices.value.filter(
+    inv =>
+      inv.invoiceNumber?.toLowerCase().includes(q)
+      || inv.customerName?.toLowerCase().includes(q),
+  )
+})
+
+// Debounce text search
+const searchDebounce = ref<ReturnType<typeof setTimeout>>()
+watch(searchTerm, () => {
+  clearTimeout(searchDebounce.value)
+  searchDebounce.value = setTimeout(() => loadData(), 300)
+})
+
+// Re-fetch when server-side filters change
+watch(statusFilter, () => loadData())
+watch(dateFromFilter, () => loadData())
+watch(dateToFilter, () => loadData())
+
+function applyFilters() {
+  loadData()
+}
+
+function resetFilters() {
+  searchTerm.value = ''
+  statusFilter.value = undefined
+  dateFromFilter.value = undefined
+  dateToFilter.value = undefined
+  loadData()
+}
+
+function getActiveFilterCount(): number {
+  let count = 0
+  if (searchTerm.value)
+    count++
+  if (statusFilter.value !== undefined)
+    count++
+  if (dateFromFilter.value)
+    count++
+  if (dateToFilter.value)
+    count++
+  return count
+}
+
+// Status options for the Select
+const statusOptions = [
+  { label: t('invoices.status_draft'), value: InvoiceStatus.Draft },
+  { label: t('invoices.status_pending_signature'), value: InvoiceStatus.PendingSignature },
+  { label: t('invoices.status_pending_authorization'), value: InvoiceStatus.PendingAuthorization },
+  { label: t('invoices.status_authorized'), value: InvoiceStatus.Authorized },
+  { label: t('invoices.status_rejected'), value: InvoiceStatus.Rejected },
+  { label: t('invoices.status_sent'), value: InvoiceStatus.Sent },
+  { label: t('invoices.status_paid'), value: InvoiceStatus.Paid },
+  { label: t('invoices.status_overdue'), value: InvoiceStatus.Overdue },
+  { label: t('invoices.status_cancelled'), value: InvoiceStatus.Cancelled },
+  { label: t('invoices.status_voided'), value: InvoiceStatus.Voided },
+]
+
 function getStatusLabel(status: InvoiceStatus): string {
-  const labels: Record<InvoiceStatus, string> = {
-    [InvoiceStatus.Draft]: t('invoices.status_draft'),
-    [InvoiceStatus.PendingSignature]: t('invoices.status_pending_signature'),
-    [InvoiceStatus.PendingAuthorization]: t('invoices.status_pending_authorization'),
-    [InvoiceStatus.Authorized]: t('invoices.status_authorized'),
-    [InvoiceStatus.Rejected]: t('invoices.status_rejected'),
-    [InvoiceStatus.Sent]: t('invoices.status_sent'),
-    [InvoiceStatus.Paid]: t('invoices.status_paid'),
-    [InvoiceStatus.Overdue]: t('invoices.status_overdue'),
-    [InvoiceStatus.Cancelled]: t('invoices.status_cancelled'),
-    [InvoiceStatus.Voided]: t('invoices.status_voided'),
-  }
-  return labels[status] || status.toString()
+  const opt = statusOptions.find(o => o.value === status)
+  return opt ? opt.label : status.toString()
 }
 
 function getStatusSeverity(status: InvoiceStatus): string {
@@ -61,10 +134,7 @@ function getStatusSeverity(status: InvoiceStatus): string {
 }
 
 function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat('es-EC', {
-    style: 'currency',
-    currency: 'USD',
-  }).format(amount)
+  return new Intl.NumberFormat('es-EC', { style: 'currency', currency: 'USD' }).format(amount)
 }
 </script>
 
@@ -84,10 +154,108 @@ function formatCurrency(amount: number): string {
       </template>
     </PageHeader>
 
+    <!-- Filter Panel -->
+    <Card class="mb-6">
+      <template #content>
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-2">
+            <h3 class="text-lg font-semibold text-slate-900 dark:text-white">
+              {{ t('invoices.filters') }}
+            </h3>
+            <Badge
+              v-if="getActiveFilterCount() > 0"
+              :value="getActiveFilterCount()"
+              severity="info"
+            />
+          </div>
+          <Button
+            :icon="showFilters ? 'pi pi-chevron-up' : 'pi pi-chevron-down'"
+            text
+            rounded
+            @click="showFilters = !showFilters"
+          />
+        </div>
+
+        <div v-if="showFilters" class="space-y-4">
+          <!-- Text search -->
+          <div class="flex flex-col gap-2">
+            <label for="inv-search" class="font-semibold text-slate-700 dark:text-slate-200">
+              {{ t('common.search') }}
+            </label>
+            <InputText
+              id="inv-search"
+              v-model="searchTerm"
+              :placeholder="t('invoices.search_placeholder')"
+            />
+          </div>
+
+          <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+            <!-- Status -->
+            <div class="flex flex-col gap-2">
+              <label for="inv-status" class="font-semibold text-slate-700 dark:text-slate-200">
+                {{ t('invoices.status') }}
+              </label>
+              <Select
+                id="inv-status"
+                v-model="statusFilter"
+                :options="statusOptions"
+                option-label="label"
+                option-value="value"
+                :placeholder="t('invoices.filter_status_all')"
+                show-clear
+              />
+            </div>
+
+            <!-- Date From -->
+            <div class="flex flex-col gap-2">
+              <label for="inv-date-from" class="font-semibold text-slate-700 dark:text-slate-200">
+                {{ t('invoices.filter_date_from') }}
+              </label>
+              <DatePicker
+                id="inv-date-from"
+                v-model="dateFromFilter"
+                date-format="dd/mm/yy"
+                :placeholder="t('invoices.filter_date_from')"
+                show-clear
+              />
+            </div>
+
+            <!-- Date To -->
+            <div class="flex flex-col gap-2">
+              <label for="inv-date-to" class="font-semibold text-slate-700 dark:text-slate-200">
+                {{ t('invoices.filter_date_to') }}
+              </label>
+              <DatePicker
+                id="inv-date-to"
+                v-model="dateToFilter"
+                date-format="dd/mm/yy"
+                :placeholder="t('invoices.filter_date_to')"
+                show-clear
+              />
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="flex gap-2 justify-end">
+            <Button
+              :label="t('common.reset')"
+              severity="secondary"
+              @click="resetFilters"
+            />
+            <Button
+              :label="t('common.apply')"
+              icon="pi pi-filter"
+              @click="applyFilters"
+            />
+          </div>
+        </div>
+      </template>
+    </Card>
+
     <Card>
       <template #content>
         <DataTable
-          :value="invoices"
+          :value="filteredInvoices"
           :loading="loading"
           striped-rows
           paginator
